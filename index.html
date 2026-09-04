@@ -30,7 +30,6 @@
     .reset-btn { background: var(--danger); color: white; }
     .print-btn:hover, .help-btn:hover, .reset-btn:hover { opacity: 0.85; }
 
-    /* LAYOUT DE DOS COLUMNAS PRINCIPAL */
     .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 1024px) { 
       .container { grid-template-columns: 350px 1fr; align-items: start; } 
@@ -61,7 +60,7 @@
     .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; }
     .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; }
-    canvas { width: 100%; height: auto; max-height: 200px; display: block; margin: 0 auto; }
+    canvas { width: 100% !important; height: 210px !important; display: block; margin: 0 auto; background: #020617; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
@@ -72,41 +71,37 @@
     .summary-card strong { display: block; font-size: 1.2rem; margin-top: 3px; color: var(--accent); font-family: monospace; }
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.7rem; margin-top: 2px; }
 
-    /* ESTILOS DE TABLA DE HISTORIAL */
     .history-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
     .history-card h3 { font-size: 0.9rem; color: var(--highlight); margin-bottom: 6px; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
     .history-table th, .history-table td { padding: 6px; border-bottom: 1px solid var(--border); }
     .history-table th { color: var(--highlight); font-weight: 600; }
 
-    /* GRID DE FÓRMULAS EN 2 COLUMNAS */
-    .results-area { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    @media (min-width: 768px) {
+    .results-area { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    @media (min-width: 900px) {
       .results-area { grid-template-columns: repeat(2, 1fr); }
     }
 
-    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
-    .formula-card h3 { font-size: 0.92rem; color: var(--highlight); margin-bottom: 8px; }
-    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; }
-    .step-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 2px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.82rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
-    .step-content.result { color: var(--success); font-weight: bold; font-size: 0.9rem; }
-    .step-explanation { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; line-height: 1.4; padding-top: 8px; border-top: 1px dashed var(--border); }
+    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; }
+    .formula-card h3 { font-size: 0.95rem; color: var(--highlight); margin-bottom: 10px; }
+    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+    .step-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
+    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.8rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
+    .step-content.result { color: var(--success); font-weight: bold; font-size: 0.88rem; }
+    .step-explanation { font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; line-height: 1.45; padding-top: 8px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
 
-    /* MODAL DE AYUDA */
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
     .modal-content { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 10px; max-width: 500px; width: 90%; color: var(--text-main); position: relative; }
     .close-modal { position: absolute; right: 15px; top: 10px; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
 
-    /* NOTA DE PIE ACADÉMICO */
     footer.academic-footer { text-align: center; margin-top: 25px; padding: 15px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); }
 
     @media print {
       body { background: white; color: black; }
       .panel-controls, .print-btn, .help-btn, .reset-btn, .modal { display: none; }
       .container { display: block; }
-      .visualizer-card, .formula-card, .history-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; margin-bottom: 10px; }
+      .visualizer-card, .formula-card, .history-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; margin-bottom: 15px; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
       .status-panel, .history-table th, .history-table td { border: 1px solid #ccc; color: black; }
@@ -129,12 +124,12 @@
   <div id="helpModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" id="closeHelpBtn">&times;</span>
-      <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso del Simulador</h3>
-      <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5; margin-bottom:10px;">
-        1. <strong>Mueve los deslizadores</strong> del panel izquierdo para cambiar las propiedades de la pieza o de la bobina de cobre.<br>
-        2. Observa cómo las <strong>Cámaras 3D y 2D</strong> reaccionan en tiempo real mostrando las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
-        3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C en aceros) o si configuras una potencia poco realista.<br>
-        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla inferior antes de exportar todo a PDF.
+      <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
+      <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+        1. <strong>Mueve los deslizadores</strong> del panel izquierdo para cambiar propiedades de la pieza o bobina.<br>
+        2. Observa en las <strong>Cámaras 3D y 2D</strong> las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
+        3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C).<br>
+        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla.
       </p>
     </div>
   </div>
@@ -144,7 +139,7 @@
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
-        <label title="Selecciona el metal.">Material a Calentar: ℹ️</label>
+        <label>Material a Calentar: ℹ️</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
           <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
@@ -161,46 +156,37 @@
       </div>
 
       <div class="control-group">
-        <label title="Masa total de la pieza.">Masa (kg) ℹ️: 
-          <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success); font-size:0.72rem;"></small></span>
-        </label>
+        <label>Masa (kg) ℹ️: <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
       </div>
 
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       
       <div class="control-group">
-        <label title="Temperatura objetivo.">Temp. Objetivo (°C) ℹ️: 
-          <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning); font-size:0.72rem;"></small></span>
-        </label>
+        <label>Temp. Objetivo (°C) ℹ️: <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning);"></small></span></label>
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
       </div>
 
       <div class="control-group">
-        <label title="Tiempo de calentamiento.">Tiempo (s) ℹ️: 
-          <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success); font-size:0.72rem;"></small></span>
-        </label>
+        <label>Tiempo (s) ℹ️: <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
       </div>
 
-      <div class="control-group"><label title="Área superficial expuesta.">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <div class="control-group"><label>Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
 
       <h2 style="margin-top: 15px;">2. Bobina y Parámetros AC</h2>
       
       <div class="control-group">
-        <label title="Frecuencia de trabajo AC.">Frecuencia (kHz) ℹ️: 
-          <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success); font-size:0.72rem;"></small></span>
-        </label>
+        <label>Frecuencia (kHz) ℹ️: <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
       </div>
 
-      <div class="control-group"><label title="Número de espiras.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
+      <div class="control-group"><label>Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
       
       <div class="control-group">
-        <label title="Corriente RMS en bobina.">Corriente RMS (A) ℹ️: 
-          <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success); font-size:0.72rem;"></small></span>
-        </label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+        <label>Corriente RMS (A) ℹ️: <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success);"></small></span></label>
+        <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
       </div>
       
       <h2 style="margin-top: 15px;">3. Control de Animación</h2>
@@ -224,11 +210,11 @@
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
-            <canvas id="simCanvas1" width="380" height="220"></canvas>
+            <canvas id="simCanvas1" width="400" height="220"></canvas>
           </div>
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 2: Reflexión y Efecto Skin</h4>
-            <canvas id="simCanvas2" width="380" height="220"></canvas>
+            <canvas id="simCanvas2" width="400" height="220"></canvas>
           </div>
         </div>
         
@@ -240,22 +226,22 @@
       </div>
 
       <div class="summary-cards">
-        <div class="summary-card"><span>Potencia Recomendada</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas equiv.</small></div>
-        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small id="cardSkinNote">Capa superficial activa</small></div>
+        <div class="summary-card"><span>Potencia Recomendada</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas</small></div>
+        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small id="cardSkinNote">Capa superficial</small></div>
         <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad inductora</small></div>
       </div>
 
       <div id="conclusionAmigable" class="tip-box" style="border-left-color: var(--success); margin-bottom: 15px;"></div>
 
       <div class="history-card">
-        <h3>📊 Historial de Escenarios Guardados (Comparativa)</h3>
+        <h3>📊 Historial de Escenarios Guardados</h3>
         <div style="overflow-x: auto; max-height: 130px; margin-top: 8px;">
           <table class="history-table">
             <thead>
-              <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp Obj</th><th>Tiempo</th><th>Freq</th><th>Potencia Req</th><th>Skin (δ)</th></tr>
+              <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp Obj</th><th>Tiempo</th><th>Freq</th><th>Potencia</th><th>Skin (δ)</th></tr>
             </thead>
             <tbody id="historyTableBody">
-              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">No hay escenarios guardados todavía. Modifica parámetros y haz clic en "Guardar Escenario".</td></tr>
+              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía.</td></tr>
             </tbody>
           </table>
         </div>
@@ -285,7 +271,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Los cambios muy rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse.<br>
+            <strong>💡 Qué nos dice:</strong> Los cambios rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse.<br>
             <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo (Corrientes de Foucault).
           </div>
         </div>
@@ -312,7 +298,7 @@
           </div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Toda corriente que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br>
-            <strong>👉 Ejemplo práctico:</strong> Miles de electrones forzados a correr por un pasillo muy estrecho (la capa "Skin") generan una fricción inmensa que calienta el metal.
+            <strong>👉 Ejemplo práctico:</strong> Miles de electrones forzados a correr por un pasillo muy estrecho (la capa "Skin") generan fricción inmensa que calienta el metal.
           </div>
         </div>
 
@@ -342,9 +328,9 @@
           </div>
         </div>
 
-        <div class="formula-card" style="grid-column: span 2;">
+        <div class="formula-card" style="grid-column: 1 / -1;">
           <h3>7. Balance de Potencia Global del Equipo</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px;">
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_eq ≈ (P_th + P_rad) / η</div></div>
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepTotalSub"></div></div>
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
@@ -360,7 +346,7 @@
   </div>
 
   <footer class="academic-footer">
-    Simulador Académico de Ingeniería electromagnética y Termodinámica — ITPA (2026)
+    Simulador Académico de Ingeniería Electromagnética y Termodinámica — ITPA (2026)
   </footer>
 
   <script>
@@ -372,4 +358,202 @@
       hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
       inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65 },
       aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
-      cobre:
+      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
+    };
+
+    let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono" };
+    let currentSimulationState = {};
+    let simulationHistory = [];
+
+    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current', 'Speed'].reduce((acc, id) => {
+      acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
+      acc['lbl' + id] = document.getElementById('lbl' + id);
+      return acc;
+    }, {});
+
+    function actualizarCalculos() {
+      const mat = MATERIALES[els.materialselect.value];
+      
+      document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
+      document.getElementById('infoC').textContent = mat.c + " J/kg·K";
+      document.getElementById('infoMu').textContent = mat.mu_r + (mat.mu_r > 1 ? " (Magnético)" : " (No magnético)");
+
+      const m = parseFloat(els.mass.value) || 0.5;
+      const T_ini = parseFloat(els.tempini.value) || 25;
+      let T_fin = parseFloat(els.tempfin.value) || 800;
+      if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
+      
+      const t = parseFloat(els.time.value) || 45;
+      const areaCm2 = parseFloat(els.area.value) || 60;
+      const areaM2 = areaCm2 * 1e-4;
+      const f_khz = parseFloat(els.freq.value) || 100;
+      const f_hz = f_khz * 1000;
+      const N = parseFloat(els.turns.value) || 6;
+      const lenCm = parseFloat(els.length.value) || 8;
+      const lenM = lenCm * 1e-2;
+      const I = parseFloat(els.current.value) || 180;
+      const spd = parseFloat(els.speed.value);
+
+      let refTemp = "";
+      if (T_fin < 100) refTemp = "(Tibio)";
+      else if (T_fin < 400) refTemp = "(Horno doméstico)";
+      else if (T_fin < 900) refTemp = "(Al rojo vivo)";
+      else refTemp = "(Punto de fusión)";
+      document.getElementById('lblTempRef').textContent = refTemp;
+
+      let refMass = "";
+      if (m <= 1.0) refMass = "(Pieza ligera)";
+      else if (m <= 3.0) refMass = "(Pieza mediana)";
+      else refMass = "(⚠️ Pesada)";
+      document.getElementById('lblMassRef').textContent = refMass;
+      document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
+
+      let refTime = "";
+      if (t < 15) refTime = "(⚠️ Violento)";
+      else if (t <= 90) refTime = "(Óptimo)";
+      else refTime = "(Lento)";
+      document.getElementById('lblTimeRef').textContent = refTime;
+      document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
+
+      let refFreq = "";
+      if (f_khz < 30) refFreq = "(Baja)";
+      else if (f_khz <= 150) refFreq = "(Óptimo)";
+      else refFreq = "(Superficial)";
+      document.getElementById('lblFreqRef').textContent = refFreq;
+
+      let refCurr = "";
+      if (I < 100) refCurr = "(Baja)";
+      else if (I <= 350) refCurr = "(Óptimo)";
+      else refCurr = "(⚠️ Alto estrés)";
+      document.getElementById('lblCurrentRef').textContent = refCurr;
+      document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
+
+      els.lblMass.textContent = m.toFixed(2);
+      els.lblTempIni.textContent = T_ini;
+      els.lblTempFin.textContent = T_fin;
+      els.lblTime.textContent = t;
+      els.lblArea.textContent = areaCm2;
+      els.lblFreq.textContent = f_khz;
+      els.lblTurns.textContent = N;
+      els.lblLength.textContent = lenCm;
+      els.lblCurrent.textContent = I;
+      els.lblSpeed.textContent = spd.toFixed(1) + 'x';
+
+      const B = MU_0 * (N / lenM) * I;
+      document.getElementById('stepAmpereSub').textContent = `B = (4π × 10⁻⁷) · (${N} / ${lenM.toFixed(3)}) · ${I}`;
+      document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
+
+      const A_pieza = 0.003; 
+      const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
+      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz} Hz) · (${B.toFixed(3)} T) · 0.003`;
+      document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
+
+      let mu_efectivo = mat.mu_r;
+      let warnings = [];
+      let dangers = [];
+
+      if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
+        mu_efectivo = 1.0; 
+        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
+      }
+
+      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
+      const delta_mm = delta_m * 1000;
+      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
+      
+      const deltaT = T_fin - T_ini;
+      const P_th = (m * mat.c * deltaT) / t;
+      const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
+      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
+      const P_equipo = (P_th + P_rad) / 0.75;
+      const P_kW = P_equipo / 1000;
+
+      if (P_kW > 150) {
+        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
+      }
+
+      const statusBox = document.getElementById('statusPanel');
+      if (dangers.length > 0) {
+        statusBox.className = "status-panel status-danger";
+        statusBox.innerHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
+      } else if (warnings.length > 0) {
+        statusBox.className = "status-panel status-warning";
+        statusBox.innerHTML = warnings.join("<br><br>");
+      } else {
+        statusBox.className = "status-panel status-optimal";
+        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables.";
+      }
+
+      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz} · μ₀ · ${mu_efectivo}) )`;
+      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
+
+      document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
+      document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
+
+      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT}°C) / ${t}s`;
+      document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
+
+      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · σ · A · (${T_fin_K.toFixed(0)}⁴ - ${T_amb_K.toFixed(0)}⁴)`;
+      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
+
+      document.getElementById('stepTotalSub').textContent = `P_eq = (${Math.round(P_th)} + ${Math.round(P_rad)}) / 0.75`;
+      document.getElementById('stepTotalRes').textContent = `P_eq ≈ ${P_kW.toFixed(2)} kW`;
+
+      document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
+      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
+      document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
+      document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
+
+      document.getElementById('conclusionAmigable').innerHTML = 
+        `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
+        Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
+
+      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre };
+
+      currentSimulationState = {
+        material: mat.nombre, mass: m.toFixed(2) + " kg", temp: T_fin + " °C",
+        time: t + " s", freq: f_khz + " kHz", power: P_kW.toFixed(1) + " kW", skin: delta_mm.toFixed(2) + " mm"
+      };
+    }
+
+    Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
+    actualizarCalculos();
+
+    document.getElementById('saveHistoryBtn').addEventListener('click', () => {
+      simulationHistory.push({...currentSimulationState});
+      updateHistoryTable();
+    });
+
+    document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+      simulationHistory = [];
+      updateHistoryTable();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      els.mass.value = 0.5; els.tempini.value = 25; els.tempfin.value = 800;
+      els.time.value = 45; els.area.value = 60; els.freq.value = 100;
+      els.turns.value = 6; els.length.value = 8; els.current.value = 180;
+      els.speed.value = 1.0; els.materialselect.value = 'acero';
+      actualizarCalculos();
+    });
+
+    function updateHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      if (simulationHistory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = "";
+      simulationHistory.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    const modal = document.getElementById('helpModal');
+    document.getElementById('openHelpBtn').addEventListener('click', () => modal.style.display = 'flex');
+    document.getElementById('closeHelpBtn').addEventListener('click', () => modal.style.display = 'none');
+    window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
+
+    const
