@@ -37,7 +37,6 @@
     header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
     header p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
 
-    /* Botón de impresión amigable */
     .print-btn {
       background: var(--highlight);
       color: var(--bg-main);
@@ -62,7 +61,6 @@
       body { padding: 25px; }
     }
 
-    /* Panel de controles */
     .panel-controls {
       background-color: var(--bg-card);
       padding: 20px;
@@ -84,7 +82,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 6px;
-      cursor: help; /* Cursor de interrogación */
+      cursor: help;
     }
     .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
@@ -108,7 +106,6 @@
       line-height: 1.4;
     }
 
-    /* Motor Gráfico 3D */
     .visualizer-card {
       background: var(--bg-subcard);
       border: 1px solid var(--border);
@@ -145,7 +142,6 @@
       vertical-align: middle;
     }
 
-    /* Tarjetas de Resumen */
     .summary-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -163,7 +159,6 @@
     .summary-card strong { display: block; font-size: 1.35rem; margin-top: 5px; color: var(--accent); font-family: monospace; }
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
 
-    /* Fórmulas */
     .results-area { display: flex; flex-direction: column; gap: 18px; }
     .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
     .formula-card h3 { font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px; }
@@ -171,9 +166,11 @@
     .step-title { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
     .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.92rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
     .step-content.result { color: var(--success); font-weight: bold; font-size: 1.02rem; }
-    .step-explanation { font-size: 0.83rem; color: var(--text-muted); margin-top: 8px; line-height: 1.45; }
+    
+    /* Estilo amigable para las explicaciones */
+    .step-explanation { font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; line-height: 1.5; padding-top: 10px; border-top: 1px dashed var(--border); }
+    .step-explanation strong { color: var(--text-main); }
 
-    /* Estilos para impresión de informes (Anexos a PDF) */
     @media print {
       body { background: white; color: black; }
       .panel-controls, .print-btn { display: none; }
@@ -181,7 +178,7 @@
       .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
       canvas { filter: invert(1); border: 1px solid #ccc; }
       h3 { color: black !important; }
-      .step-content, .step-title { color: black !important; }
+      .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
     }
   </style>
 </head>
@@ -260,7 +257,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepAmpereSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
-          <p class="step-explanation">La corriente alterna de alta frecuencia circulando por el solenoide genera la densidad de flujo magnético <strong>B</strong> que excita la pieza.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> La corriente al pasar por las vueltas de alambre de cobre crea un campo magnético invisible y poderoso en el centro.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético" (Teslas) que lanza hacia la pieza metálica.
+          </div>
         </div>
 
         <div class="formula-card">
@@ -268,7 +268,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
-          <p class="step-explanation">La oscilación varía rápidamente el flujo, induciendo voltaje. El signo negativo (Lenz) indica que las corrientes inducidas se oponen al campo inductor.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Los cambios muy rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse. <br><br>
+            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo para frenar ese cambio molesto. A eso se le llama "Corrientes de Foucault" (y por oponerse lleva el signo negativo de Lenz).
+          </div>
         </div>
 
         <div class="formula-card">
@@ -276,7 +279,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepSkinSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
-          <p class="step-explanation">Determina qué tan profundo penetra la onda en el metal antes de atenuarse. En el gráfico 3D verás cómo la onda muere bruscamente con Acero pero penetra más con Aluminio.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Piensa en un tren tomando una curva a toda velocidad: los pasajeros se aplastan contra las ventanas. Mientras más rápida es la oscilación (Frecuencia en kHz), más delgada es esta "piel" externa por donde se concentra toda la energía. <em>(Juega cambiando de Aluminio a Acero en el simulador 3D para verlo en vivo)</em>.
+          </div>
         </div>
 
         <div class="formula-card">
@@ -284,7 +290,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
           <div class="step-box"><div class="step-title">Estimación de Densidad de Corriente Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
-          <p class="step-explanation">El calor es producido por la resistencia que el material opone al paso forzado de las corrientes inducidas en la capa superficial.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Toda corriente eléctrica que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de personas (electrones) forzadas a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que termina calentando el metal al rojo vivo en segundos.
+          </div>
         </div>
 
         <div class="formula-card">
@@ -292,7 +301,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
-          <p class="step-explanation">Tasa de absorción de calor requerida para elevar la temperatura de la masa en el intervalo seleccionado.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá. Todo depende de la masa y la prisa que tengas.
+          </div>
         </div>
 
         <div class="formula-card">
@@ -300,7 +312,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
-          <p class="step-explanation">Pérdidas radiativas al entorno que se disparan exponencialmente a la cuarta potencia ($T^4$) a altas temperaturas.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, irradiando y perdiendo energía hacia el aire que lo rodea en forma de luz y calor (Infrarrojo).<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica. Mientras más caliente está, más energía desperdicia "regalándola" al aire del taller, lo que obliga a la máquina a trabajar mucho más duro para compensar.
+          </div>
         </div>
 
         <div class="formula-card">
@@ -308,7 +323,10 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica (Eficiencia estimada 75%)</div><div class="step-content" id="stepTotalSub"></div></div>
           <div class="step-box"><div class="step-title">Potencia Eléctrica Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
-          <p class="step-explanation">Potencia total que debe entregar la fuente de poder, considerando radiación térmica e ineficiencias electromagnéticas.</p>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Es el resumen de cuánta energía total necesitas consumir desde el enchufe para que la máquina logre su cometido.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Es como calcular cuánta gasolina necesitas para un viaje en auto. Debes sumar la energía real para mover el auto (Calor Termodinámico útil), más lo que se desperdicia en humo y calor del motor (Radiación térmica y Pérdidas del cobre), dividiéndolo por la eficiencia de tu equipo.
+          </div>
         </div>
 
       </div>
@@ -320,11 +338,11 @@
     const SIGMA = 5.670374e-8;      
 
     const MATERIALES = {
-      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80 },
-      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
-      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65 },
-      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
-      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
+      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, comentario: "Excelente rendimiento. Permeabilidad alta atrapa el campo en la superficie." },
+      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, comentario: "Muy ferromagnético. Atenuación de onda superficial casi instantánea." },
+      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, comentario: "No es ferromagnético, pero su alta resistividad genera fuerte calentamiento por Joule." },
+      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, comentario: "No magnético: la onda penetra profundamente y su alto calor específico exige mucha energía." },
+      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, comentario: "Resistencia casi nula: conduce la corriente sin generar calentamiento apreciable." }
     };
 
     let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0 };
@@ -334,6 +352,7 @@
       acc['lbl' + id] = document.getElementById('lbl' + id);
       return acc;
     }, {});
+    const matComment = document.getElementById('materialComment');
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
@@ -370,6 +389,7 @@
       els.lblLength.textContent = lenCm;
       els.lblCurrent.textContent = I;
       els.lblSpeed.textContent = spd.toFixed(1) + 'x';
+      matComment.textContent = mat.comentario;
 
       // 1. Ampère-Maxwell
       const B = MU_0 * (N / lenM) * I;
@@ -387,7 +407,7 @@
       let avisoCurie = "";
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        avisoCurie = "<br><br>⚠️ <strong>Punto de Curie superado (>730°C):</strong> El acero/hierro ha perdido su magnetismo (μ_r cae a 1). El Efecto Skin ha aumentado drásticamente, disminuyendo la resistencia equivalente y bajando la eficiencia del calentamiento.";
+        avisoCurie = "<br><br>⚠️ <strong>Punto de Curie superado (>730°C):</strong> El acero/hierro ha perdido su magnetismo (μ_r cae a 1). El Efecto Skin ha aumentado drásticamente, bajando la eficiencia del calentamiento.";
       }
 
       // 3. Efecto Skin
