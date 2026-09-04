@@ -11,29 +11,16 @@
 
   <style>
     :root {
-      --bg-main: #0f172a;
-      --bg-card: #1e293b;
-      --bg-subcard: #090d16;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #f97316;
-      --border: #334155;
-      --highlight: #38bdf8;
-      --success: #10b981;
-      --warning: #fbbf24;
+      --bg-main: #0f172a; --bg-card: #1e293b; --bg-subcard: #090d16;
+      --text-main: #f8fafc; --text-muted: #94a3b8; --accent: #f97316;
+      --border: #334155; --highlight: #38bdf8; --success: #10b981;
+      --warning: #fbbf24; --danger: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.5; }
     
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 20px 15px;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
+    header { text-align: center; margin-bottom: 20px; padding: 20px 15px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; border: 1px solid var(--border); }
     header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
     header p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
 
@@ -52,11 +39,12 @@
     select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
     
     .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 12px; border-radius: 6px; font-size: 0.82rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4; }
+    .alert-box { background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text-main); margin-bottom: 20px; display: none; }
 
     .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
     .canvases-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
-    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 8px; font-size: 0.95rem; }
+    .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 10px; position: relative; }
+    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 8px; font-size: 0.95rem; text-align: left; padding-left: 10px; }
     canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.78rem; color: var(--text-muted); margin-top: 15px; }
@@ -85,6 +73,7 @@
       .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
+      .alert-box { border: 1px solid red; color: black; }
     }
   </style>
 </head>
@@ -93,6 +82,10 @@
   <header>
     <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
     <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
+    
+    <!-- Sistema de Diagnóstico Experto (Sugerencias al usuario) -->
+    <div id="expertDiagnostics" class="alert-box"></div>
+    
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
   </header>
 
@@ -142,14 +135,12 @@
       <!-- CÁMARAS DUALES -->
       <div class="visualizer-card">
         <div class="canvases-container">
-          <!-- Cámara 1 -->
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
             <canvas id="simCanvas1" width="400" height="260"></canvas>
           </div>
-          <!-- Cámara 2 -->
           <div class="canvas-wrapper">
-            <h4>🎥 Cámara 2: Vista Lateral (Perfil Z-Y)</h4>
+            <h4>🎥 Cámara 2: Vista Lateral del Metal</h4>
             <canvas id="simCanvas2" width="400" height="260"></canvas>
           </div>
         </div>
@@ -200,7 +191,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>"Cámara 2: Vista Lateral"</em> en el simulador. Al chocar contra la pared metálica, la onda pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa superficial por donde viaja la energía.
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Al chocar contra la pared metálica, la onda pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa superficial por donde viaja la energía.
           </div>
         </div>
 
@@ -319,12 +310,15 @@
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      // CÁLCULO DEL PUNTO DE CURIE PARA EFECTO SKIN
+      // CÁLCULO DEL PUNTO DE CURIE PARA EFECTO SKIN Y DIAGNÓSTICOS
       let mu_efectivo = mat.mu_r;
-      let avisoCurie = "";
+      let diagnosticosHTML = "";
+      let mostrarAlerta = false;
+
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        avisoCurie = "<br><br>⚠️ <strong>Punto de Curie superado (>730°C):</strong> El acero/hierro ha perdido su magnetismo (μ_r cae a 1). El Efecto Skin ha aumentado drásticamente, bajando la eficiencia del calentamiento.";
+        diagnosticosHTML += "⚠️ <strong>Punto de Curie superado (>730°C):</strong> El material ha perdido su magnetismo (μ_r cae a 1). La eficiencia de calentamiento caerá en la vida real.<br>";
+        mostrarAlerta = true;
       }
 
       // 3. Efecto Skin
@@ -352,11 +346,30 @@
 
       // 7. Balance Global
       const P_equipo = (P_th + P_rad) / 0.75;
+      const P_kW = P_equipo / 1000;
       document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)} W útil + ${Math.round(P_rad)} W radiación) / 0.75`;
-      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${(P_equipo / 1000).toFixed(2)} kW)`;
+      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${P_kW.toFixed(2)} kW)`;
+
+      // DIAGNÓSTICOS EXPERTOS ADICIONALES
+      if (P_kW > 150) {
+        diagnosticosHTML += "🛑 <strong>Potencia Irreal:</strong> Se requieren " + P_kW.toFixed(0) + " kW. Estás intentando calentar demasiada masa en muy poco tiempo. Sugerencia: <strong>Aumenta el tiempo (s)</strong> o disminuye la masa.<br>";
+        mostrarAlerta = true;
+      }
+      if (delta_mm > 15) {
+        diagnosticosHTML += "⚡ <strong>Baja Frecuencia:</strong> La onda está penetrando demasiado (δ = " + delta_mm.toFixed(1) + " mm). Sugerencia: Para calentar la superficie más rápido, <strong>aumenta la Frecuencia (kHz)</strong>.<br>";
+        mostrarAlerta = true;
+      }
+
+      const alertBox = document.getElementById('expertDiagnostics');
+      if (mostrarAlerta) {
+        alertBox.innerHTML = diagnosticosHTML;
+        alertBox.style.display = "block";
+      } else {
+        alertBox.style.display = "none";
+      }
 
       // Tarjetas de Resumen
-      document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
+      document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
@@ -365,7 +378,7 @@
       document.getElementById('conclusionAmigable').innerHTML = 
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
-        Requieres un equipo que entregue al menos <strong>${(P_equipo / 1000).toFixed(1)} kW</strong> para lograrlo en ${t} segundos.${avisoCurie}`;
+        Requieres un equipo que entregue al menos <strong>${P_kW.toFixed(1)} kW</strong> para lograrlo en ${t} segundos.`;
 
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd };
     }
@@ -380,16 +393,17 @@
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
-    // Proyección Cámara 1 (Isométrica 3D)
+    // Cámara 1 (Isométrica 3D)
     function projIso(x, y, z) {
       const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
       return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
     }
 
-    // Proyección Cámara 2 (Lateral Z-Y, ignora la X)
+    // Cámara 2 (Lateral - Ahora muestra profundidad en perspectiva para ver el Campo Magnético)
     function projSide(x, y, z) {
       const cx = canvas2.width / 2 - 20, cy = canvas2.height / 2;
-      return { u: cx + (z * 1.0), v: cy - (y * 0.85) }; 
+      // Ligera perspectiva (0.2) en la X para que la onda rosa no quede oculta de frente
+      return { u: cx + (z * 1.0) - (x * 0.2), v: cy - (y * 0.85) + (x * 0.1) }; 
     }
 
     function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
@@ -398,15 +412,13 @@
       ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
     }
 
-    function renderView(ctx, canvas, projFn, isSideView) {
+    function renderView(ctx, canvas, projFn) {
       ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
       const A = 25 + (animData.current / 500) * 45;
 
-      // Ejes
       drawLine(ctx, projFn, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
       drawLine(ctx, projFn, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
 
-      // Bloque Metálico
       const z_metal = 40;
       let r = 71, g = 85, b_col = 105;
       if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
@@ -421,15 +433,13 @@
       ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
       ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
 
-      // Dibujar caras según la proyección
       ctx.beginPath(); ctx.moveTo(frontTR.u, frontTR.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(backBR.u, backBR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Derecha
       ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(backTL.u, backTL.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Arriba
       ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.lineTo(frontBL.u, frontBL.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Frente
 
       ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
-      ctx.fillText('Metal (Efecto Skin)', frontTL.u + 5, frontTL.v - 8);
+      ctx.fillText('Metal', frontTL.u + 5, frontTL.v - 8);
 
-      // Dibujar Onda
       const step = 6; 
       let prevE = null, prevB = null;
 
@@ -445,16 +455,12 @@
         const Ey = wave * A, Bx = wave * A * 0.9;
         const currentE = projFn(0, Ey, z), currentB = projFn(Bx, 0, z);
 
-        drawLine(ctx, projFn, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2);
-        
-        // En la vista lateral, el campo magnético (eje X) se oculta para no hacer ruido visual
-        if (!isSideView) drawLine(ctx, projFn, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);
+        drawLine(ctx, projFn, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2); // Azul (E)
+        drawLine(ctx, projFn, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);  // Rosa (B)
 
         if (prevE) {
           ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.stroke();
-          if (!isSideView) {
-            ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5; ctx.stroke();
-          }
+          ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5; ctx.stroke();
         }
         prevE = currentE; prevB = currentB;
       }
@@ -462,12 +468,11 @@
 
     function renderAll() {
       timePhase += 0.02 * animData.speed;
-      renderView(ctx1, canvas1, projIso, false);
-      renderView(ctx2, canvas2, projSide, true);
+      renderView(ctx1, canvas1, projIso);
+      renderView(ctx2, canvas2, projSide); // Ahora la Cámara 2 también ve el campo magnético en perspectiva
       requestAnimationFrame(renderAll);
     }
     
-    // Iniciar renderizado al instante
     renderAll();
   </script>
 
