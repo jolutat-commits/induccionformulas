@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Maestro de Calentamiento por Inducción</title>
+  <title>Simulador Maestro 3D de Calentamiento por Inducción</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
@@ -18,76 +18,81 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.4; }
+    body { background-color: var(--bg-main); color: var(--text-main); padding: 12px; line-height: 1.35; font-size: 0.82rem; }
     
-    header { text-align: center; margin-bottom: 15px; padding: 15px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 10px; border: 1px solid var(--border); }
-    header h1 { font-size: 1.4rem; color: var(--accent); margin-bottom: 4px; }
-    header p { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 10px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 10px 15px; background: #1e293b; border-radius: 8px; border: 1px solid var(--border); }
+    header h1 { font-size: 1.2rem; color: var(--accent); }
+    header p { color: var(--text-muted); font-size: 0.72rem; }
 
-    .print-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+    .print-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem; }
     .print-btn:hover { opacity: 0.8; }
 
-    /* LAYOUT PRINCIPAL BALANCEADO (Grid de 2 columnas optimizado) */
-    .container { max-width: 1350px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 1024px) { 
-      .container { grid-template-columns: 340px 1fr; align-items: start; } 
+      .container { grid-template-columns: 310px 1fr; } 
     }
 
-    .panel-controls { background-color: var(--bg-card); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
-    .panel-controls h2 { font-size: 0.95rem; margin: 12px 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid var(--border); color: var(--highlight); }
+    .panel-controls { background-color: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border); height: fit-content; }
+    .panel-controls h2 { font-size: 0.85rem; margin: 8px 0 4px 0; padding-bottom: 2px; border-bottom: 1px solid var(--border); color: var(--highlight); }
     .panel-controls h2:first-child { margin-top: 0; }
     
-    .control-group { margin-bottom: 10px; }
-    .control-group label { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 3px; }
-    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.82rem; }
+    .control-group { margin-bottom: 6px; }
+    .control-group label { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 600; margin-bottom: 2px; }
+    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.78rem; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
-    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 6px; border-radius: 6px; font-size: 0.82rem; cursor: pointer; }
+    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
 
-    /* Tarjeta de información técnica extra para Materiales */
-    .material-info-card { background: var(--bg-subcard); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; margin-bottom: 10px; }
+    .material-info-card { background: var(--bg-subcard); border: 1px solid var(--border); padding: 6px; border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 6px; }
     .material-info-card span { color: var(--highlight); font-family: monospace; }
 
-    .status-panel { padding: 10px; border-radius: 6px; font-size: 0.78rem; margin-top: 12px; line-height: 1.4; border-left: 4px solid; }
+    .status-panel { padding: 8px; border-radius: 4px; font-size: 0.72rem; margin-top: 8px; line-height: 1.3; border-left: 4px solid; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
     .status-danger { background: rgba(239, 68, 68, 0.1); border-left-color: var(--danger); color: #fca5a5; }
 
-    .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: center; }
-    .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
-    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; }
-    canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
+    .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 12px; text-align: center; }
+    .canvases-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .canvas-wrapper { flex: 1; min-width: 250px; background: #020617; border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
+    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 4px; font-size: 0.75rem; text-align: left; }
+    canvas { width: 100%; height: auto; max-height: 170px; display: block; margin: 0 auto; }
     
-    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
-    .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; }
+    .legend-item span { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; vertical-align: middle; }
 
-    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px; }
-    .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 10px; border-radius: 8px; text-align: center; }
-    .summary-card span { font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); }
-    .summary-card strong { display: block; font-size: 1.15rem; margin-top: 3px; color: var(--accent); font-family: monospace; }
-    .summary-card small { display: block; color: var(--text-muted); font-size: 0.68rem; margin-top: 2px; }
+    .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+    .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 8px; border-radius: 6px; text-align: center; }
+    .summary-card span { font-size: 0.62rem; text-transform: uppercase; color: var(--text-muted); }
+    .summary-card strong { display: block; font-size: 1rem; margin-top: 2px; color: var(--accent); font-family: monospace; }
+    .summary-card small { display: block; color: var(--text-muted); font-size: 0.62rem; }
 
-    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 10px; border-radius: 6px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px; }
+    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 8px; border-radius: 4px; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 10px; }
 
-    .results-area { display: flex; flex-direction: column; gap: 12px; }
-    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
-    .formula-card h3 { font-size: 0.95rem; color: var(--highlight); margin-bottom: 8px; }
-    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
-    .step-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 2px; }
-    .step-content { font-family: monospace; font-size: 0.85rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
-    .step-content.result { color: var(--success); font-weight: bold; font-size: 0.92rem; }
-    .step-explanation { font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
+    /* GRID COMPACTO DE FÓRMULAS (2 Columnas) */
+    .results-area { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 768px) {
+      .results-area { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+    .formula-card h3 { font-size: 0.82rem; color: var(--highlight); margin-bottom: 6px; }
+    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; margin-bottom: 4px; }
+    .step-title { font-size: 0.58rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+    .step-content { font-family: monospace; font-size: 0.75rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
+    .step-content.result { color: var(--success); font-weight: bold; font-size: 0.8rem; }
+    
+    /* Estilo amigable recuperado */
+    .step-explanation { font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; line-height: 1.35; padding-top: 6px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
 
-    .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; margin-top: 8px; }
-    .history-table th, .history-table td { padding: 6px; border-bottom: 1px solid var(--border); }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; }
+    .history-table th, .history-table td { padding: 4px; border-bottom: 1px solid var(--border); }
     .history-table th { color: var(--highlight); font-weight: 600; }
 
     @media print {
-      body { background: white; color: black; }
+      body { background: white; color: black; font-size: 10pt; }
       .panel-controls, .print-btn, #clearHistoryBtn { display: none; }
       .container { display: block; }
-      .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; background: white; }
+      .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; background: white; margin-bottom: 10px; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
     }
@@ -96,18 +101,19 @@
 <body>
 
   <header>
-    <h1>Simulador Maestro de Calentamiento por Inducción</h1>
-    <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
-    <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
+    <div>
+      <h1>Simulador Maestro de Calentamiento por Inducción</h1>
+      <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ PDF</button>
   </header>
 
   <div class="container">
     
-    <!-- COLUMNA IZQUIERDA: CONTROLES COMPACTOS -->
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
-        <label>Material a Calentar:</label>
+        <label>Material:</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
           <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
@@ -117,11 +123,8 @@
         </select>
       </div>
 
-      <!-- Tarjeta de justificación técnica ampliada del material -->
       <div id="materialDetails" class="material-info-card">
-        <div>Resistividad (ρ): <span id="infoRho">-</span></div>
-        <div>Calor Esp. (c): <span id="infoC">-</span></div>
-        <div>Permeabilidad (μr): <span id="infoMu">-</span></div>
+        <div>ρ: <span id="infoRho">-</span> | c: <span id="infoC">-</span> | μr: <span id="infoMu">-</span></div>
       </div>
 
       <div class="control-group">
@@ -149,7 +152,7 @@
         <input type="range" id="inputArea" min="10" max="500" step="5" value="60">
       </div>
 
-      <h2>2. Parámetros de Bobina y AC</h2>
+      <h2>2. Parámetros AC y Bobina</h2>
       
       <div class="control-group">
         <label>Frecuencia (kHz): <span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success);"></small></label>
@@ -177,29 +180,28 @@
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
-      <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; width: 100%; margin-top: 10px;">💾 Guardar Escenario</button>
+      <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; width: 100%; margin-top: 8px;">💾 Guardar Escenario</button>
 
       <div id="statusPanel" class="status-panel status-optimal"></div>
     </aside>
 
-    <!-- COLUMNA DERECHA: VISUALIZADORES Y RESULTADOS -->
     <main>
       <div class="visualizer-card">
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
-            <canvas id="simCanvas1" width="380" height="220"></canvas>
+            <canvas id="simCanvas1" width="340" height="170"></canvas>
           </div>
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 2: Reflexión y Efecto Skin (2D)</h4>
-            <canvas id="simCanvas2" width="380" height="220"></canvas>
+            <canvas id="simCanvas2" width="340" height="170"></canvas>
           </div>
         </div>
         
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E</div>
-          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B</div>
-          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo E</div>
+          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo B</div>
+          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Metal</div>
         </div>
       </div>
 
@@ -211,79 +213,115 @@
 
       <div id="conclusionAmigable" class="tip-box"></div>
 
-      <!-- HISTORIAL -->
-      <div class="formula-card" style="margin-bottom: 15px;">
+      <div class="formula-card" style="margin-bottom: 10px;">
         <h3>📊 Historial de Escenarios Guardados</h3>
-        <div style="overflow-x: auto;">
+        <div style="overflow-x: auto; max-height: 100px;">
           <table class="history-table">
             <thead>
-              <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp Obj</th><th>Tiempo</th><th>Freq</th><th>Potencia</th><th>Skin (δ)</th></tr>
+              <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp</th><th>Tiempo</th><th>Freq</th><th>Potencia</th><th>Skin</th></tr>
             </thead>
             <tbody id="historyTableBody">
-              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 10px;">Sin escenarios guardados.</td></tr>
+              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 6px;">Sin escenarios guardados.</td></tr>
             </tbody>
           </table>
         </div>
-        <button id="clearHistoryBtn" style="margin-top: 8px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem;">Limpiar Historial</button>
+        <button id="clearHistoryBtn" style="margin-top: 6px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 0.68rem;">Limpiar Historial</button>
       </div>
 
-      <!-- FÓRMULAS -->
+      <!-- GRID DE FÓRMULAS CON EXPLICACIONES Y EJEMPLOS RECUPERADOS -->
       <div class="results-area">
+        
         <div class="formula-card">
-          <h3>1. Ley de Ampère-Maxwell (Generación del Campo Magnético)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepAmpereSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La corriente al pasar por las espiras crea el campo magnético inductor central.</div>
+          <h3>1. Ley de Ampère-Maxwell</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepAmpereSub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepAmpereRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> La corriente al pasar por las espiras crea un campo magnético invisible y potente.<br>
+            <strong>👉 Ejemplo:</strong> Imagina una manguera de agua. Cuanta más corriente pasa y más juntas están las espiras, más potente es el "chorro magnético".
+          </div>
         </div>
 
         <div class="formula-card">
-          <h3>2. Ley de Faraday-Lenz (Inducción de FEM y Oposición)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La variación temporal del campo induce corrientes parásitas (Foucault) en el metal.</div>
+          <h3>2. Ley de Faraday-Lenz</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepFaradaySub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepFaradayRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Los cambios rápidos de magnetismo obligan a los electrones del metal a moverse.<br>
+            <strong>👉 Ejemplo:</strong> Agitar un imán rápido cerca de una placa crea corrientes parásitas (Foucault) que se oponen al cambio.
+          </div>
         </div>
 
         <div class="formula-card">
-          <h3>3. Efecto Skin o Pelicular (Profundidad de Penetración δ)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepSkinSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Atenuación exponencial de la onda electromagnética dentro del conductor según su resistividad y frecuencia.</div>
+          <h3>3. Efecto Skin (Profundidad δ)</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepSkinSub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepSkinRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> Las corrientes de alta frecuencia se quedan atrapadas en los bordes del metal.<br>
+            <strong>👉 Ejemplo:</strong> Como pasajeros de un tren en una curva cerrada, los electrones se aplastan contra la superficie exterior.
+          </div>
         </div>
 
         <div class="formula-card">
-          <h3>4. Ley de Joule y Densidad de Corrientes</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
-          <div class="step-box"><div class="step-title">Estimación Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La fricción de los electrones confinados en la capa skin genera calor extremo por efecto Joule.</div>
+          <h3>4. Ley de Joule y Densidad</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">p = ρ · J²</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepJouleSub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepJouleRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> La fricción de los electrones al chocar en el estrecho espacio "Skin" genera calor extremo.<br>
+            <strong>👉 Ejemplo:</strong> Miles de personas forzadas a correr por un pasillo estrecho generan calor por puro roce.
+          </div>
         </div>
 
         <div class="formula-card">
-          <h3>5. Termodinámica: Potencia Térmica Neta Requerida</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Energía útil necesaria para elevar la temperatura de la masa en el tiempo estipulado.</div>
+          <h3>5. Potencia Térmica Neta</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepThermoSub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepThermoRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> La energía bruta que el metal necesita absorber para llegar a la temperatura deseada.<br>
+            <strong>👉 Ejemplo:</strong> Como hervir agua: calentar rápido requiere un quemador gigante; con más tiempo, uno pequeño basta.
+          </div>
         </div>
 
         <div class="formula-card">
-          <h3>6. Pérdidas por Radiación Térmica (Stefan-Boltzmann)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepRadSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Energía disipada hacia el entorno en forma de radiación infrarroja a altas temperaturas.</div>
+          <h3>6. Radiación (Stefan-Boltzmann)</h3>
+          <div>
+            <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">P_rad = ε · σ · A · (T_p⁴ - T_a⁴)</div></div>
+            <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepRadSub"></div></div>
+            <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepRadRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> A alta temperatura, el metal actúa como una lámpara, perdiendo calor hacia el aire.<br>
+            <strong>👉 Ejemplo:</strong> Una barra al rojo vivo "regala" calor infrarrojo al taller, exigiendo más potencia al equipo.
+          </div>
         </div>
 
-        <div class="formula-card">
+        <div class="formula-card" style="grid-column: span 2;">
           <h3>7. Balance de Potencia Global del Inversor</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepTotalSub"></div></div>
-          <div class="step-box"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
-          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Demanda eléctrica total del equipo contemplando pérdidas de acoplamiento.</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <div class="step-box" style="margin-bottom:0;"><div class="step-title">Fórmula</div><div class="step-content">P_eq = (P_th + P_rad) / η</div></div>
+            <div class="step-box" style="margin-bottom:0;"><div class="step-title">Sustitución</div><div class="step-content" id="stepTotalSub"></div></div>
+            <div class="step-box" style="margin-bottom:0;"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
+          </div>
+          <div class="step-explanation">
+            <strong>💡 Qué nos dice:</strong> El total de energía consumida desde el enchufe sumando el calor útil y las pérdidas.<br>
+            <strong>👉 Ejemplo:</strong> Como calcular la gasolina de un auto sumando el movimiento real más lo que se disipa en el motor.
+          </div>
         </div>
+
       </div>
     </main>
   </div>
@@ -313,9 +351,8 @@
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
       
-      // Actualizar tarjeta informativa técnica del material
-      document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
-      document.getElementById('infoC').textContent = mat.c + " J/kg·K";
+      document.getElementById('infoRho').textContent = mat.rho.toExponential(2);
+      document.getElementById('infoC').textContent = mat.c;
       document.getElementById('infoMu').textContent = mat.mu_r;
 
       const m = parseFloat(els.mass.value) || 0.5;
@@ -334,24 +371,20 @@
       const I = parseFloat(els.current.value) || 180;
       const spd = parseFloat(els.speed.value);
 
-      // Etiquetas en vivo
-      let refTemp = T_fin < 100 ? "(Tibio)" : T_fin < 400 ? "(Horno)" : T_fin < 900 ? "(Al rojo vivo)" : "(Fusión)";
+      let refTemp = T_fin < 100 ? "(Tibio)" : T_fin < 400 ? "(Horno)" : T_fin < 900 ? "(Rojo vivo)" : "(Fusión)";
       document.getElementById('lblTempRef').textContent = refTemp;
 
-      let refMass = m <= 1.0 ? "(Ligera)" : m <= 3.0 ? "(Mediana)" : "(⚠️ Pesada)";
+      let refMass = m <= 1.0 ? "(Ligera)" : m <= 3.0 ? "(Media)" : "(⚠️ Pesada)";
       document.getElementById('lblMassRef').textContent = refMass;
-      document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
 
-      let refTime = t < 15 ? "(⚠️ Violento)" : t <= 90 ? "(Óptimo)" : "(Lento)";
+      let refTime = t < 15 ? "(⚠️ Rápido)" : t <= 90 ? "(Óptimo)" : "(Lento)";
       document.getElementById('lblTimeRef').textContent = refTime;
-      document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
 
       let refFreq = f_khz < 30 ? "(Baja)" : f_khz <= 150 ? "(Óptimo)" : "(Superficial)";
       document.getElementById('lblFreqRef').textContent = refFreq;
 
-      let refCurr = I < 100 ? "(Baja)" : I <= 350 ? "(Óptimo)" : "(⚠️ Alto estrés)";
+      let refCurr = I < 100 ? "(Baja)" : I <= 350 ? "(Óptimo)" : "(⚠️ Alto)";
       document.getElementById('lblCurrentRef').textContent = refCurr;
-      document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
 
       els.lblMass.textContent = m.toFixed(2);
       els.lblTempIni.textContent = T_ini;
@@ -365,21 +398,20 @@
       els.lblSpeed.textContent = spd.toFixed(1) + 'x';
 
       const B = MU_0 * (N / lenM) * I;
-      document.getElementById('stepAmpereSub').textContent = `B = (4π × 10⁻⁷) · (${N} / ${lenM.toFixed(3)}) · ${I}`;
+      document.getElementById('stepAmpereSub').textContent = `B = (4π×10⁻⁷)·(${N}/${lenM.toFixed(2)})·${I}`;
       document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
 
       const A_pieza = 0.003; 
       const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
-      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · ${f_hz}Hz · ${B.toFixed(4)}T · 0.003m²`;
-      document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
+      document.getElementById('stepFaradaySub').textContent = `2π·${f_hz}Hz·${B.toFixed(3)}T·0.003m²`;
+      document.getElementById('stepFaradayRes').textContent = `${FEM_est.toFixed(1)} V`;
 
       let mu_efectivo = mat.mu_r;
-      let warnings = [];
-      let dangers = [];
+      let warnings = [], dangers = [];
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> μ_r cae a 1. Menor eficiencia magnética.");
+        warnings.push("🔥 <strong>Curie (>730°C):</strong> μ_r cae a 1. Menor eficiencia.");
       }
 
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
@@ -388,15 +420,13 @@
       
       const deltaT = T_fin - T_ini;
       const P_th = (m * mat.c * deltaT) / t;
-
       const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
-
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
       if (P_kW > 150) {
-        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Exige demasiada energía. Aumenta el tiempo o baja la masa.`);
+        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Aumenta el tiempo o baja la masa.`);
       }
 
       const statusBox = document.getElementById('statusPanel');
@@ -408,23 +438,23 @@
         statusBox.innerHTML = warnings.join("<br>");
       } else {
         statusBox.className = "status-panel status-optimal";
-        statusBox.innerHTML = "✅ <strong>Sistema Óptimo:</strong> Parámetros en rangos seguros y eficientes.";
+        statusBox.innerHTML = "✅ <strong>Sistema Óptimo:</strong> Parámetros viables.";
       }
 
-      document.getElementById('stepSkinSub').textContent = `δ = √(${mat.rho.toExponential(2)} / (π · ${f_hz} · 4π×10⁻⁷ · ${mu_efectivo}))`;
-      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
+      document.getElementById('stepSkinSub').textContent = `√(${mat.rho.toExponential(2)} / (π·${f_hz}·μ))`;
+      document.getElementById('stepSkinRes').textContent = `${delta_mm.toFixed(3)} mm`;
 
-      document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
-      document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
+      document.getElementById('stepJouleSub').textContent = `ρ·J² | ρ=${mat.rho.toExponential(2)}`;
+      document.getElementById('stepJouleRes').textContent = `~${(J_max / 1e6).toFixed(1)} A/mm²`;
 
-      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT}°C) / ${t}s`;
-      document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
+      document.getElementById('stepThermoSub').textContent = `(${m}kg·${mat.c}·${deltaT}°C)/${t}s`;
+      document.getElementById('stepThermoRes').textContent = `${Math.round(P_th)} W (${(P_th/1000).toFixed(2)} kW)`;
 
-      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)} · [${T_fin_K.toFixed(0)}⁴ - ${T_amb_K.toFixed(0)}⁴]`;
-      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
+      document.getElementById('stepRadSub').textContent = `${mat.emissivity}·σ·A·(T1⁴-T2⁴)`;
+      document.getElementById('stepRadRes').textContent = `${Math.round(P_rad)} W`;
 
-      document.getElementById('stepTotalSub').textContent = `P_eq = (${Math.round(P_th)} + ${Math.round(P_rad)}) / 0.75`;
-      document.getElementById('stepTotalRes').textContent = `P_eq ≈ ${P_kW.toFixed(2)} kW`;
+      document.getElementById('stepTotalSub').textContent = `(${Math.round(P_th)}+${Math.round(P_rad)})/0.75`;
+      document.getElementById('stepTotalRes').textContent = `${P_kW.toFixed(2)} kW`;
 
       document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
@@ -432,7 +462,7 @@
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
       document.getElementById('conclusionAmigable').innerHTML = 
-        `💡 <strong>Resumen:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
+        `💡 <strong>Resumen:</strong> ${m.toFixed(2)} kg de ${mat.nombre} a ${T_fin}°C. Skin: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia: <strong>${P_kW.toFixed(1)} kW</strong>.`;
 
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd };
 
@@ -458,7 +488,7 @@
     function updateHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       if (simulationHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 10px;">Sin escenarios guardados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 6px;">Sin escenarios guardados.</td></tr>`;
         return;
       }
       tbody.innerHTML = "";
@@ -469,14 +499,13 @@
       });
     }
 
-    // CANVAS CAMARAS
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
     function projIso(x, y, z) {
-      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 5;
-      return { u: cx + (z * 0.8) - (x * 0.5), v: cy - (y * 0.7) + (x * 0.3) };
+      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 3;
+      return { u: cx + (z * 0.7) - (x * 0.4), v: cy - (y * 0.6) + (x * 0.25) };
     }
 
     function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
@@ -487,21 +516,21 @@
 
     function renderCamera1() {
       ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
-      const A = 20 + (animData.current / 500) * 35;
+      const A = 18 + (animData.current / 500) * 25;
 
-      drawLine(ctx1, projIso, 0, 0, -140, 0, 0, 120, 'rgba(148, 163, 184, 0.4)', 1.2);
-      drawLine(ctx1, projIso, 0, -60, -140, 0, 60, -140, 'rgba(56, 189, 248, 0.4)', 1.2);
+      drawLine(ctx1, projIso, 0, 0, -120, 0, 0, 100, 'rgba(148, 163, 184, 0.4)', 1);
+      drawLine(ctx1, projIso, 0, -50, -120, 0, 50, -120, 'rgba(56, 189, 248, 0.4)', 1);
 
-      const z_metal = 30;
+      const z_metal = 25;
       let r = 71, g = 85, b_col = 105;
       if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
       if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
       
-      const ex = 45, ey = 55;
+      const ex = 35, ey = 45;
       const frontTL = projIso(-ex, ey, z_metal), frontTR = projIso(ex, ey, z_metal);
       const frontBL = projIso(-ex, -ey, z_metal), frontBR = projIso(ex, -ey, z_metal);
-      const backTL = projIso(-ex, ey, 120), backTR = projIso(ex, ey, 120);
-      const backBL = projIso(-ex, -ey, 120), backBR = projIso(ex, -ey, 120);
+      const backTL = projIso(-ex, ey, 100), backTR = projIso(ex, ey, 100);
+      const backBL = projIso(-ex, -ey, 100), backBR = projIso(ex, -ey, 100);
 
       ctx1.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
       ctx1.strokeStyle = '#94a3b8'; ctx1.lineWidth = 1;
@@ -511,15 +540,15 @@
       ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.lineTo(frontBL.u, frontBL.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
 
       let prevE = null, prevB = null;
-      for (let z = -140; z <= 120; z += 6) {
+      for (let z = -120; z <= 100; z += 6) {
         let decay = 1;
         if (z > z_metal) {
-          let visualDelta = Math.max(5, animData.delta * 35); 
+          let visualDelta = Math.max(5, animData.delta * 30); 
           decay = Math.exp(-(z - z_metal) / visualDelta);
         }
-        if (decay < 0.015) continue; 
+        if (decay < 0.02) continue; 
 
-        const wave = Math.sin((z * 0.05) - timePhase) * decay;
+        const wave = Math.sin((z * 0.06) - timePhase) * decay;
         const Ey = wave * A, Bx = wave * A * 0.9;
         const currentE = projIso(0, Ey, z), currentB = projIso(Bx, 0, z);
 
@@ -527,18 +556,11 @@
         drawLine(ctx1, projIso, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1);  
 
         if (prevE) {
-          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1.2; ctx1.stroke();
-          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1.2; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1; ctx1.stroke();
         }
         prevE = currentE; prevB = currentB;
       }
-
-      ctx1.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      ctx1.fillRect(6, 6, 110, 28);
-      ctx1.strokeStyle = '#334155'; ctx1.strokeRect(6, 6, 110, 28);
-      ctx1.fillStyle = '#38bdf8'; ctx1.font = '9px monospace';
-      ctx1.fillText(`Freq: ${els.freq.value} kHz`, 10, 17);
-      ctx1.fillText(`Skin: ${animData.delta.toFixed(2)} mm`, 10, 27);
     }
 
     function renderCamera2() {
@@ -564,46 +586,39 @@
       const traU = { x: Math.sin(angT), y: Math.cos(angT) };
 
       function drawRayLine(u, startD, endD, color) {
-         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.2;
+         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1;
          ctx2.moveTo(cx + startD * u.x, cy + startD * u.y);
          ctx2.lineTo(cx + endD * u.x, cy + endD * u.y);
          ctx2.stroke();
       }
-      drawRayLine(incU, -150, 0, 'rgba(255,255,255,0.3)'); 
-      drawRayLine(refU, 0, 150, 'rgba(255,255,255,0.3)');  
-      drawRayLine(traU, 0, 150, 'rgba(255,255,255,0.3)');  
+      drawRayLine(incU, -120, 0, 'rgba(255,255,255,0.3)'); 
+      drawRayLine(refU, 0, 120, 'rgba(255,255,255,0.3)');  
+      drawRayLine(traU, 0, 120, 'rgba(255,255,255,0.3)');  
 
-      const slideRange = 120;
-      let slidePhase = (timePhase * 35) % slideRange;
+      const slideRange = 100;
+      let slidePhase = (timePhase * 30) % slideRange;
 
-      function drawMovingVectors(u, d, labelE, labelB, decay=1) {
+      function drawMovingVectors(u, d, labelE, decay=1) {
          if(decay < 0.05) return;
          const px = cx + d * u.x, py = cy + d * u.y;
          const vx = -u.y, vy = u.x;
 
-         ctx2.beginPath(); ctx2.arc(px, py, 5, 0, Math.PI*2);
+         ctx2.beginPath(); ctx2.arc(px, py, 4, 0, Math.PI*2);
          ctx2.fillStyle = '#020617'; ctx2.fill();
-         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 1.5; ctx2.stroke();
+         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 1; ctx2.stroke();
 
-         const eLen = 22 * decay;
+         const eLen = 18 * decay;
          ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(px + vx * eLen, py + vy * eLen);
-         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2; ctx2.stroke();
+         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 1.5; ctx2.stroke();
 
-         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 9px sans-serif';
-         ctx2.fillText(labelE, px + vx*eLen + 6, py + vy*eLen + 3);
+         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 8px sans-serif';
+         ctx2.fillText(labelE, px + vx*eLen + 5, py + vy*eLen + 3);
       }
 
-      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 18));
-      drawMovingVectors(incU, -slideRange + slidePhase, 'Ei', 'Bi');
-      drawMovingVectors(refU, slidePhase, 'Er', 'Br');
-      drawMovingVectors(traU, slidePhase, 'Et', 'Bt', transDecay);
-
-      ctx2.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      ctx2.fillRect(6, 6, 110, 28);
-      ctx2.strokeStyle = '#334155'; ctx2.strokeRect(6, 6, 110, 28);
-      ctx2.fillStyle = '#10b981'; ctx2.font = '9px monospace';
-      ctx2.fillText(`Temp: ${animData.temp} °C`, 10, 17);
-      ctx2.fillText(`Reflexión / Skin`, 10, 27);
+      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 15));
+      drawMovingVectors(incU, -slideRange + slidePhase, 'Ei');
+      drawMovingVectors(refU, slidePhase, 'Er');
+      drawMovingVectors(traU, slidePhase, 'Et', transDecay);
     }
 
     function renderAll() {
