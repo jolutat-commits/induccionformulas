@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador y Calculadora de Calentamiento por Inducción</title>
+  
+  <!-- Etiquetas PWA para Celular y PC -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-subcard: #0f172a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #f97316;
+      --border: #334155;
+      --highlight: #38bdf8;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 15px;
+      line-height: 1.5;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px 15px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    /* Diseño responsivo para PC */
+    @media (min-width: 900px) {
+      .container {
+        grid-template-columns: 350px 1fr;
+      }
+      body {
+        padding: 25px;
+      }
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Panel de Parámetros */
+    .panel-controls {
+      background-color: var(--bg-card);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      height: fit-content;
+    }
+
+    .panel-controls h2 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--highlight);
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .control-group label span {
+      color: var(--accent);
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    select {
+      background: var(--bg-subcard);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .tip-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--highlight);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 15px;
+      line-height: 1.4;
+    }
+
+    /* Resumen rápido para principiantes */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .summary-card span {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 1.3rem;
+      margin-top: 5px;
+      color: var(--accent);
+      font-family: monospace;
+    }
+
+    .summary-card small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 4px;
+    }
+
+    /* Desglose Paso a Paso de Fórmulas */
+    .results-area {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .formula-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .formula-card h3 {
+      font-size: 1.05rem;
+      color: var(--highlight);
+      margin-bottom: 12px;
+    }
+
+    .step-box {
+      background-color: var(--bg-subcard);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .step-content {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .step-content.result {
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .step-explanation {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Simulador de Inducción</h1>
+    <p>Análisis electromagnético y termodinámico paso a paso</p>
+  </header>
+
+  <div class="container">
+    <!-- PANEL DE CONTROLES (SE ADAPTA A CELULAR Y PC) -->
+    <aside class="panel-controls">
+      <h2>1. Configuración de la Pieza</h2>
+
+      <div class="control-group">
+        <label for="materialSelect">Material:</label>
+        <select id="materialSelect">
+          <option value="acero">Acero al Carbono (Magnético)</option>
+          <option value="hierro">Hierro Dulce</option>
+          <option value="inoxidable">Acero Inoxidable 304</option>
+          <option value="aluminio">Aluminio</option>
+          <option value="cobre">Cobre</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>Masa (kg): <span id="lblMass">0.50</span></label>
+        <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
+      </div>
+
+      <div class="control-group">
+        <label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label>
+        <input type="range" id="inputTempIni" min="10" max="100" step="5" value="25">
+      </div>
+
+      <div class="control-group">
+        <label>Temp. Objetivo (°C): <span id="lblTempFin">800</span></label>
+        <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
+      </div>
+
+      <div class="control-group">
+        <label>Tiempo (seg): <span id="lblTime">45</span></label>
+        <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
+      </div>
+
+      <div class="control-group">
+        <label>Área Expuesta (cm²): <span id="lblArea">60</span></label>
+        <input type="range" id="inputArea" min="10" max="500" step="5" value="60">
+      </div>
+
+      <h2 style="margin-top: 20px;">2. Bobina y Potencia</h2>
+
+      <div class="control-group">
+        <label>Frecuencia (kHz): <span id="lblFreq">100</span></label>
+        <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
+      </div>
+
+      <div class="control-group">
+        <label>Vueltas de Bobina (N): <span id="lblTurns">6</span></label>
+        <input type="range" id="inputTurns" min="2" max="20" step="1" value="6">
+      </div>
+
+      <div class="control-group">
+        <label>Long. Bobina (cm): <span id="lblLength">8</span></label>
+        <input type="range" id="inputLength" min="3" max="30" step="1" value="8">
+      </div>
+
+      <div class="control-group">
+        <label>Corriente RMS (A): <span id="lblCurrent">180</span></label>
+        <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+      </div>
+
+      <div class="tip-box" id="materialComment">
+        <!-- Comentario dinámico -->
+      </div>
+    </aside>
+
+    <!-- PANEL DE RESULTADOS -->
+    <main>
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span>Potencia Estimada</span>
+          <strong id="cardTotalPower">0 kW</strong>
+          <small id="cardMicrowaves">0 microondas</small>
+        </div>
+        <div class="summary-card">
+          <span>Efecto Skin (δ)</span>
+          <strong id="cardSkinDepth">0 mm</strong>
+          <small>Penetración</small>
+        </div>
+        <div class="summary-card">
+          <span>Campo Magnético</span>
+          <strong id="cardMagneticB">0 mT</strong>
+          <small>Fuerza Inductora</small>
+        </div>
+      </div>
+
+      <div class="results-area">
+        
+        <!-- Ampère-Maxwell -->
+        <div class="formula-card">
+          <h3>1. Ley de Ampère-Maxwell (Campo Magnético)</h3>
+          <div class="step-box">
+            <div class="step-title">Fórmula</div>
+            <div class="step-content">B = μ₀ · (N / l) · I</div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Sustitución</div>
+            <div class="step-content" id="stepAmpereSub"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Resultado</div>
+            <div class="step-content result" id="stepAmpereRes"></div>
+          </div>
+        </div>
+
+        <!-- Efecto Skin -->
+        <div class="formula-card">
+          <h3>2. Efecto Skin (Profundidad de Penetración δ)</h3>
+          <div class="step-box">
+            <div class="step-title">Fórmula</div>
+            <div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Sustitución</div>
+            <div class="step-content" id="stepSkinSub"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Resultado</div>
+            <div class="step-content result" id="stepSkinRes"></div>
+          </div>
+        </div>
+
+        <!-- Termodinámica -->
+        <div class="formula-card">
+          <h3>3. Potencia Térmica Neta (Energía Útil)</h3>
+          <div class="step-box">
+            <div class="step-title">Fórmula</div>
+            <div class="step-content">P_th = (m · c · ΔT) / t</div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Sustitución</div>
+            <div class="step-content" id="stepThermoSub"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Resultado</div>
+            <div class="step-content result" id="stepThermoRes"></div>
+          </div>
+        </div>
+
+        <!-- Stefan-Boltzmann -->
+        <div class="formula-card">
+          <h3>4. Pérdidas por Radiación Térmica (Stefan-Boltzmann)</h3>
+          <div class="step-box">
+            <div class="step-title">Fórmula</div>
+            <div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Sustitución (En Kelvin)</div>
+            <div class="step-content" id="stepRadSub"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Resultado</div>
+            <div class="step-content result" id="stepRadRes"></div>
+          </div>
+        </div>
+
+        <!-- Balance Total -->
+        <div class="formula-card">
+          <h3>5. Balance de Potencia Global</h3>
+          <div class="step-box">
+            <div class="step-title">Fórmula</div>
+            <div class="step-content">P_equipo ≈ (P_th + P_rad) / η_estimada</div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Sustitución (Eficiencia del 75%)</div>
+            <div class="step-content" id="stepTotalSub"></div>
+          </div>
+          <div class="step-box">
+            <div class="step-title">Potencia Recomendada</div>
+            <div class="step-content result" id="stepTotalRes"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Lógica de Cálculo -->
+  <script>
+    const MU_0 = 4 * Math.PI * 1e-7; 
+    const SIGMA = 5.670374e-8;      
+
+    const MATERIALES = {
+      acero: {
+        nombre: "Acero al Carbono",
+        c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80,
+        comentario: "Excelente para inducción. Su alta permeabilidad atrapa el campo en la superficie."
+      },
+      hierro: {
+        nombre: "Hierro Dulce",
+        c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75,
+        comentario: "Altamente magnético. Se calienta con gran facilidad por corrientes de Foucault."
+      },
+      inoxidable: {
+        nombre: "Acero Inoxidable 304",
+        c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65,
+        comentario: "No es magnético, pero su alta resistividad genera mucho calor por efecto Joule."
+      },
+      aluminio: {
+        nombre: "Aluminio",
+        c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20,
+        comentario: "Difícil de calentar. Calor específico altísimo y el efecto skin es muy profundo."
+      },
+      cobre: {
+        nombre: "Cobre",
+        c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15,
+        comentario: "Muy difícil. Las corrientes fluyen sin oponer resistencia, generando poco calor."
+      }
+    };
+
+    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current'].reduce((acc, id) => {
+      acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
+      acc['lbl' + id] = document.getElementById('lbl' + id);
+      return acc;
+    }, {});
+    
+    const matComment = document.getElementById('materialComment');
+
+    function actualizarCalculos() {
+      const mat = MATERIALES[els.materialselect.value];
+      const m = parseFloat(els.mass.value);
+      const T_ini = parseFloat(els.tempini.value);
+      let T_fin = parseFloat(els.tempfin.value);
+      
+      if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
+      
+      const t = parseFloat(els.time.value);
+      const areaM2 = parseFloat(els.area.value) * 1e-4;
+      const f_hz = parseFloat(els.freq.value) * 1000;
+      const N = parseFloat(els.turns.value);
+      const lenM = parseFloat(els.length.value) * 1e-2;
+      const I = parseFloat(els.current.value);
+
+      els.lblMass.textContent = m.toFixed(2);
+      els.lblTempIni.textContent = T_ini;
+      els.lblTempFin.textContent = T_fin;
+      els.lblTime.textContent = t;
+      els.lblArea.textContent = els.area.value;
+      els.lblFreq.textContent = els.freq.value;
+      els.lblTurns.textContent = N;
+      els.lblLength.textContent = els.length.value;
+      els.lblCurrent.textContent = I;
+      matComment.textContent = mat.comentario;
+
+      // 1. Ampère-Maxwell
+      const B = MU_0 * (N / lenM) * I;
+      document.getElementById('stepAmpereSub').textContent = `B = (4π×10⁻⁷) · (${N} / ${lenM.toFixed(3)}m) · ${I}A`;
+      document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
+
+      // 2. Skin Effect
+      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
+      const delta_mm = delta_m * 1000;
+      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz}Hz · 4π×10⁻⁷ · ${mat.mu_r}) )`;
+      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
+
+      // 3. Termodinámica
+      const P_th = (m * mat.c * (T_fin - T_ini)) / t;
+      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c}J/kg°C · ${T_fin - T_ini}°C) / ${t}s`;
+      document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W`;
+
+      // 4. Stefan-Boltzmann
+      const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
+      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
+      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)}m² · [${T_fin_K.toFixed(1)}⁴ - ${T_amb_K.toFixed(1)}⁴]`;
+      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
+
+      // 5. Total
+      const P_equipo = (P_th + P_rad) / 0.75;
+      document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)}W + ${Math.round(P_rad)}W) / 0.75`;
+      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W`;
+
+      // Cards
+      document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
+      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
+      document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
+      document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
+    }
+
+    Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
+    actualizarCalculos();
+  </script>
+
+  <!-- Registro del Service Worker para PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(registration => {
+            console.log('Service Worker registrado con éxito:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Error al registrar el Service Worker:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
