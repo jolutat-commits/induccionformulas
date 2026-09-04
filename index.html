@@ -34,11 +34,11 @@
     .panel-controls h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--highlight); }
     .control-group { margin-bottom: 15px; }
     .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; cursor: help; }
-    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
+    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.90rem; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
     select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
     
-    /* Panel de Estado Dinámico */
+    /* Panel de Estado General */
     .status-panel { padding: 15px; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; line-height: 1.5; border-left: 5px solid; transition: all 0.3s ease; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-optimal strong { color: var(--success); }
@@ -88,7 +88,7 @@
 <body>
 
   <header>
-    <h1>Simulador Maestro de Calentamiento por Inducción</h1>
+    <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
     <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
   </header>
@@ -98,7 +98,7 @@
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
-        <label title="Selecciona el metal. Los materiales ferromagnéticos como el acero son los más eficientes.">Material a Calentar: ℹ️</label>
+        <label title="Selecciona el metal.">Material a Calentar: ℹ️</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
           <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
@@ -107,9 +107,18 @@
           <option value="cobre">Cobre (Muy conductor)</option>
         </select>
       </div>
-      <div class="control-group"><label title="El peso total del metal a calentar.">Masa (kg) ℹ️: <span id="lblMass">0.50</span></label><input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50"></div>
+
+      <!-- Masa con etiqueta dinámica -->
+      <div class="control-group">
+        <label title="Masa total de la pieza.">Masa (kg) ℹ️: 
+          <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success); font-size:0.75rem;"></small></span>
+        </label>
+        <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
+      </div>
+
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       
+      <!-- Temp Objetivo con etiqueta dinámica -->
       <div class="control-group">
         <label title="Temperatura que deseas alcanzar.">Temp. Objetivo (°C) ℹ️: 
           <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning); font-size:0.75rem;"></small></span>
@@ -117,14 +126,35 @@
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
       </div>
 
-      <div class="control-group"><label title="Tiempo en el que necesitas que alcance la temperatura objetivo.">Tiempo (s) ℹ️: <span id="lblTime">45</span></label><input type="range" id="inputTime" min="5" max="300" step="5" value="45"></div>
-      <div class="control-group"><label title="Área total de la pieza expuesta al aire.">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <!-- Tiempo con etiqueta dinámica -->
+      <div class="control-group">
+        <label title="Tiempo de calentamiento.">Tiempo (s) ℹ️: 
+          <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success); font-size:0.75rem;"></small></span>
+        </label>
+        <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
+      </div>
+
+      <div class="control-group"><label title="Área superficial expuesta.">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
 
       <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
-      <div class="control-group"><label title="A mayor frecuencia, la onda penetra menos en el metal.">Frecuencia (kHz) ℹ️: <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
-      <div class="control-group"><label title="Número de vueltas del tubo de cobre.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
+      
+      <!-- Frecuencia con etiqueta dinámica -->
+      <div class="control-group">
+        <label title="Frecuencia de trabajo AC.">Frecuencia (kHz) ℹ️: 
+          <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success); font-size:0.75rem;"></small></span>
+        </label>
+        <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
+      </div>
+
+      <div class="control-group"><label title="Número de espiras.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
-      <div class="control-group"><label title="Amperaje fluyendo a través de la bobina.">Corriente RMS (A) ℹ️: <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
+      
+      <!-- Corriente con etiqueta dinámica -->
+      <div class="control-group">
+        <label title="Corriente RMS en bobina.">Corriente RMS (A) ℹ️: 
+          <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success); font-size:0.75rem;"></small></span>
+        </label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+      </div>
       
       <h2 style="margin-top: 20px;">3. Control de Animación</h2>
       <div class="control-group">
@@ -132,14 +162,12 @@
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
-      <!-- PANEL DE ESTADO DINÁMICO (Nuevo) -->
       <div id="statusPanel" class="status-panel status-optimal"></div>
 
     </aside>
 
     <main>
       
-      <!-- CÁMARAS DUALES -->
       <div class="visualizer-card">
         <div class="canvases-container">
           <div class="canvas-wrapper">
@@ -198,7 +226,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota (Reflexión) y la que entra pierde fuerza y se achica rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota y la que entra pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
           </div>
         </div>
 
@@ -220,7 +248,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá.
+            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos, un quemador pequeño servirá.
           </div>
         </div>
 
@@ -288,13 +316,48 @@
       const I = parseFloat(els.current.value) || 180;
       const spd = parseFloat(els.speed.value);
 
-      let refTexto = "";
-      if (T_fin < 100) refTexto = "(Tibio)";
-      else if (T_fin < 400) refTexto = "(Horno doméstico)";
-      else if (T_fin < 900) refTexto = "(Al rojo vivo)";
-      else refTexto = "(Punto de fusión)";
-      document.getElementById('lblTempRef').textContent = refTexto;
+      // --- ETIQUETAS DINÁMICAS EN VIVO PARA CADA PARÁMETRO ---
+      
+      // 1. Temperatura
+      let refTemp = "";
+      if (T_fin < 100) refTemp = "(Tibio)";
+      else if (T_fin < 400) refTemp = "(Horno doméstico)";
+      else if (T_fin < 900) refTemp = "(Al rojo vivo)";
+      else refTemp = "(Punto de fusión)";
+      document.getElementById('lblTempRef').textContent = refTemp;
 
+      // 2. Masa
+      let refMass = "";
+      if (m <= 1.0) refMass = "(Pieza ligera / taller)";
+      else if (m <= 3.0) refMass = "(Pieza mediana)";
+      else refMass = "(⚠️ Pieza pesada / industrial)";
+      document.getElementById('lblMassRef').textContent = refMass;
+      document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
+
+      // 3. Tiempo
+      let refTime = "";
+      if (t < 15) refTime = "(⚠️ Calentamiento violento)";
+      else if (t <= 90) refTime = "(Óptimo)";
+      else refTime = "(Demasiado lento)";
+      document.getElementById('lblTimeRef').textContent = refTime;
+      document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
+
+      // 4. Frecuencia
+      let refFreq = "";
+      if (f_khz < 30) refFreq = "(Baja: penetra hondo)";
+      else if (f_khz <= 150) refFreq = "(Óptimo estándar)";
+      else refFreq = "(Superficial / temple)";
+      document.getElementById('lblFreqRef').textContent = refFreq;
+
+      // 5. Corriente
+      let refCurr = "";
+      if (I < 100) refCurr = "(Baja inducción)";
+      else if (I <= 350) refCurr = "(Óptimo estándar)";
+      else refCurr = "(⚠️ Alto estrés térmico en cobre)";
+      document.getElementById('lblCurrentRef').textContent = refCurr;
+      document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
+
+      // Actualizar valores numéricos en etiquetas
       els.lblMass.textContent = m.toFixed(2);
       els.lblTempIni.textContent = T_ini;
       els.lblTempFin.textContent = T_fin;
@@ -317,42 +380,40 @@
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      // REGLAS DEL SISTEMA EXPERTO (Warnings y Dangers)
+      // REGLAS DEL SISTEMA EXPERTO
       let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
 
-      // A) Punto de Curie
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo. La eficiencia de calentamiento caerá drásticamente.");
+        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia de calentamiento decae.");
       }
 
-      // B) Efecto Skin
+      // 3. Efecto Skin
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
       const delta_mm = delta_m * 1000;
-      if (delta_mm > 15) {
-        warnings.push("⚡ <strong>Penetración muy profunda (Baja Frecuencia):</strong> El calor no se está concentrando en la superficie. Sugerencia: Aumenta la Frecuencia (kHz).");
-      }
 
-      // C) Metales difíciles
-      if ((mat.nombre.includes("Cobre") || mat.nombre.includes("Aluminio")) && f_khz < 50) {
-        warnings.push("⚠️ <strong>Material no magnético:</strong> El cobre y el aluminio requieren frecuencias mucho más altas (>50 kHz) para inducir corrientes efectivas.");
-      }
-
-      // D) Cálculos Termodinámicos y Potencia
+      // 4. Joule / Densidad
+      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
+      
+      // 5. Termodinámica
       const deltaT = T_fin - T_ini;
       const P_th = (m * mat.c * deltaT) / t;
+
+      // 6. Stefan-Boltzmann
       const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
+
+      // 7. Balance Global
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
       if (P_kW > 150) {
-        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás intentando calentar mucha masa en muy poco tiempo. Sugerencia: Aumenta el tiempo (s) o disminuye la masa.`);
+        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo (s) o baja la masa (kg).`);
       }
 
-      // E) Actualizar Panel de Estado Dinámico
+      // Panel de Estado Dinámico General
       const statusBox = document.getElementById('statusPanel');
       if (dangers.length > 0) {
         statusBox.className = "status-panel status-danger";
@@ -362,14 +423,13 @@
         statusBox.innerHTML = warnings.join("<br><br>");
       } else {
         statusBox.className = "status-panel status-optimal";
-        statusBox.innerHTML = "✅ <strong>Parámetros en Óptimas Condiciones:</strong><br>La relación entre frecuencia, masa, tiempo y material es ideal para un calentamiento eficiente en el mundo real.";
+        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables para un diseño de ingeniería eficiente.";
       }
 
       // Actualizar Fórmulas DOM
       document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mu_efectivo}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
 
-      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
       document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)} Ω·m, δ = ${delta_mm.toFixed(3)} mm`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
 
@@ -382,13 +442,11 @@
       document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)} W útil + ${Math.round(P_rad)} W radiación) / 0.75`;
       document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${P_kW.toFixed(2)} kW)`;
 
-      // Tarjetas de Resumen
       document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
-      // Texto Explicativo Dinámico
       document.getElementById('conclusionAmigable').innerHTML = 
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
@@ -401,13 +459,12 @@
     actualizarCalculos();
 
     // =========================================================
-    // MULTI-CÁMARA: CÁMARA 1 (3D) Y CÁMARA 2 (DIAGRAMA FRESNEL 2D)
+    // RENDERIZADO DE CÁMARAS (3D Y 2D)
     // =========================================================
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
-    // --- CÁMARA 1: Vista Isométrica 3D ---
     function projIso(x, y, z) {
       const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
       return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
@@ -471,11 +528,9 @@
       }
     }
 
-    // --- CÁMARA 2: Diagrama de Reflexión 2D ---
     function renderCamera2() {
       ctx2.fillStyle = '#020617'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
-      const cx = canvas2.width / 2;
-      const cy = canvas2.height / 2;
+      const cx = canvas2.width / 2, cy = canvas2.height / 2;
 
       ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; 
       ctx2.fillRect(0, 0, canvas2.width, cy);
@@ -490,9 +545,7 @@
       ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
       ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
 
-      const angI = Math.PI / 4; 
-      const angT = Math.PI / 8; 
-
+      const angI = Math.PI / 4, angT = Math.PI / 8; 
       const incU = { x: Math.sin(angI), y: Math.cos(angI) };
       const refU = { x: Math.sin(angI), y: -Math.cos(angI) };
       const traU = { x: Math.sin(angT), y: Math.cos(angT) };
@@ -512,10 +565,8 @@
 
       function drawMovingVectors(u, d, labelE, labelB, decay=1) {
          if(decay < 0.05) return;
-         const px = cx + d * u.x;
-         const py = cy + d * u.y;
-         const vx = -u.y; 
-         const vy = u.x;
+         const px = cx + d * u.x, py = cy + d * u.y;
+         const vx = -u.y, vy = u.x;
 
          ctx2.beginPath(); ctx2.arc(px, py, 6, 0, Math.PI*2);
          ctx2.fillStyle = '#020617'; ctx2.fill();
