@@ -1,4 +1,4 @@
-const CACHE_NAME = 'induccion-v1';
+const CACHE_NAME = 'induccion-v2'; // Cambié el nombre a v2 para forzar la actualización
 const urlsToCache = [
   './',
   './index.html',
@@ -7,7 +7,7 @@ const urlsToCache = [
   './icon-512.png'
 ];
 
-// Instalación del Service Worker y guardado en caché
+// 1. INSTALACIÓN
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -15,15 +15,46 @@ self.addEventListener('install', event => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Fuerza al Service Worker a tomar el control inmediatamente
+  self.skipWaiting(); 
 });
 
-// Interceptar peticiones para usar la caché offline
+// 2. ACTIVACIÓN Y LIMPIEZA DE CACHÉ VIEJA
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          // Si el nombre de la caché no es la actual, bórrala
+          if (cacheName !== CACHE_NAME) {
+            console.log('Borrando caché antigua:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// 3. ESTRATEGIA: RED PRIMERO, CACHÉ DESPUÉS (Network-First)
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // Devuelve la versión en caché si existe, si no, busca en la red
-        return response || fetch(event.request);
+        // Si hay internet y la descarga fue exitosa, actualiza la caché
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+        }
+        return response; // Devuelve la versión fresquita de internet
+      })
+      .catch(() => {
+        // Si NO hay internet (modo offline), saca los archivos de la caché
+        return caches.match(event.request);
       })
   );
 });
