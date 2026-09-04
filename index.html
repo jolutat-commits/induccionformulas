@@ -80,10 +80,10 @@
 <body>
 
   <header>
-    <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
+    <h1>Simulador Maestro de Calentamiento por Inducción</h1>
     <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
     
-    <!-- Sistema de Diagnóstico Experto (Sugerencias al usuario) -->
+    <!-- Sistema de Diagnóstico Experto -->
     <div id="expertDiagnostics" class="alert-box"></div>
     
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
@@ -122,7 +122,7 @@
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
       <div class="control-group"><label title="Amperaje fluyendo a través de la bobina.">Corriente RMS (A) ℹ️: <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
       
-      <h2 style="margin-top: 20px;">3. Control 3D</h2>
+      <h2 style="margin-top: 20px;">3. Control de Animación</h2>
       <div class="control-group">
         <label>Velocidad de Onda: <span id="lblSpeed">1.0x</span></label>
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
@@ -135,20 +135,22 @@
       <!-- CÁMARAS DUALES -->
       <div class="visualizer-card">
         <div class="canvases-container">
+          <!-- Cámara 1: Vista Isométrica 3D original -->
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
             <canvas id="simCanvas1" width="400" height="260"></canvas>
           </div>
+          <!-- Cámara 2: Reflexión y Transmisión (Animación del diagrama) -->
           <div class="canvas-wrapper">
-            <h4>🎥 Cámara 2: Vista Lateral del Metal</h4>
+            <h4>🎥 Cámara 2: Reflexión y Efecto Skin (Diagrama 2D)</h4>
             <canvas id="simCanvas2" width="400" height="260"></canvas>
           </div>
         </div>
         
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E (Azul)</div>
-          <div class="legend-item"><span style="background: #f43f5e;"></span>Campo Magnético B (Rosa)</div>
-          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica (Efecto Skin)</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E_i (Azul)</div>
+          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B_i (Rosa)</div>
+          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Medio (Aire vs Metal)</div>
         </div>
       </div>
 
@@ -191,7 +193,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Al chocar contra la pared metálica, la onda pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa superficial por donde viaja la energía.
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota (Reflexión) y la que entra (Transmisión) pierde fuerza y se achica rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
           </div>
         </div>
 
@@ -356,7 +358,7 @@
         mostrarAlerta = true;
       }
       if (delta_mm > 15) {
-        diagnosticosHTML += "⚡ <strong>Baja Frecuencia:</strong> La onda está penetrando demasiado (δ = " + delta_mm.toFixed(1) + " mm). Sugerencia: Para calentar la superficie más rápido, <strong>aumenta la Frecuencia (kHz)</strong>.<br>";
+        diagnosticosHTML += "⚡ <strong>Baja Frecuencia:</strong> La onda está penetrando demasiado (δ = " + delta_mm.toFixed(1) + " mm). Sugerencia: Para concentrar el calor en la superficie, <strong>aumenta la Frecuencia (kHz)</strong>.<br>";
         mostrarAlerta = true;
       }
 
@@ -368,13 +370,11 @@
         alertBox.style.display = "none";
       }
 
-      // Tarjetas de Resumen
       document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
-      // Texto Explicativo Dinámico
       document.getElementById('conclusionAmigable').innerHTML = 
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
@@ -387,23 +387,16 @@
     actualizarCalculos();
 
     // =========================================================
-    // MULTI-CÁMARA: MOTOR GRÁFICO 3D Y 2D LATERAL
+    // MULTI-CÁMARA: CÁMARA 1 (3D) Y CÁMARA 2 (DIAGRAMA FRESNEL 2D)
     // =========================================================
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
-    // Cámara 1 (Isométrica 3D)
+    // --- CÁMARA 1: Vista Isométrica 3D ---
     function projIso(x, y, z) {
       const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
       return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
-    }
-
-    // Cámara 2 (Lateral - Ahora muestra profundidad en perspectiva para ver el Campo Magnético)
-    function projSide(x, y, z) {
-      const cx = canvas2.width / 2 - 20, cy = canvas2.height / 2;
-      // Ligera perspectiva (0.2) en la X para que la onda rosa no quede oculta de frente
-      return { u: cx + (z * 1.0) - (x * 0.2), v: cy - (y * 0.85) + (x * 0.1) }; 
     }
 
     function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
@@ -412,12 +405,12 @@
       ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
     }
 
-    function renderView(ctx, canvas, projFn) {
-      ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function renderCamera1() {
+      ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
       const A = 25 + (animData.current / 500) * 45;
 
-      drawLine(ctx, projFn, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
-      drawLine(ctx, projFn, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
+      drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
+      drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
 
       const z_metal = 40;
       let r = 71, g = 85, b_col = 105;
@@ -425,25 +418,23 @@
       if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
       
       const ex = 55, ey = 70;
-      const frontTL = projFn(-ex, ey, z_metal), frontTR = projFn(ex, ey, z_metal);
-      const frontBL = projFn(-ex, -ey, z_metal), frontBR = projFn(ex, -ey, z_metal);
-      const backTL = projFn(-ex, ey, 160), backTR = projFn(ex, ey, 160);
-      const backBL = projFn(-ex, -ey, 160), backBR = projFn(ex, -ey, 160);
+      const frontTL = projIso(-ex, ey, z_metal), frontTR = projIso(ex, ey, z_metal);
+      const frontBL = projIso(-ex, -ey, z_metal), frontBR = projIso(ex, -ey, z_metal);
+      const backTL = projIso(-ex, ey, 160), backTR = projIso(ex, ey, 160);
+      const backBL = projIso(-ex, -ey, 160), backBR = projIso(ex, -ey, 160);
 
-      ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
-      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+      ctx1.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
+      ctx1.strokeStyle = '#94a3b8'; ctx1.lineWidth = 1;
 
-      ctx.beginPath(); ctx.moveTo(frontTR.u, frontTR.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(backBR.u, backBR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Derecha
-      ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(backTL.u, backTL.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Arriba
-      ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.lineTo(frontBL.u, frontBL.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Frente
+      ctx1.beginPath(); ctx1.moveTo(frontTR.u, frontTR.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(backBR.u, backBR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
+      ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(backTL.u, backTL.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
+      ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.lineTo(frontBL.u, frontBL.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
 
-      ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
-      ctx.fillText('Metal', frontTL.u + 5, frontTL.v - 8);
+      ctx1.fillStyle = '#f8fafc'; ctx1.font = '10px monospace';
+      ctx1.fillText('Metal', frontTL.u + 5, frontTL.v - 8);
 
-      const step = 6; 
       let prevE = null, prevB = null;
-
-      for (let z = -180; z <= 160; z += step) {
+      for (let z = -180; z <= 160; z += 6) {
         let decay = 1;
         if (z > z_metal) {
           let visualDelta = Math.max(5, animData.delta * 40); 
@@ -453,23 +444,109 @@
 
         const wave = Math.sin((z * 0.04) - timePhase) * decay;
         const Ey = wave * A, Bx = wave * A * 0.9;
-        const currentE = projFn(0, Ey, z), currentB = projFn(Bx, 0, z);
+        const currentE = projIso(0, Ey, z), currentB = projIso(Bx, 0, z);
 
-        drawLine(ctx, projFn, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2); // Azul (E)
-        drawLine(ctx, projFn, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);  // Rosa (B)
+        drawLine(ctx1, projIso, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2); 
+        drawLine(ctx1, projIso, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);  
 
         if (prevE) {
-          ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1.5; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1.5; ctx1.stroke();
         }
         prevE = currentE; prevB = currentB;
       }
     }
 
+    // --- CÁMARA 2: Diagrama de Reflexión 2D (Basado en tu imagen) ---
+    function renderCamera2() {
+      ctx2.fillStyle = '#020617'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+      const cx = canvas2.width / 2;
+      const cy = canvas2.height / 2;
+
+      // Fondo Dieléctrico (Aire) vs Conductor (Metal)
+      ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; // Verde suave (Aire)
+      ctx2.fillRect(0, 0, canvas2.width, cy);
+
+      let r = 71, g = 85, b_col = 105;
+      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
+      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; // Metal
+      ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
+
+      // Ejes (Interfaz horizontal y Normal vertical)
+      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
+      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); // Eje x (Interfaz)
+      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); // Eje z (Normal)
+
+      // Ángulos y Vectores Directores de los Rayos
+      const angI = Math.PI / 4; // Incidente y Reflejado a 45 grados
+      const angT = Math.PI / 8; // Transmitido se refracta a ~22 grados
+
+      const incU = { x: Math.sin(angI), y: Math.cos(angI) };
+      const refU = { x: Math.sin(angI), y: -Math.cos(angI) };
+      const traU = { x: Math.sin(angT), y: Math.cos(angT) };
+
+      // Dibujar Líneas Base de los Rayos
+      function drawRayLine(u, startD, endD, color) {
+         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.5;
+         ctx2.moveTo(cx + startD * u.x, cy + startD * u.y);
+         ctx2.lineTo(cx + endD * u.x, cy + endD * u.y);
+         ctx2.stroke();
+      }
+      drawRayLine(incU, -200, 0, 'rgba(255,255,255,0.3)'); // Incidente
+      drawRayLine(refU, 0, 200, 'rgba(255,255,255,0.3)');  // Reflejado
+      drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  // Transmitido
+
+      // Animación de los Vectores Móviles (Idénticos a tu imagen)
+      const slideRange = 150;
+      let slidePhase = (timePhase * 40) % slideRange;
+
+      function drawMovingVectors(u, d, labelE, labelB, decay=1) {
+         if(decay < 0.05) return;
+         const px = cx + d * u.x;
+         const py = cy + d * u.y;
+         const vx = -u.y; // Vector Perpendicular (para dibujar la flecha E)
+         const vy = u.x;
+
+         // Dibujar Campo Magnético B (Círculo con punto en el centro)
+         ctx2.beginPath(); ctx2.arc(px, py, 6, 0, Math.PI*2);
+         ctx2.fillStyle = '#020617'; ctx2.fill();
+         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 2; ctx2.stroke();
+         ctx2.fillStyle = '#f43f5e'; ctx2.fillRect(px-1.5, py-1.5, 3, 3); // Punto
+
+         // Dibujar Campo Eléctrico E (Flecha azul)
+         const eLen = 28 * decay;
+         ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(px + vx * eLen, py + vy * eLen);
+         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2.5; ctx2.stroke();
+         // Cabeza de flecha
+         ctx2.beginPath(); ctx2.moveTo(px + vx * eLen, py + vy * eLen);
+         ctx2.lineTo(px + vx * eLen - 5*u.x - 5*vx, py + vy * eLen - 5*u.y - 5*vy); ctx2.stroke();
+
+         // Etiquetas de texto
+         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 12px sans-serif';
+         ctx2.fillText(labelE, px + vx*eLen + 8, py + vy*eLen + 4);
+         ctx2.fillStyle = '#f43f5e';
+         ctx2.fillText(labelB, px - 30, py + 18);
+      }
+
+      // El rayo transmitido pierde fuerza exponencialmente
+      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
+
+      // Dibujar los 3 sets de vectores viajando
+      drawMovingVectors(incU, -slideRange + slidePhase, 'E_i', 'B_i');
+      drawMovingVectors(refU, slidePhase, 'E_r', 'B_r');
+      drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
+
+      // Nombres de los medios
+      ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
+      ctx2.fillText('Aire (Dieléctrico)', 10, 20);
+      ctx2.fillText('Metal (Conductor)', 10, cy + 20);
+    }
+
     function renderAll() {
       timePhase += 0.02 * animData.speed;
-      renderView(ctx1, canvas1, projIso);
-      renderView(ctx2, canvas2, projSide); // Ahora la Cámara 2 también ve el campo magnético en perspectiva
+      renderCamera1();
+      renderCamera2();
       requestAnimationFrame(renderAll);
     }
     
