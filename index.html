@@ -14,7 +14,7 @@
       --bg-main: #0f172a; --bg-card: #1e293b; --bg-subcard: #090d16;
       --text-main: #f8fafc; --text-muted: #94a3b8; --accent: #f97316;
       --border: #334155; --highlight: #38bdf8; --success: #10b981;
-      --warning: #fbbf24; --danger: #ef4444;
+      --warning: #f59e0b; --danger: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
@@ -38,8 +38,16 @@
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
     select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
     
+    /* Panel de Estado Dinámico */
+    .status-panel { padding: 15px; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; line-height: 1.5; border-left: 5px solid; transition: all 0.3s ease; }
+    .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
+    .status-optimal strong { color: var(--success); }
+    .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
+    .status-warning strong { color: var(--warning); }
+    .status-danger { background: rgba(239, 68, 68, 0.1); border-left-color: var(--danger); color: #fca5a5; }
+    .status-danger strong { color: var(--danger); }
+
     .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 12px; border-radius: 6px; font-size: 0.82rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4; }
-    .alert-box { background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text-main); margin-bottom: 20px; display: none; }
 
     .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
     .canvases-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
@@ -73,7 +81,7 @@
       .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
-      .alert-box { border: 1px solid red; color: black; }
+      .status-panel { border: 1px solid #ccc; color: black; }
     }
   </style>
 </head>
@@ -82,10 +90,6 @@
   <header>
     <h1>Simulador Maestro de Calentamiento por Inducción</h1>
     <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
-    
-    <!-- Sistema de Diagnóstico Experto -->
-    <div id="expertDiagnostics" class="alert-box"></div>
-    
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
   </header>
 
@@ -128,6 +132,9 @@
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
+      <!-- PANEL DE ESTADO DINÁMICO (Nuevo) -->
+      <div id="statusPanel" class="status-panel status-optimal"></div>
+
     </aside>
 
     <main>
@@ -135,12 +142,10 @@
       <!-- CÁMARAS DUALES -->
       <div class="visualizer-card">
         <div class="canvases-container">
-          <!-- Cámara 1: Vista Isométrica 3D original -->
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
             <canvas id="simCanvas1" width="400" height="260"></canvas>
           </div>
-          <!-- Cámara 2: Reflexión y Transmisión (Animación del diagrama) -->
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 2: Reflexión y Efecto Skin (Diagrama 2D)</h4>
             <canvas id="simCanvas2" width="400" height="260"></canvas>
@@ -193,7 +198,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota (Reflexión) y la que entra (Transmisión) pierde fuerza y se achica rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota (Reflexión) y la que entra pierde fuerza y se achica rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
           </div>
         </div>
 
@@ -204,7 +209,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Toda corriente eléctrica que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de personas (electrones) forzadas a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que calienta el metal al rojo vivo.
+            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de electrones forzados a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que calienta el metal al rojo vivo.
           </div>
         </div>
 
@@ -215,7 +220,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá. Todo depende de la masa y la prisa.
+            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá.
           </div>
         </div>
 
@@ -312,69 +317,78 @@
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      // CÁLCULO DEL PUNTO DE CURIE PARA EFECTO SKIN Y DIAGNÓSTICOS
+      // REGLAS DEL SISTEMA EXPERTO (Warnings y Dangers)
       let mu_efectivo = mat.mu_r;
-      let diagnosticosHTML = "";
-      let mostrarAlerta = false;
+      let warnings = [];
+      let dangers = [];
 
+      // A) Punto de Curie
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        diagnosticosHTML += "⚠️ <strong>Punto de Curie superado (>730°C):</strong> El material ha perdido su magnetismo (μ_r cae a 1). La eficiencia de calentamiento caerá en la vida real.<br>";
-        mostrarAlerta = true;
+        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo. La eficiencia de calentamiento caerá drásticamente.");
       }
 
-      // 3. Efecto Skin
+      // B) Efecto Skin
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
       const delta_mm = delta_m * 1000;
+      if (delta_mm > 15) {
+        warnings.push("⚡ <strong>Penetración muy profunda (Baja Frecuencia):</strong> El calor no se está concentrando en la superficie. Sugerencia: Aumenta la Frecuencia (kHz).");
+      }
+
+      // C) Metales difíciles
+      if ((mat.nombre.includes("Cobre") || mat.nombre.includes("Aluminio")) && f_khz < 50) {
+        warnings.push("⚠️ <strong>Material no magnético:</strong> El cobre y el aluminio requieren frecuencias mucho más altas (>50 kHz) para inducir corrientes efectivas.");
+      }
+
+      // D) Cálculos Termodinámicos y Potencia
+      const deltaT = T_fin - T_ini;
+      const P_th = (m * mat.c * deltaT) / t;
+      const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
+      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
+      const P_equipo = (P_th + P_rad) / 0.75;
+      const P_kW = P_equipo / 1000;
+
+      if (P_kW > 150) {
+        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás intentando calentar mucha masa en muy poco tiempo. Sugerencia: Aumenta el tiempo (s) o disminuye la masa.`);
+      }
+
+      // E) Actualizar Panel de Estado Dinámico
+      const statusBox = document.getElementById('statusPanel');
+      if (dangers.length > 0) {
+        statusBox.className = "status-panel status-danger";
+        statusBox.innerHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
+      } else if (warnings.length > 0) {
+        statusBox.className = "status-panel status-warning";
+        statusBox.innerHTML = warnings.join("<br><br>");
+      } else {
+        statusBox.className = "status-panel status-optimal";
+        statusBox.innerHTML = "✅ <strong>Parámetros en Óptimas Condiciones:</strong><br>La relación entre frecuencia, masa, tiempo y material es ideal para un calentamiento eficiente en el mundo real.";
+      }
+
+      // Actualizar Fórmulas DOM
       document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mu_efectivo}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
 
-      // 4. Joule / Densidad
       const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
       document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)} Ω·m, δ = ${delta_mm.toFixed(3)} mm`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
 
-      // 5. Termodinámica
-      const deltaT = T_fin - T_ini;
-      const P_th = (m * mat.c * deltaT) / t;
       document.getElementById('stepThermoSub').textContent = `P_th = (${m} kg · ${mat.c} J/kg°C · ${deltaT} °C) / ${t} s`;
       document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
 
-      // 6. Stefan-Boltzmann
-      const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
-      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
       document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)} m² · [(${T_fin_K.toFixed(1)} K)⁴ - (${T_amb_K.toFixed(1)} K)⁴]`;
       document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W (${(P_rad / 1000).toFixed(2)} kW)`;
 
-      // 7. Balance Global
-      const P_equipo = (P_th + P_rad) / 0.75;
-      const P_kW = P_equipo / 1000;
       document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)} W útil + ${Math.round(P_rad)} W radiación) / 0.75`;
       document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${P_kW.toFixed(2)} kW)`;
 
-      // DIAGNÓSTICOS EXPERTOS ADICIONALES
-      if (P_kW > 150) {
-        diagnosticosHTML += "🛑 <strong>Potencia Irreal:</strong> Se requieren " + P_kW.toFixed(0) + " kW. Estás intentando calentar demasiada masa en muy poco tiempo. Sugerencia: <strong>Aumenta el tiempo (s)</strong> o disminuye la masa.<br>";
-        mostrarAlerta = true;
-      }
-      if (delta_mm > 15) {
-        diagnosticosHTML += "⚡ <strong>Baja Frecuencia:</strong> La onda está penetrando demasiado (δ = " + delta_mm.toFixed(1) + " mm). Sugerencia: Para concentrar el calor en la superficie, <strong>aumenta la Frecuencia (kHz)</strong>.<br>";
-        mostrarAlerta = true;
-      }
-
-      const alertBox = document.getElementById('expertDiagnostics');
-      if (mostrarAlerta) {
-        alertBox.innerHTML = diagnosticosHTML;
-        alertBox.style.display = "block";
-      } else {
-        alertBox.style.display = "none";
-      }
-
+      // Tarjetas de Resumen
       document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
+      // Texto Explicativo Dinámico
       document.getElementById('conclusionAmigable').innerHTML = 
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
@@ -457,47 +471,42 @@
       }
     }
 
-    // --- CÁMARA 2: Diagrama de Reflexión 2D (Basado en tu imagen) ---
+    // --- CÁMARA 2: Diagrama de Reflexión 2D ---
     function renderCamera2() {
       ctx2.fillStyle = '#020617'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
       const cx = canvas2.width / 2;
       const cy = canvas2.height / 2;
 
-      // Fondo Dieléctrico (Aire) vs Conductor (Metal)
-      ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; // Verde suave (Aire)
+      ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; 
       ctx2.fillRect(0, 0, canvas2.width, cy);
 
       let r = 71, g = 85, b_col = 105;
       if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
       if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
-      ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; // Metal
+      ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; 
       ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
 
-      // Ejes (Interfaz horizontal y Normal vertical)
       ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
-      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); // Eje x (Interfaz)
-      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); // Eje z (Normal)
+      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
+      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
 
-      // Ángulos y Vectores Directores de los Rayos
-      const angI = Math.PI / 4; // Incidente y Reflejado a 45 grados
-      const angT = Math.PI / 8; // Transmitido se refracta a ~22 grados
+      const angI = Math.PI / 4; 
+      const angT = Math.PI / 8; 
 
       const incU = { x: Math.sin(angI), y: Math.cos(angI) };
       const refU = { x: Math.sin(angI), y: -Math.cos(angI) };
       const traU = { x: Math.sin(angT), y: Math.cos(angT) };
 
-      // Dibujar Líneas Base de los Rayos
       function drawRayLine(u, startD, endD, color) {
          ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.5;
          ctx2.moveTo(cx + startD * u.x, cy + startD * u.y);
          ctx2.lineTo(cx + endD * u.x, cy + endD * u.y);
          ctx2.stroke();
       }
-      drawRayLine(incU, -200, 0, 'rgba(255,255,255,0.3)'); // Incidente
-      drawRayLine(refU, 0, 200, 'rgba(255,255,255,0.3)');  // Reflejado
-      drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  // Transmitido
+      drawRayLine(incU, -200, 0, 'rgba(255,255,255,0.3)'); 
+      drawRayLine(refU, 0, 200, 'rgba(255,255,255,0.3)');  
+      drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  
 
-      // Animación de los Vectores Móviles (Idénticos a tu imagen)
       const slideRange = 150;
       let slidePhase = (timePhase * 40) % slideRange;
 
@@ -505,41 +514,34 @@
          if(decay < 0.05) return;
          const px = cx + d * u.x;
          const py = cy + d * u.y;
-         const vx = -u.y; // Vector Perpendicular (para dibujar la flecha E)
+         const vx = -u.y; 
          const vy = u.x;
 
-         // Dibujar Campo Magnético B (Círculo con punto en el centro)
          ctx2.beginPath(); ctx2.arc(px, py, 6, 0, Math.PI*2);
          ctx2.fillStyle = '#020617'; ctx2.fill();
          ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 2; ctx2.stroke();
-         ctx2.fillStyle = '#f43f5e'; ctx2.fillRect(px-1.5, py-1.5, 3, 3); // Punto
+         ctx2.fillStyle = '#f43f5e'; ctx2.fillRect(px-1.5, py-1.5, 3, 3); 
 
-         // Dibujar Campo Eléctrico E (Flecha azul)
          const eLen = 28 * decay;
          ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(px + vx * eLen, py + vy * eLen);
          ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2.5; ctx2.stroke();
-         // Cabeza de flecha
          ctx2.beginPath(); ctx2.moveTo(px + vx * eLen, py + vy * eLen);
          ctx2.lineTo(px + vx * eLen - 5*u.x - 5*vx, py + vy * eLen - 5*u.y - 5*vy); ctx2.stroke();
 
-         // Etiquetas de texto
          ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 12px sans-serif';
          ctx2.fillText(labelE, px + vx*eLen + 8, py + vy*eLen + 4);
          ctx2.fillStyle = '#f43f5e';
          ctx2.fillText(labelB, px - 30, py + 18);
       }
 
-      // El rayo transmitido pierde fuerza exponencialmente
       let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
 
-      // Dibujar los 3 sets de vectores viajando
       drawMovingVectors(incU, -slideRange + slidePhase, 'E_i', 'B_i');
       drawMovingVectors(refU, slidePhase, 'E_r', 'B_r');
       drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
 
-      // Nombres de los medios
       ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
-      ctx2.fillText('Aire (Dieléctrico)', 10, 20);
+      ctx2.fillText('Aire', 10, 20);
       ctx2.fillText('Metal (Conductor)', 10, cy + 20);
     }
 
