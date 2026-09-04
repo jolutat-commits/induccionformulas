@@ -38,7 +38,6 @@
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
     select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
     
-    /* Panel de Estado General */
     .status-panel { padding: 15px; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; line-height: 1.5; border-left: 5px solid; transition: all 0.3s ease; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-optimal strong { color: var(--success); }
@@ -108,7 +107,6 @@
         </select>
       </div>
 
-      <!-- Masa con etiqueta dinámica -->
       <div class="control-group">
         <label title="Masa total de la pieza.">Masa (kg) ℹ️: 
           <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success); font-size:0.75rem;"></small></span>
@@ -118,7 +116,6 @@
 
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       
-      <!-- Temp Objetivo con etiqueta dinámica -->
       <div class="control-group">
         <label title="Temperatura que deseas alcanzar.">Temp. Objetivo (°C) ℹ️: 
           <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning); font-size:0.75rem;"></small></span>
@@ -126,7 +123,6 @@
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
       </div>
 
-      <!-- Tiempo con etiqueta dinámica -->
       <div class="control-group">
         <label title="Tiempo de calentamiento.">Tiempo (s) ℹ️: 
           <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success); font-size:0.75rem;"></small></span>
@@ -138,7 +134,6 @@
 
       <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
       
-      <!-- Frecuencia con etiqueta dinámica -->
       <div class="control-group">
         <label title="Frecuencia de trabajo AC.">Frecuencia (kHz) ℹ️: 
           <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success); font-size:0.75rem;"></small></span>
@@ -149,7 +144,6 @@
       <div class="control-group"><label title="Número de espiras.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
       
-      <!-- Corriente con etiqueta dinámica -->
       <div class="control-group">
         <label title="Corriente RMS en bobina.">Corriente RMS (A) ℹ️: 
           <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success); font-size:0.75rem;"></small></span>
@@ -181,9 +175,9 @@
         </div>
         
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E_i (Azul)</div>
-          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B_i (Rosa)</div>
-          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Medio (Aire vs Metal)</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E (Azul)</div>
+          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B (Rosa)</div>
+          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica</div>
         </div>
       </div>
 
@@ -317,8 +311,6 @@
       const spd = parseFloat(els.speed.value);
 
       // --- ETIQUETAS DINÁMICAS EN VIVO PARA CADA PARÁMETRO ---
-      
-      // 1. Temperatura
       let refTemp = "";
       if (T_fin < 100) refTemp = "(Tibio)";
       else if (T_fin < 400) refTemp = "(Horno doméstico)";
@@ -326,15 +318,13 @@
       else refTemp = "(Punto de fusión)";
       document.getElementById('lblTempRef').textContent = refTemp;
 
-      // 2. Masa
       let refMass = "";
-      if (m <= 1.0) refMass = "(Pieza ligera / taller)";
+      if (m <= 1.0) refMass = "(Pieza ligera)";
       else if (m <= 3.0) refMass = "(Pieza mediana)";
-      else refMass = "(⚠️ Pieza pesada / industrial)";
+      else refMass = "(⚠️ Pesada / industrial)";
       document.getElementById('lblMassRef').textContent = refMass;
       document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
 
-      // 3. Tiempo
       let refTime = "";
       if (t < 15) refTime = "(⚠️ Calentamiento violento)";
       else if (t <= 90) refTime = "(Óptimo)";
@@ -342,22 +332,19 @@
       document.getElementById('lblTimeRef').textContent = refTime;
       document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
 
-      // 4. Frecuencia
       let refFreq = "";
       if (f_khz < 30) refFreq = "(Baja: penetra hondo)";
       else if (f_khz <= 150) refFreq = "(Óptimo estándar)";
       else refFreq = "(Superficial / temple)";
       document.getElementById('lblFreqRef').textContent = refFreq;
 
-      // 5. Corriente
       let refCurr = "";
       if (I < 100) refCurr = "(Baja inducción)";
       else if (I <= 350) refCurr = "(Óptimo estándar)";
-      else refCurr = "(⚠️ Alto estrés térmico en cobre)";
+      else refCurr = "(⚠️ Alto estrés térmico)";
       document.getElementById('lblCurrentRef').textContent = refCurr;
       document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
 
-      // Actualizar valores numéricos en etiquetas
       els.lblMass.textContent = m.toFixed(2);
       els.lblTempIni.textContent = T_ini;
       els.lblTempFin.textContent = T_fin;
@@ -380,14 +367,13 @@
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      // REGLAS DEL SISTEMA EXPERTO
       let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia de calentamiento decae.");
+        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
       }
 
       // 3. Efecto Skin
@@ -413,7 +399,6 @@
         dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo (s) o baja la masa (kg).`);
       }
 
-      // Panel de Estado Dinámico General
       const statusBox = document.getElementById('statusPanel');
       if (dangers.length > 0) {
         statusBox.className = "status-panel status-danger";
@@ -423,10 +408,9 @@
         statusBox.innerHTML = warnings.join("<br><br>");
       } else {
         statusBox.className = "status-panel status-optimal";
-        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables para un diseño de ingeniería eficiente.";
+        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables para un diseño eficiente.";
       }
 
-      // Actualizar Fórmulas DOM
       document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mu_efectivo}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
 
@@ -459,7 +443,7 @@
     actualizarCalculos();
 
     // =========================================================
-    // RENDERIZADO DE CÁMARAS (3D Y 2D)
+    // RENDERIZADO DE CÁMARAS (3D y 2D CON EJES TÉCNICOS Y VALORES)
     // =========================================================
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
@@ -480,8 +464,15 @@
       ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
       const A = 25 + (animData.current / 500) * 45;
 
-      drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
-      drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
+      // Ejes rotulados (Z: Propagación, Y: Campo Eléctrico)
+      drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.4)', 1.5);
+      drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1.5);
+      
+      // Etiquetas de Ejes en Cámara 1
+      const pZ = projIso(0, 0, 150), pY = projIso(0, 75, -180);
+      ctx1.fillStyle = '#94a3b8'; ctx1.font = '10px monospace';
+      ctx1.fillText('+Z (Propagación)', pZ.u, pZ.v);
+      ctx1.fillText('+Y (E)', pY.u, pY.v);
 
       const z_metal = 40;
       let r = 71, g = 85, b_col = 105;
@@ -502,7 +493,7 @@
       ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.lineTo(frontBL.u, frontBL.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
 
       ctx1.fillStyle = '#f8fafc'; ctx1.font = '10px monospace';
-      ctx1.fillText('Metal', frontTL.u + 5, frontTL.v - 8);
+      ctx1.fillText('Superficie del Metal', frontTL.u + 5, frontTL.v - 8);
 
       let prevE = null, prevB = null;
       for (let z = -180; z <= 160; z += 6) {
@@ -526,6 +517,14 @@
         }
         prevE = currentE; prevB = currentB;
       }
+
+      // Medidor flotante de valores en Cámara 1
+      ctx1.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx1.fillRect(8, 8, 140, 36);
+      ctx1.strokeStyle = '#334155'; ctx1.strokeRect(8, 8, 140, 36);
+      ctx1.fillStyle = '#38bdf8'; ctx1.font = '10px monospace';
+      ctx1.fillText(`Freq: ${els.freq.value} kHz`, 14, 22);
+      ctx1.fillText(`Skin (δ): ${animData.delta.toFixed(2)} mm`, 14, 36);
     }
 
     function renderCamera2() {
@@ -541,9 +540,16 @@
       ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; 
       ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
 
-      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
-      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
-      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
+      // Ejes con marcas técnicas en Cámara 2
+      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1.2;
+      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); // Eje X
+      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); // Eje Z (Normal)
+
+      // Marcas de graduación en el eje Z
+      ctx2.fillStyle = '#94a3b8'; ctx2.font = '9px monospace';
+      ctx2.fillText('Interfaz (z=0)', cx + 8, cy - 4);
+      ctx2.fillText('Aire (z < 0)', 10, 18);
+      ctx2.fillText('Metal (z > 0)', 10, cy + 18);
 
       const angI = Math.PI / 4, angT = Math.PI / 8; 
       const incU = { x: Math.sin(angI), y: Math.cos(angI) };
@@ -579,10 +585,10 @@
          ctx2.beginPath(); ctx2.moveTo(px + vx * eLen, py + vy * eLen);
          ctx2.lineTo(px + vx * eLen - 5*u.x - 5*vx, py + vy * eLen - 5*u.y - 5*vy); ctx2.stroke();
 
-         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 12px sans-serif';
+         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 11px sans-serif';
          ctx2.fillText(labelE, px + vx*eLen + 8, py + vy*eLen + 4);
          ctx2.fillStyle = '#f43f5e';
-         ctx2.fillText(labelB, px - 30, py + 18);
+         ctx2.fillText(labelB, px - 28, py + 16);
       }
 
       let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
@@ -591,9 +597,13 @@
       drawMovingVectors(refU, slidePhase, 'E_r', 'B_r');
       drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
 
-      ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
-      ctx2.fillText('Aire', 10, 20);
-      ctx2.fillText('Metal (Conductor)', 10, cy + 20);
+      // Medidor flotante de valores en Cámara 2
+      ctx2.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx2.fillRect(8, 8, 140, 36);
+      ctx2.strokeStyle = '#334155'; ctx2.strokeRect(8, 8, 140, 36);
+      ctx2.fillStyle = '#10b981'; ctx2.font = '10px monospace';
+      ctx2.fillText(`Temp: ${animData.temp} °C`, 14, 22);
+      ctx2.fillText(`Atenuación δ`, 14, 36);
     }
 
     function renderAll() {
