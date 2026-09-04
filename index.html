@@ -221,4 +221,317 @@
       <div class="results-area">
         
         <div class="formula-card">
-          <h3>1. Ley de Ampère-Maxwell (Generación del Campo Magnético
+          <h3>1. Ley de Ampère-Maxwell (Generación del Campo Magnético)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepAmpereSub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
+          <p class="step-explanation">La corriente alterna de alta frecuencia circulando por el solenoide genera la densidad de flujo magnético <strong>B</strong> que excita la pieza.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>2. Ley de Faraday-Lenz (Inducción de FEM y Oposición)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
+          <p class="step-explanation">La oscilación de alta frecuencia varía rápidamente el flujo, induciendo voltaje. El signo negativo (Lenz) indica que las corrientes inducidas se oponen al campo inductor.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>3. Efecto Skin o Pelicular (Profundidad de Penetración δ)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepSkinSub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
+          <p class="step-explanation">Determina qué tan profundo penetra la onda en el metal antes de atenuarse. En el gráfico 3D verás cómo la onda muere bruscamente con Acero pero penetra más con Aluminio.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>4. Ley de Joule y Densidad de Corrientes de Foucault</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
+          <div class="step-box"><div class="step-title">Estimación de Densidad de Corriente Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
+          <p class="step-explanation">El calor es producido por la resistencia que el material opone al paso forzado de las corrientes inducidas en la capa delgada superficial.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>5. Termodinámica: Potencia Térmica Neta Requerida (Energía Útil)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
+          <p class="step-explanation">Tasa de absorción de calor requerida para elevar la temperatura de la masa en el intervalo de tiempo seleccionado.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>6. Pérdidas por Radiación Térmica (Ley de Stefan-Boltzmann)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas Absolutas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
+          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
+          <p class="step-explanation">Pérdidas radiativas al entorno que se disparan exponencialmente a la cuarta potencia ($T^4$) a temperaturas incandescentes.</p>
+        </div>
+
+        <div class="formula-card">
+          <h3>7. Balance de Potencia Global del Equipo (Inversor/Generador)</h3>
+          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica (Eficiencia estimada 75%)</div><div class="step-content" id="stepTotalSub"></div></div>
+          <div class="step-box"><div class="step-title">Potencia Eléctrica de Entrada Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
+          <p class="step-explanation">Potencia total que debe entregar el inversor considerando las pérdidas por radiación y el acoplamiento magnético.</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const MU_0 = 4 * Math.PI * 1e-7; 
+    const SIGMA = 5.670374e-8;      
+
+    const MATERIALES = {
+      acero: { c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, comentario: "Excelente rendimiento. Permeabilidad alta atrapa el campo en la superficie." },
+      hierro: { c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, comentario: "Muy ferromagnético. Atenuación de onda superficial casi instantánea." },
+      inoxidable: { c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, comentario: "No es ferromagnético, pero su alta resistividad genera fuerte calentamiento por Joule." },
+      aluminio: { c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, comentario: "No magnético: la onda penetra profundamente y su alto calor específico exige mucha energía." },
+      cobre: { c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, comentario: "Resistencia casi nula: conduce la corriente sin generar calentamiento apreciable." }
+    };
+
+    let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0 };
+
+    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current', 'Speed'].reduce((acc, id) => {
+      acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
+      acc['lbl' + id] = document.getElementById('lbl' + id);
+      return acc;
+    }, {});
+    const matComment = document.getElementById('materialComment');
+
+    function actualizarCalculos() {
+      const mat = MATERIALES[els.materialselect.value];
+      const m = parseFloat(els.mass.value) || 0.5;
+      const T_ini = parseFloat(els.tempini.value) || 25;
+      let T_fin = parseFloat(els.tempfin.value) || 800;
+      if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
+      
+      const t = parseFloat(els.time.value) || 45;
+      const areaCm2 = parseFloat(els.area.value) || 60;
+      const areaM2 = areaCm2 * 1e-4;
+      const f_khz = parseFloat(els.freq.value) || 100;
+      const f_hz = f_khz * 1000;
+      const N = parseFloat(els.turns.value) || 6;
+      const lenCm = parseFloat(els.length.value) || 8;
+      const lenM = lenCm * 1e-2;
+      const I = parseFloat(els.current.value) || 180;
+      const spd = parseFloat(els.speed.value);
+
+      els.lblMass.textContent = m.toFixed(2);
+      els.lblTempIni.textContent = T_ini;
+      els.lblTempFin.textContent = T_fin;
+      els.lblTime.textContent = t;
+      els.lblArea.textContent = areaCm2;
+      els.lblFreq.textContent = f_khz;
+      els.lblTurns.textContent = N;
+      els.lblLength.textContent = lenCm;
+      els.lblCurrent.textContent = I;
+      els.lblSpeed.textContent = spd.toFixed(1) + 'x';
+      matComment.textContent = mat.comentario;
+
+      // 1. Ampère-Maxwell
+      const B = MU_0 * (N / lenM) * I;
+      document.getElementById('stepAmpereSub').textContent = 
+        `B = (4π × 10⁻⁷ H/m) · (${N} espiras / ${lenM.toFixed(3)} m) · ${I} A`;
+      document.getElementById('stepAmpereRes').textContent = 
+        `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
+
+      // 2. Faraday-Lenz
+      const A_pieza = 0.003; 
+      const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
+      document.getElementById('stepFaradaySub').textContent = 
+        `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
+      document.getElementById('stepFaradayRes').textContent = 
+        `E_ind ≈ ${FEM_est.toFixed(1)} V`;
+
+      // 3. Efecto Skin
+      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
+      const delta_mm = delta_m * 1000;
+      document.getElementById('stepSkinSub').textContent = 
+        `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mat.mu_r}) )`;
+      document.getElementById('stepSkinRes').textContent = 
+        `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
+
+      // 4. Joule / Densidad
+      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
+      document.getElementById('stepJouleSub').textContent = 
+        `p = ρ · J² | ρ = ${mat.rho.toExponential(2)} Ω·m, δ = ${delta_mm.toFixed(3)} mm`;
+      document.getElementById('stepJouleRes').textContent = 
+        `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
+
+      // 5. Termodinámica
+      const deltaT = T_fin - T_ini;
+      const P_th = (m * mat.c * deltaT) / t;
+      document.getElementById('stepThermoSub').textContent = 
+        `P_th = (${m} kg · ${mat.c} J/kg°C · ${deltaT} °C) / ${t} s`;
+      document.getElementById('stepThermoRes').textContent = 
+        `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
+
+      // 6. Stefan-Boltzmann
+      const T_fin_K = T_fin + 273.15;
+      const T_amb_K = T_ini + 273.15;
+      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
+      document.getElementById('stepRadSub').textContent = 
+        `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)} m² · [(${T_fin_K.toFixed(1)} K)⁴ - (${T_amb_K.toFixed(1)} K)⁴]`;
+      document.getElementById('stepRadRes').textContent = 
+        `P_rad = ${Math.round(P_rad).toLocaleString()} W (${(P_rad / 1000).toFixed(2)} kW)`;
+
+      // 7. Balance Global
+      const eficiencia = 0.75;
+      const P_equipo = (P_th + P_rad) / eficiencia;
+      document.getElementById('stepTotalSub').textContent = 
+        `P_equipo = (${Math.round(P_th)} W útil + ${Math.round(P_rad)} W radiación) / ${eficiencia}`;
+      document.getElementById('stepTotalRes').textContent = 
+        `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${(P_equipo / 1000).toFixed(2)} kW)`;
+
+      // Tarjetas de Resumen
+      document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
+      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas equiv.`;
+      document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
+      document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
+
+      // Enviar datos al motor 3D
+      animData = {
+        freq: f_khz,
+        delta: delta_mm,
+        temp: T_fin,
+        current: I,
+        speed: spd
+      };
+    }
+
+    Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
+    actualizarCalculos();
+
+    // =========================================================
+    // MOTOR GRÁFICO 3D (ONDA ELECTROMAGNÉTICA VECTORIAL)
+    // =========================================================
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let timePhase = 0;
+
+    // Proyección isométrica tridimensional suave
+    function project3D(x, y, z) {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2 + 15;
+      const u = cx + (z * 1.35) - (x * 0.72);
+      const v = cy - (y * 0.95) + (x * 0.38);
+      return { u, v };
+    }
+
+    function drawLine3D(x1, y1, z1, x2, y2, z2, color, width = 1) {
+      const p1 = project3D(x1, y1, z1);
+      const p2 = project3D(x2, y2, z2);
+      ctx.beginPath();
+      ctx.moveTo(p1.u, p1.v);
+      ctx.lineTo(p2.u, p2.v);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    }
+
+    function renderFrame() {
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Velocidad controlada y suave (paso lento)
+      timePhase += 0.018 * animData.speed;
+
+      // Amplitud basada en corriente
+      const A = 28 + (animData.current / 500) * 55;
+
+      // Eje central de propagación Z
+      drawLine3D(0, 0, -250, 0, 0, 240, 'rgba(148, 163, 184, 0.35)', 1.5);
+      
+      // Eje vertical Y de referencia
+      drawLine3D(0, -90, -250, 0, 90, -250, 'rgba(56, 189, 248, 0.4)', 1);
+
+      // PLACA DE METAL (Efecto Skin) en Z = 60
+      const z_metal = 60;
+      const p1 = project3D(-95, 95, z_metal);
+      const p2 = project3D(95, 95, z_metal);
+      const p3 = project3D(95, -95, z_metal);
+      const p4 = project3D(-95, -95, z_metal);
+      
+      // Bloque metálico translúcido
+      ctx.beginPath();
+      ctx.moveTo(p1.u, p1.v); ctx.lineTo(p2.u, p2.v); ctx.lineTo(p3.u, p3.v); ctx.lineTo(p4.u, p4.v);
+      ctx.closePath();
+      
+      // Color térmico del metal según la temperatura elegida
+      let r = 71, g = 85, b_col = 105;
+      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
+      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
+      ctx.fill();
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Etiqueta del metal
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '11px monospace';
+      ctx.fillText('Superficie del Metal (δ)', p1.u + 5, p1.v - 8);
+
+      // ONDAS VECTORIALES E (Azul) y B (Rosa)
+      const step = 9;
+      let prevE = null;
+      let prevB = null;
+
+      for (let z = -250; z <= 240; z += step) {
+        
+        let decay = 1;
+        if (z > z_metal) {
+          // Escala del efecto skin para visualización clara
+          let visualDelta = Math.max(8, animData.delta * 70); 
+          decay = Math.exp(-(z - z_metal) / visualDelta);
+        }
+
+        if (decay < 0.015) continue; // Si se atenuó, no dibujar
+
+        // Ondulación espacial progresiva
+        const wave = Math.sin((z * 0.035) - timePhase) * decay;
+        
+        const Ey = wave * A;      // Campo Eléctrico Vertical
+        const Bx = wave * A * 0.9; // Campo Magnético Horizontal
+
+        const currentE = project3D(0, Ey, z);
+        const currentB = project3D(Bx, 0, z);
+
+        // Flechas vectoriales verticales E
+        drawLine3D(0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2);
+        // Flechas vectoriales horizontales B
+        drawLine3D(0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);
+
+        // Curvas envolventes
+        if (prevE) {
+          ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v);
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+          
+          ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v);
+          ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2; ctx.stroke();
+        }
+
+        prevE = currentE;
+        prevB = currentB;
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    window.onload = () => {
+      renderFrame();
+    };
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error', err));
+      });
+    }
+  </script>
+</body>
+</html>
