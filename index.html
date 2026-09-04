@@ -60,7 +60,9 @@
     .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; }
     .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; }
-    canvas { width: 100% !important; height: 210px !important; display: block; margin: 0 auto; background: #020617; }
+    
+    /* LA CORRECCIÓN CLAVE DEL CANVAS: Dimensiones fluidas seguras */
+    canvas { width: 100%; height: auto; max-height: 220px; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
@@ -71,22 +73,23 @@
     .summary-card strong { display: block; font-size: 1.2rem; margin-top: 3px; color: var(--accent); font-family: monospace; }
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.7rem; margin-top: 2px; }
 
-    .history-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+    .history-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; min-width: 0; }
     .history-card h3 { font-size: 0.9rem; color: var(--highlight); margin-bottom: 6px; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
     .history-table th, .history-table td { padding: 6px; border-bottom: 1px solid var(--border); }
     .history-table th { color: var(--highlight); font-weight: 600; }
 
+    /* LA CORRECCIÓN CLAVE DE LAS FÓRMULAS: min-width: 0 previene el desbordamiento flex/grid */
     .results-area { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 900px) {
       .results-area { grid-template-columns: repeat(2, 1fr); }
     }
 
-    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; }
+    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
     .formula-card h3 { font-size: 0.95rem; color: var(--highlight); margin-bottom: 10px; }
-    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; min-width: 0; }
     .step-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.8rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
+    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.8rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; padding-bottom: 4px; }
     .step-content.result { color: var(--success); font-weight: bold; font-size: 0.88rem; }
     .step-explanation { font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; line-height: 1.45; padding-top: 8px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
@@ -125,7 +128,7 @@
     <div class="modal-content">
       <span class="close-modal" id="closeHelpBtn">&times;</span>
       <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
-      <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
         1. <strong>Mueve los deslizadores</strong> del panel izquierdo para cambiar propiedades de la pieza o bobina.<br>
         2. Observa en las <strong>Cámaras 3D y 2D</strong> las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
         3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C).<br>
@@ -210,6 +213,7 @@
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
+            <!-- El canvas mantiene sus proporciones originales pero responde al CSS -->
             <canvas id="simCanvas1" width="400" height="220"></canvas>
           </div>
           <div class="canvas-wrapper">
@@ -235,17 +239,17 @@
 
       <div class="history-card">
         <h3>📊 Historial de Escenarios Guardados</h3>
-        <div style="overflow-x: auto; max-height: 130px; margin-top: 8px;">
+        <div style="overflow-x: auto; max-height: 150px; margin-top: 8px;">
           <table class="history-table">
             <thead>
               <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp Obj</th><th>Tiempo</th><th>Freq</th><th>Potencia</th><th>Skin (δ)</th></tr>
             </thead>
             <tbody id="historyTableBody">
-              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía.</td></tr>
+              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía. Modifica parámetros y haz clic en "Guardar Escenario".</td></tr>
             </tbody>
           </table>
         </div>
-        <button id="clearHistoryBtn" style="margin-top: 8px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem;">Limpiar Historial</button>
+        <button id="clearHistoryBtn" style="margin-top: 8px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Limpiar Historial</button>
       </div>
 
       <div class="results-area">
@@ -330,7 +334,7 @@
 
         <div class="formula-card" style="grid-column: 1 / -1;">
           <h3>7. Balance de Potencia Global del Equipo</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_eq ≈ (P_th + P_rad) / η</div></div>
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepTotalSub"></div></div>
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
@@ -540,7 +544,7 @@
     function updateHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       if (simulationHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía. Modifica parámetros y haz clic en "Guardar Escenario".</td></tr>`;
         return;
       }
       tbody.innerHTML = "";
@@ -556,4 +560,155 @@
     document.getElementById('closeHelpBtn').addEventListener('click', () => modal.style.display = 'none');
     window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
 
-    const
+    const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
+    const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
+    let timePhase = 0;
+
+    function projIso(x, y, z) {
+      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
+      return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
+    }
+
+    function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
+      const p1 = projFn(x1, y1, z1), p2 = projFn(x2, y2, z2);
+      ctx.beginPath(); ctx.moveTo(p1.u, p1.v); ctx.lineTo(p2.u, p2.v);
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
+    }
+
+    function renderCamera1() {
+      ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
+      const A = 25 + (animData.current / 500) * 45;
+
+      drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
+      drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
+
+      const z_metal = 40;
+      let r = 71, g = 85, b_col = 105;
+      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
+      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      
+      const ex = 55, ey = 70;
+      const frontTL = projIso(-ex, ey, z_metal), frontTR = projIso(ex, ey, z_metal);
+      const frontBL = projIso(-ex, -ey, z_metal), frontBR = projIso(ex, -ey, z_metal);
+      const backTL = projIso(-ex, ey, 160), backTR = projIso(ex, ey, 160);
+      const backBL = projIso(-ex, -ey, 160), backBR = projIso(ex, -ey, 160);
+
+      ctx1.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
+      ctx1.strokeStyle = '#94a3b8'; ctx1.lineWidth = 1;
+
+      ctx1.beginPath(); ctx1.moveTo(frontTR.u, frontTR.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(backBR.u, backBR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
+      ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(backTL.u, backTL.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
+      ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.lineTo(frontBL.u, frontBL.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
+
+      ctx1.fillStyle = '#f8fafc'; ctx1.font = '10px monospace';
+      ctx1.fillText(animData.materialName, frontTL.u + 5, frontTL.v - 8);
+
+      let prevE = null, prevB = null;
+      for (let z = -180; z <= 160; z += 6) {
+        let decay = 1;
+        if (z > z_metal) {
+          let visualDelta = Math.max(5, animData.delta * 40); 
+          decay = Math.exp(-(z - z_metal) / visualDelta);
+        }
+        if (decay < 0.015) continue; 
+
+        const wave = Math.sin((z * 0.04) - timePhase) * decay;
+        const Ey = wave * A, Bx = wave * A * 0.9;
+        const currentE = projIso(0, Ey, z), currentB = projIso(Bx, 0, z);
+
+        drawLine(ctx1, projIso, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2); 
+        drawLine(ctx1, projIso, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);  
+
+        if (prevE) {
+          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1.5; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1.5; ctx1.stroke();
+        }
+        prevE = currentE; prevB = currentB;
+      }
+    }
+
+    function renderCamera2() {
+      ctx2.fillStyle = '#020617'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
+      const cx = canvas2.width / 2, cy = canvas2.height / 2;
+
+      ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; 
+      ctx2.fillRect(0, 0, canvas2.width, cy);
+
+      let r = 71, g = 85, b_col = 105;
+      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
+      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; 
+      ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
+
+      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
+      ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
+      ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
+
+      const angI = Math.PI / 4, angT = Math.PI / 8; 
+      const incU = { x: Math.sin(angI), y: Math.cos(angI) };
+      const refU = { x: Math.sin(angI), y: -Math.cos(angI) };
+      const traU = { x: Math.sin(angT), y: Math.cos(angT) };
+
+      function drawRayLine(u, startD, endD, color) {
+         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.5;
+         ctx2.moveTo(cx + startD * u.x, cy + startD * u.y);
+         ctx2.lineTo(cx + endD * u.x, cy + endD * u.y);
+         ctx2.stroke();
+      }
+      drawRayLine(incU, -200, 0, 'rgba(255,255,255,0.3)'); 
+      drawRayLine(refU, 0, 200, 'rgba(255,255,255,0.3)');  
+      drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  
+
+      const slideRange = 150;
+      let slidePhase = (timePhase * 40) % slideRange;
+
+      function drawMovingVectors(u, d, labelE, labelB, decay=1) {
+         if(decay < 0.05) return;
+         const px = cx + d * u.x, py = cy + d * u.y;
+         const vx = -u.y, vy = u.x;
+
+         ctx2.beginPath(); ctx2.arc(px, py, 6, 0, Math.PI*2);
+         ctx2.fillStyle = '#020617'; ctx2.fill();
+         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 2; ctx2.stroke();
+         ctx2.fillStyle = '#f43f5e'; ctx2.fillRect(px-1.5, py-1.5, 3, 3); 
+
+         const eLen = 28 * decay;
+         ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(px + vx * eLen, py + vy * eLen);
+         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2.5; ctx2.stroke();
+         ctx2.beginPath(); ctx2.moveTo(px + vx * eLen, py + vy * eLen);
+         ctx2.lineTo(px + vx * eLen - 5*u.x - 5*vx, py + vy * eLen - 5*u.y - 5*vy); ctx2.stroke();
+
+         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 12px sans-serif';
+         ctx2.fillText(labelE, px + vx*eLen + 8, py + vy*eLen + 4);
+         ctx2.fillStyle = '#f43f5e';
+         ctx2.fillText(labelB, px - 30, py + 18);
+      }
+
+      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
+
+      drawMovingVectors(incU, -slideRange + slidePhase, 'E_i', 'B_i');
+      drawMovingVectors(refU, slidePhase, 'E_r', 'B_r');
+      drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
+
+      ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
+      ctx2.fillText('Aire', 10, 20);
+      ctx2.fillText('Metal (Conductor)', 10, cy + 20);
+    }
+
+    function renderAll() {
+      timePhase += 0.02 * animData.speed;
+      renderCamera1();
+      renderCamera2();
+      requestAnimationFrame(renderAll);
+    }
+    
+    renderAll();
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error', err)); });
+    }
+  </script>
+</body>
+</html>
