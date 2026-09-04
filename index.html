@@ -25,10 +25,11 @@
     header div p { color: var(--text-muted); font-size: 0.78rem; }
     .header-actions { display: flex; gap: 8px; }
 
-    .print-btn, .help-btn, .reset-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem; transition: opacity 0.2s; }
+    .print-btn, .help-btn, .reset-btn, .excel-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem; transition: opacity 0.2s; }
     .help-btn { background: var(--warning); }
     .reset-btn { background: var(--danger); color: white; }
-    .print-btn:hover, .help-btn:hover, .reset-btn:hover { opacity: 0.85; }
+    .excel-btn { background: #10b981; color: #020617; } /* Verde tipo Excel */
+    .print-btn:hover, .help-btn:hover, .reset-btn:hover, .excel-btn:hover { opacity: 0.85; }
 
     .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 1024px) { 
@@ -60,9 +61,7 @@
     .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; }
     .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; }
-    
-    /* LA CORRECCIÓN CLAVE DEL CANVAS: Dimensiones fluidas seguras */
-    canvas { width: 100%; height: auto; max-height: 220px; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
+    canvas { width: 100% !important; height: 210px !important; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
@@ -74,12 +73,11 @@
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.7rem; margin-top: 2px; }
 
     .history-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; min-width: 0; }
-    .history-card h3 { font-size: 0.9rem; color: var(--highlight); margin-bottom: 6px; }
+    .history-card h3 { font-size: 0.9rem; color: var(--highlight); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
     .history-table th, .history-table td { padding: 6px; border-bottom: 1px solid var(--border); }
     .history-table th { color: var(--highlight); font-weight: 600; }
 
-    /* LA CORRECCIÓN CLAVE DE LAS FÓRMULAS: min-width: 0 previene el desbordamiento flex/grid */
     .results-area { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 900px) {
       .results-area { grid-template-columns: repeat(2, 1fr); }
@@ -89,7 +87,7 @@
     .formula-card h3 { font-size: 0.95rem; color: var(--highlight); margin-bottom: 10px; }
     .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; min-width: 0; }
     .step-title { font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.8rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; padding-bottom: 4px; }
+    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.8rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
     .step-content.result { color: var(--success); font-weight: bold; font-size: 0.88rem; }
     .step-explanation { font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; line-height: 1.45; padding-top: 8px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
@@ -102,7 +100,7 @@
 
     @media print {
       body { background: white; color: black; }
-      .panel-controls, .print-btn, .help-btn, .reset-btn, .modal { display: none; }
+      .panel-controls, .print-btn, .help-btn, .reset-btn, .excel-btn, .modal { display: none; }
       .container { display: block; }
       .visualizer-card, .formula-card, .history-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; margin-bottom: 15px; }
       canvas { filter: invert(1); }
@@ -120,7 +118,7 @@
     </div>
     <div class="header-actions">
       <button class="help-btn" id="openHelpBtn">❓ Guía de Uso</button>
-      <button class="print-btn" onclick="window.print()">🖨️ PDF</button>
+      <button class="print-btn" onclick="window.print()">🖨️ Guardar PDF</button>
     </div>
   </header>
 
@@ -131,8 +129,9 @@
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
         1. <strong>Mueve los deslizadores</strong> del panel izquierdo para cambiar propiedades de la pieza o bobina.<br>
         2. Observa en las <strong>Cámaras 3D y 2D</strong> las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
-        3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C).<br>
-        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla.
+        3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C en acero/hierro).<br>
+        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla.<br>
+        5. Exporta todos los datos (incluyendo fórmulas) en <strong>Excel (.CSV)</strong> o en un informe <strong>PDF</strong>.
       </p>
     </div>
   </div>
@@ -213,7 +212,6 @@
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
-            <!-- El canvas mantiene sus proporciones originales pero responde al CSS -->
             <canvas id="simCanvas1" width="400" height="220"></canvas>
           </div>
           <div class="canvas-wrapper">
@@ -238,7 +236,13 @@
       <div id="conclusionAmigable" class="tip-box" style="border-left-color: var(--success); margin-bottom: 15px;"></div>
 
       <div class="history-card">
-        <h3>📊 Historial de Escenarios Guardados</h3>
+        <h3>
+          📊 Historial de Escenarios Guardados
+          <div>
+            <button id="exportExcelBtn" class="excel-btn">⬇️ Descargar Excel</button>
+            <button id="clearHistoryBtn" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem; margin-left: 5px;">Limpiar</button>
+          </div>
+        </h3>
         <div style="overflow-x: auto; max-height: 150px; margin-top: 8px;">
           <table class="history-table">
             <thead>
@@ -249,7 +253,6 @@
             </tbody>
           </table>
         </div>
-        <button id="clearHistoryBtn" style="margin-top: 8px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Limpiar Historial</button>
       </div>
 
       <div class="results-area">
@@ -455,9 +458,11 @@
       let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
+      let isCurie = false;
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
+        isCurie = true;
         warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
       }
 
@@ -471,8 +476,10 @@
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
+      let isOverpower = false;
 
       if (P_kW > 150) {
+        isOverpower = true;
         dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
@@ -514,9 +521,22 @@
 
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre };
 
+      // Se guardan los parámetros y LOS RESULTADOS DE LAS FÓRMULAS para exportar
       currentSimulationState = {
-        material: mat.nombre, mass: m.toFixed(2) + " kg", temp: T_fin + " °C",
-        time: t + " s", freq: f_khz + " kHz", power: P_kW.toFixed(1) + " kW", skin: delta_mm.toFixed(2) + " mm"
+        material: mat.nombre, 
+        mass: m.toFixed(2), 
+        temp: T_fin,
+        time: t, 
+        freq: f_khz, 
+        power: P_kW.toFixed(1), 
+        skin: delta_mm.toFixed(3),
+        B_mT: (B * 1000).toFixed(1),
+        E_V: FEM_est.toFixed(1),
+        J_Amm2: (J_max / 1e6).toFixed(1),
+        Pth_kW: (P_th / 1000).toFixed(2),
+        Prad_kW: (P_rad / 1000).toFixed(2),
+        isCurie: isCurie,
+        isOverpower: isOverpower
       };
     }
 
@@ -541,6 +561,46 @@
       actualizarCalculos();
     });
 
+    // GENERAR EXCEL (.CSV) CON RESULTADOS DE FÓRMULAS
+    document.getElementById('exportExcelBtn').addEventListener('click', () => {
+      if (simulationHistory.length === 0) {
+        alert("No hay escenarios guardados para exportar.");
+        return;
+      }
+      
+      let csvContent = "\uFEFF"; // Para compatibilidad de tildes en Excel
+      csvContent += "Escenario,Material,Masa (kg),Temp Obj (C),Tiempo (s),Frecuencia (kHz),Potencia Req (kW),Skin (mm),Campo B (mT),FEM Inducida (V),Densidad J (A/mm2),P. Termica (kW),P. Radiacion (kW)\n";
+      
+      simulationHistory.forEach((item, index) => {
+        let row = [
+          `Prueba ${index + 1}`,
+          item.material,
+          item.mass,
+          item.temp,
+          item.time,
+          item.freq,
+          item.power,
+          item.skin,
+          item.B_mT,
+          item.E_V,
+          item.J_Amm2,
+          item.Pth_kW,
+          item.Prad_kW
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "Simulacion_Induccion_Resultados.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
     function updateHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       if (simulationHistory.length === 0) {
@@ -549,8 +609,13 @@
       }
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
+        // Alertas visuales añadidas a la tabla
+        let tempStr = item.isCurie ? `${item.temp}°C 🔥` : `${item.temp}°C`;
+        let powerStr = item.isOverpower ? `${item.power} kW 🛑` : `${item.power} kW`;
+        let powerColor = item.isOverpower ? "var(--danger)" : "var(--accent)";
+
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${tempStr}</td><td>${item.time}s</td><td>${item.freq}</td><td style="color:${powerColor}; font-weight:bold;">${powerStr}</td><td>${item.skin}</td>`;
         tbody.appendChild(tr);
       });
     }
