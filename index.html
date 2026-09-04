@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Maestro 3D de Calentamiento por Inducción</title>
+  <title>Simulador Maestro de Calentamiento por Inducción</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
@@ -18,75 +18,78 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.5; }
+    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.4; }
     
-    header { text-align: center; margin-bottom: 20px; padding: 20px 15px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; border: 1px solid var(--border); }
-    header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
-    header p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+    header { text-align: center; margin-bottom: 15px; padding: 15px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 10px; border: 1px solid var(--border); }
+    header h1 { font-size: 1.4rem; color: var(--accent); margin-bottom: 4px; }
+    header p { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 10px; }
 
-    .print-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; display: inline-block; margin: 4px; }
+    .print-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
     .print-btn:hover { opacity: 0.8; }
 
-    .container { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 960px) { .container { grid-template-columns: 360px 1fr; } body { padding: 25px; } }
+    /* LAYOUT PRINCIPAL BALANCEADO (Grid de 2 columnas optimizado) */
+    .container { max-width: 1350px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
+    @media (min-width: 1024px) { 
+      .container { grid-template-columns: 340px 1fr; align-items: start; } 
+    }
 
-    .panel-controls { background-color: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
-    .panel-controls h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--highlight); }
-    .control-group { margin-bottom: 15px; }
-    .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; cursor: help; }
-    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.90rem; }
-    select, input[type="range"] { width: 100%; accent-color: var(--accent); }
-    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
+    .panel-controls { background-color: var(--bg-card); padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
+    .panel-controls h2 { font-size: 0.95rem; margin: 12px 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid var(--border); color: var(--highlight); }
+    .panel-controls h2:first-child { margin-top: 0; }
     
-    .status-panel { padding: 15px; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; line-height: 1.5; border-left: 5px solid; transition: all 0.3s ease; }
+    .control-group { margin-bottom: 10px; }
+    .control-group label { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 3px; }
+    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.82rem; }
+    select, input[type="range"] { width: 100%; accent-color: var(--accent); }
+    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 6px; border-radius: 6px; font-size: 0.82rem; cursor: pointer; }
+
+    /* Tarjeta de información técnica extra para Materiales */
+    .material-info-card { background: var(--bg-subcard); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; margin-bottom: 10px; }
+    .material-info-card span { color: var(--highlight); font-family: monospace; }
+
+    .status-panel { padding: 10px; border-radius: 6px; font-size: 0.78rem; margin-top: 12px; line-height: 1.4; border-left: 4px solid; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
-    .status-optimal strong { color: var(--success); }
     .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
-    .status-warning strong { color: var(--warning); }
     .status-danger { background: rgba(239, 68, 68, 0.1); border-left-color: var(--danger); color: #fca5a5; }
-    .status-danger strong { color: var(--danger); }
 
-    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 12px; border-radius: 6px; font-size: 0.82rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4; }
-
-    .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
-    .canvases-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 10px; position: relative; }
-    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 8px; font-size: 0.95rem; text-align: left; padding-left: 10px; }
+    .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: center; }
+    .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; }
     canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
     
-    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.78rem; color: var(--text-muted); margin-top: 15px; }
-    .legend-item span { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
+    .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
 
-    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
-    .summary-card span { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
-    .summary-card strong { display: block; font-size: 1.35rem; margin-top: 5px; color: var(--accent); font-family: monospace; }
-    .summary-card small { display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
+    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px; }
+    .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 10px; border-radius: 8px; text-align: center; }
+    .summary-card span { font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); }
+    .summary-card strong { display: block; font-size: 1.15rem; margin-top: 3px; color: var(--accent); font-family: monospace; }
+    .summary-card small { display: block; color: var(--text-muted); font-size: 0.68rem; margin-top: 2px; }
 
-    .results-area { display: flex; flex-direction: column; gap: 18px; }
-    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-    .formula-card h3 { font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px; }
-    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
-    .step-title { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.92rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
-    .step-content.result { color: var(--success); font-weight: bold; font-size: 1.02rem; }
-    .step-explanation { font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; line-height: 1.5; padding-top: 10px; border-top: 1px dashed var(--border); }
+    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 10px; border-radius: 6px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px; }
+
+    .results-area { display: flex; flex-direction: column; gap: 12px; }
+    .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .formula-card h3 { font-size: 0.95rem; color: var(--highlight); margin-bottom: 8px; }
+    .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+    .step-title { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 2px; }
+    .step-content { font-family: monospace; font-size: 0.85rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
+    .step-content.result { color: var(--success); font-weight: bold; font-size: 0.92rem; }
+    .step-explanation { font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
 
-    /* Estilos de Tabla de Historial */
-    .history-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; margin-top: 10px; }
-    .history-table th, .history-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; margin-top: 8px; }
+    .history-table th, .history-table td { padding: 6px; border-bottom: 1px solid var(--border); }
     .history-table th { color: var(--highlight); font-weight: 600; }
-    .history-table tr:hover { background: rgba(56, 189, 248, 0.05); }
 
     @media print {
       body { background: white; color: black; }
       .panel-controls, .print-btn, #clearHistoryBtn { display: none; }
       .container { display: block; }
-      .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
+      .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; background: white; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
-      .status-panel, .history-table th, .history-table td { border: 1px solid #ccc; color: black; }
     }
   </style>
 </head>
@@ -100,10 +103,11 @@
 
   <div class="container">
     
+    <!-- COLUMNA IZQUIERDA: CONTROLES COMPACTOS -->
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
-        <label title="Selecciona el metal.">Material a Calentar: ℹ️</label>
+        <label>Material a Calentar:</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
           <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
@@ -113,130 +117,124 @@
         </select>
       </div>
 
+      <!-- Tarjeta de justificación técnica ampliada del material -->
+      <div id="materialDetails" class="material-info-card">
+        <div>Resistividad (ρ): <span id="infoRho">-</span></div>
+        <div>Calor Esp. (c): <span id="infoC">-</span></div>
+        <div>Permeabilidad (μr): <span id="infoMu">-</span></div>
+      </div>
+
       <div class="control-group">
-        <label title="Masa total de la pieza.">Masa (kg) ℹ️: 
-          <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success); font-size:0.75rem;"></small></span>
-        </label>
+        <label>Masa (kg): <span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success);"></small></label>
         <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
       </div>
 
-      <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
+      <div class="control-group">
+        <label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label>
+        <input type="range" id="inputTempIni" min="10" max="100" step="5" value="25">
+      </div>
       
       <div class="control-group">
-        <label title="Temperatura que deseas alcanzar.">Temp. Objetivo (°C) ℹ️: 
-          <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning); font-size:0.75rem;"></small></span>
-        </label>
+        <label>Temp. Objetivo (°C): <span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning);"></small></label>
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
       </div>
 
       <div class="control-group">
-        <label title="Tiempo de calentamiento.">Tiempo (s) ℹ️: 
-          <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success); font-size:0.75rem;"></small></span>
-        </label>
+        <label>Tiempo (s): <span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success);"></small></label>
         <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
       </div>
 
-      <div class="control-group"><label title="Área superficial expuesta.">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <div class="control-group">
+        <label>Área Sup. (cm²): <span id="lblArea">60</span></label>
+        <input type="range" id="inputArea" min="10" max="500" step="5" value="60">
+      </div>
 
-      <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
+      <h2>2. Parámetros de Bobina y AC</h2>
       
       <div class="control-group">
-        <label title="Frecuencia de trabajo AC.">Frecuencia (kHz) ℹ️: 
-          <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success); font-size:0.75rem;"></small></span>
-        </label>
+        <label>Frecuencia (kHz): <span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success);"></small></label>
         <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
       </div>
 
-      <div class="control-group"><label title="Número de espiras.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
-      <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
-      
       <div class="control-group">
-        <label title="Corriente RMS en bobina.">Corriente RMS (A) ℹ️: 
-          <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success); font-size:0.75rem;"></small></span>
-        </label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+        <label>Espiras (N): <span id="lblTurns">6</span></label>
+        <input type="range" id="inputTurns" min="2" max="20" step="1" value="6">
+      </div>
+
+      <div class="control-group">
+        <label>Long. Bobina (cm): <span id="lblLength">8</span></label>
+        <input type="range" id="inputLength" min="3" max="30" step="1" value="8">
       </div>
       
-      <h2 style="margin-top: 20px;">3. Control de Animación</h2>
       <div class="control-group">
-        <label>Velocidad de Onda: <span id="lblSpeed">1.0x</span></label>
+        <label>Corriente RMS (A): <span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success);"></small></label>
+        <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+      </div>
+      
+      <h2>3. Animación</h2>
+      <div class="control-group">
+        <label>Velocidad: <span id="lblSpeed">1.0x</span></label>
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
-      <!-- Botón para guardar en el historial -->
-      <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; width: 100%; margin-top: 15px;">💾 Guardar Escenario Actual</button>
+      <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; width: 100%; margin-top: 10px;">💾 Guardar Escenario</button>
 
       <div id="statusPanel" class="status-panel status-optimal"></div>
-
     </aside>
 
+    <!-- COLUMNA DERECHA: VISUALIZADORES Y RESULTADOS -->
     <main>
-      
       <div class="visualizer-card">
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
-            <canvas id="simCanvas1" width="400" height="260"></canvas>
+            <canvas id="simCanvas1" width="380" height="220"></canvas>
           </div>
           <div class="canvas-wrapper">
-            <h4>🎥 Cámara 2: Reflexión y Efecto Skin (Diagrama 2D)</h4>
-            <canvas id="simCanvas2" width="400" height="260"></canvas>
+            <h4>🎥 Cámara 2: Reflexión y Efecto Skin (2D)</h4>
+            <canvas id="simCanvas2" width="380" height="220"></canvas>
           </div>
         </div>
         
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E (Azul)</div>
-          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B (Rosa)</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E</div>
+          <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B</div>
           <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica</div>
         </div>
       </div>
 
       <div class="summary-cards">
-        <div class="summary-card"><span>Potencia Recomendada</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas equiv.</small></div>
-        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small id="cardSkinNote">Capa superficial activa</small></div>
-        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad inductora</small></div>
+        <div class="summary-card"><span>Potencia Sugerida</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas</small></div>
+        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small id="cardSkinNote">Capa activa</small></div>
+        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad B</small></div>
       </div>
 
-      <div id="conclusionAmigable" class="tip-box" style="border-left-color: var(--success); margin-bottom: 20px;"></div>
+      <div id="conclusionAmigable" class="tip-box"></div>
 
-      <!-- SECCIÓN DE HISTORIAL DE ESCENARIOS GUARDADOS -->
-      <div class="formula-card" style="margin-bottom: 20px;">
-        <h3>📊 Historial de Escenarios Guardados (Comparativa de Pruebas)</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Guarda tus configuraciones preferidas para comparar resultados lado a lado. Se mantendrán durante tu sesión actual.</p>
+      <!-- HISTORIAL -->
+      <div class="formula-card" style="margin-bottom: 15px;">
+        <h3>📊 Historial de Escenarios Guardados</h3>
         <div style="overflow-x: auto;">
           <table class="history-table">
             <thead>
-              <tr>
-                <th>#</th>
-                <th>Material</th>
-                <th>Masa</th>
-                <th>Temp Obj</th>
-                <th>Tiempo</th>
-                <th>Freq</th>
-                <th>Potencia</th>
-                <th>Skin (δ)</th>
-              </tr>
+              <tr><th>#</th><th>Material</th><th>Masa</th><th>Temp Obj</th><th>Tiempo</th><th>Freq</th><th>Potencia</th><th>Skin (δ)</th></tr>
             </thead>
             <tbody id="historyTableBody">
-              <tr>
-                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 15px;">No hay escenarios guardados todavía. Modifica los parámetros y haz clic en "Guardar Escenario Actual".</td>
-              </tr>
+              <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 10px;">Sin escenarios guardados.</td></tr>
             </tbody>
           </table>
         </div>
-        <button id="clearHistoryBtn" style="margin-top: 12px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600;">Limpiar Historial</button>
+        <button id="clearHistoryBtn" style="margin-top: 8px; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem;">Limpiar Historial</button>
       </div>
 
+      <!-- FÓRMULAS -->
       <div class="results-area">
-        
         <div class="formula-card">
           <h3>1. Ley de Ampère-Maxwell (Generación del Campo Magnético)</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepAmpereSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> La corriente al pasar por las vueltas de alambre de cobre crea un campo magnético invisible y poderoso en el centro.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético" que lanza hacia la pieza metálica.
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La corriente al pasar por las espiras crea el campo magnético inductor central.</div>
         </div>
 
         <div class="formula-card">
@@ -244,10 +242,7 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Los cambios muy rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse. <br><br>
-            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo para frenar ese cambio molesto. A eso se le llama "Corrientes de Foucault".
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La variación temporal del campo induce corrientes parásitas (Foucault) en el metal.</div>
         </div>
 
         <div class="formula-card">
@@ -255,56 +250,40 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepSkinSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Verás que una parte de la onda rebota y la que entra pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa de penetración.
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Atenuación exponencial de la onda electromagnética dentro del conductor según su resistividad y frecuencia.</div>
         </div>
 
         <div class="formula-card">
-          <h3>4. Ley de Joule y Densidad de Corrientes de Foucault</h3>
+          <h3>4. Ley de Joule y Densidad de Corrientes</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
-          <div class="step-box"><div class="step-title">Estimación de Densidad de Corriente Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
+          <div class="step-box"><div class="step-title">Estimación Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Toda corriente eléctrica que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de electrones forzados a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que calienta el metal al rojo vivo.
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> La fricción de los electrones confinados en la capa skin genera calor extremo por efecto Joule.</div>
         </div>
 
         <div class="formula-card">
-          <h3>5. Termodinámica: Potencia Térmica Neta Requerida (Energía Útil)</h3>
+          <h3>5. Termodinámica: Potencia Térmica Neta Requerida</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos, un quemador pequeño servirá.
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Energía útil necesaria para elevar la temperatura de la masa en el tiempo estipulado.</div>
         </div>
 
         <div class="formula-card">
-          <h3>6. Pérdidas por Radiación Térmica (Ley de Stefan-Boltzmann)</h3>
+          <h3>6. Pérdidas por Radiación Térmica (Stefan-Boltzmann)</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepRadSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, perdiendo energía hacia el aire que lo rodea en forma de luz infrarroja y calor.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica. Mientras más caliente está, más energía desperdicia "regalándola" al aire del taller.
-          </div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Energía disipada hacia el entorno en forma de radiación infrarroja a altas temperaturas.</div>
         </div>
 
         <div class="formula-card">
-          <h3>7. Balance de Potencia Global del Equipo (Inversor/Generador)</h3>
+          <h3>7. Balance de Potencia Global del Inversor</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica (Eficiencia estimada 75%)</div><div class="step-content" id="stepTotalSub"></div></div>
-          <div class="step-box"><div class="step-title">Potencia Eléctrica Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
-          <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Es el resumen de cuánta energía total necesitas consumir desde el enchufe para que la máquina logre su cometido.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Es como calcular cuánta gasolina necesitas para un viaje. Debes sumar la energía real para mover el auto, más lo que se desperdicia en calor del motor, y dividirlo por la eficiencia real de tu máquina.
-          </div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepTotalSub"></div></div>
+          <div class="step-box"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
+          <div class="step-explanation"><strong>💡 Qué nos dice:</strong> Demanda eléctrica total del equipo contemplando pérdidas de acoplamiento.</div>
         </div>
-
       </div>
     </main>
   </div>
@@ -322,7 +301,7 @@
     };
 
     let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0 };
-    let currentSimulationState = {}; // Almacena el estado actual para el historial
+    let currentSimulationState = {};
     let simulationHistory = [];
 
     const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current', 'Speed'].reduce((acc, id) => {
@@ -333,6 +312,12 @@
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
+      
+      // Actualizar tarjeta informativa técnica del material
+      document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
+      document.getElementById('infoC').textContent = mat.c + " J/kg·K";
+      document.getElementById('infoMu').textContent = mat.mu_r;
+
       const m = parseFloat(els.mass.value) || 0.5;
       const T_ini = parseFloat(els.tempini.value) || 25;
       let T_fin = parseFloat(els.tempfin.value) || 800;
@@ -349,38 +334,22 @@
       const I = parseFloat(els.current.value) || 180;
       const spd = parseFloat(els.speed.value);
 
-      // Etiquetas dinámicas
-      let refTemp = "";
-      if (T_fin < 100) refTemp = "(Tibio)";
-      else if (T_fin < 400) refTemp = "(Horno doméstico)";
-      else if (T_fin < 900) refTemp = "(Al rojo vivo)";
-      else refTemp = "(Punto de fusión)";
+      // Etiquetas en vivo
+      let refTemp = T_fin < 100 ? "(Tibio)" : T_fin < 400 ? "(Horno)" : T_fin < 900 ? "(Al rojo vivo)" : "(Fusión)";
       document.getElementById('lblTempRef').textContent = refTemp;
 
-      let refMass = "";
-      if (m <= 1.0) refMass = "(Pieza ligera)";
-      else if (m <= 3.0) refMass = "(Pieza mediana)";
-      else refMass = "(⚠️ Pesada)";
+      let refMass = m <= 1.0 ? "(Ligera)" : m <= 3.0 ? "(Mediana)" : "(⚠️ Pesada)";
       document.getElementById('lblMassRef').textContent = refMass;
       document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
 
-      let refTime = "";
-      if (t < 15) refTime = "(⚠️ Violento)";
-      else if (t <= 90) refTime = "(Óptimo)";
-      else refTime = "(Lento)";
+      let refTime = t < 15 ? "(⚠️ Violento)" : t <= 90 ? "(Óptimo)" : "(Lento)";
       document.getElementById('lblTimeRef').textContent = refTime;
       document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
 
-      let refFreq = "";
-      if (f_khz < 30) refFreq = "(Baja)";
-      else if (f_khz <= 150) refFreq = "(Óptimo)";
-      else refFreq = "(Superficial)";
+      let refFreq = f_khz < 30 ? "(Baja)" : f_khz <= 150 ? "(Óptimo)" : "(Superficial)";
       document.getElementById('lblFreqRef').textContent = refFreq;
 
-      let refCurr = "";
-      if (I < 100) refCurr = "(Baja)";
-      else if (I <= 350) refCurr = "(Óptimo)";
-      else refCurr = "(⚠️ Alto estrés)";
+      let refCurr = I < 100 ? "(Baja)" : I <= 350 ? "(Óptimo)" : "(⚠️ Alto estrés)";
       document.getElementById('lblCurrentRef').textContent = refCurr;
       document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
 
@@ -395,15 +364,13 @@
       els.lblCurrent.textContent = I;
       els.lblSpeed.textContent = spd.toFixed(1) + 'x';
 
-      // 1. Ampère-Maxwell
       const B = MU_0 * (N / lenM) * I;
-      document.getElementById('stepAmpereSub').textContent = `B = (4π × 10⁻⁷ H/m) · (${N} espiras / ${lenM.toFixed(3)} m) · ${I} A`;
+      document.getElementById('stepAmpereSub').textContent = `B = (4π × 10⁻⁷) · (${N} / ${lenM.toFixed(3)}) · ${I}`;
       document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
 
-      // 2. Faraday-Lenz
       const A_pieza = 0.003; 
       const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
-      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
+      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · ${f_hz}Hz · ${B.toFixed(4)}T · 0.003m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
       let mu_efectivo = mat.mu_r;
@@ -412,58 +379,52 @@
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
+        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> μ_r cae a 1. Menor eficiencia magnética.");
       }
 
-      // 3. Efecto Skin
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
       const delta_mm = delta_m * 1000;
-
-      // 4. Joule / Densidad
       const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
       
-      // 5. Termodinámica
       const deltaT = T_fin - T_ini;
       const P_th = (m * mat.c * deltaT) / t;
 
-      // 6. Stefan-Boltzmann
       const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
 
-      // 7. Balance Global
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
       if (P_kW > 150) {
-        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo (s) o baja la masa (kg).`);
+        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Exige demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
       const statusBox = document.getElementById('statusPanel');
       if (dangers.length > 0) {
         statusBox.className = "status-panel status-danger";
-        statusBox.innerHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
+        statusBox.innerHTML = dangers.join("<br>") + (warnings.length > 0 ? "<br>" + warnings.join("<br>") : "");
       } else if (warnings.length > 0) {
         statusBox.className = "status-panel status-warning";
-        statusBox.innerHTML = warnings.join("<br><br>");
+        statusBox.innerHTML = warnings.join("<br>");
       } else {
         statusBox.className = "status-panel status-optimal";
-        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables.";
+        statusBox.innerHTML = "✅ <strong>Sistema Óptimo:</strong> Parámetros en rangos seguros y eficientes.";
       }
 
-      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mu_efectivo}) )`;
-      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
+      document.getElementById('stepSkinSub').textContent = `δ = √(${mat.rho.toExponential(2)} / (π · ${f_hz} · 4π×10⁻⁷ · ${mu_efectivo}))`;
+      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
 
-      document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)} Ω·m, δ = ${delta_mm.toFixed(3)} mm`;
+      document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
 
-      document.getElementById('stepThermoSub').textContent = `P_th = (${m} kg · ${mat.c} J/kg°C · ${deltaT} °C) / ${t} s`;
+      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT}°C) / ${t}s`;
       document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
 
-      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)} m² · [(${T_fin_K.toFixed(1)} K)⁴ - (${T_amb_K.toFixed(1)} K)⁴]`;
-      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W (${(P_rad / 1000).toFixed(2)} kW)`;
+      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)} · [${T_fin_K.toFixed(0)}⁴ - ${T_amb_K.toFixed(0)}⁴]`;
+      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
 
-      document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)} W útil + ${Math.round(P_rad)} W radiación) / 0.75`;
-      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W (${P_kW.toFixed(2)} kW)`;
+      document.getElementById('stepTotalSub').textContent = `P_eq = (${Math.round(P_th)} + ${Math.round(P_rad)}) / 0.75`;
+      document.getElementById('stepTotalRes').textContent = `P_eq ≈ ${P_kW.toFixed(2)} kW`;
 
       document.getElementById('cardTotalPower').textContent = `${P_kW.toFixed(1)} kW`;
       document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
@@ -471,28 +432,19 @@
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
       document.getElementById('conclusionAmigable').innerHTML = 
-        `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
-        La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
-        Requieres un equipo que entregue al menos <strong>${P_kW.toFixed(1)} kW</strong> para lograrlo en ${t} segundos.`;
+        `💡 <strong>Resumen:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
 
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd };
 
-      // Guardar estado actual para el historial
       currentSimulationState = {
-        material: mat.nombre,
-        mass: m.toFixed(2) + " kg",
-        temp: T_fin + " °C",
-        time: t + " s",
-        freq: f_khz + " kHz",
-        power: P_kW.toFixed(1) + " kW",
-        skin: delta_mm.toFixed(2) + " mm"
+        material: mat.nombre, mass: m.toFixed(2) + " kg", temp: T_fin + " °C",
+        time: t + " s", freq: f_khz + " kHz", power: P_kW.toFixed(1) + " kW", skin: delta_mm.toFixed(2) + " mm"
       };
     }
 
     Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
     actualizarCalculos();
 
-    // --- GESTIÓN DEL HISTORIAL DE ESCENARIOS ---
     document.getElementById('saveHistoryBtn').addEventListener('click', () => {
       simulationHistory.push({...currentSimulationState});
       updateHistoryTable();
@@ -506,36 +458,25 @@
     function updateHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       if (simulationHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 15px;">No hay escenarios guardados todavía. Modifica los parámetros y haz clic en "Guardar Escenario Actual".</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 10px;">Sin escenarios guardados.</td></tr>`;
         return;
       }
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>#${index + 1}</strong></td>
-          <td>${item.material}</td>
-          <td>${item.mass}</td>
-          <td>${item.temp}</td>
-          <td>${item.time}</td>
-          <td>${item.freq}</td>
-          <td style="color: var(--accent); font-weight: bold;">${item.power}</td>
-          <td>${item.skin}</td>
-        `;
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent);">${item.power}</td><td>${item.skin}</td>`;
         tbody.appendChild(tr);
       });
     }
 
-    // =========================================================
-    // RENDERIZADO DE CÁMARAS (3D y 2D)
-    // =========================================================
+    // CANVAS CAMARAS
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
     function projIso(x, y, z) {
-      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
-      return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
+      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 5;
+      return { u: cx + (z * 0.8) - (x * 0.5), v: cy - (y * 0.7) + (x * 0.3) };
     }
 
     function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
@@ -546,26 +487,21 @@
 
     function renderCamera1() {
       ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
-      const A = 25 + (animData.current / 500) * 45;
+      const A = 20 + (animData.current / 500) * 35;
 
-      drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.4)', 1.5);
-      drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1.5);
-      
-      const pZ = projIso(0, 0, 150), pY = projIso(0, 75, -180);
-      ctx1.fillStyle = '#94a3b8'; ctx1.font = '10px monospace';
-      ctx1.fillText('+Z', pZ.u, pZ.v);
-      ctx1.fillText('+Y', pY.u, pY.v);
+      drawLine(ctx1, projIso, 0, 0, -140, 0, 0, 120, 'rgba(148, 163, 184, 0.4)', 1.2);
+      drawLine(ctx1, projIso, 0, -60, -140, 0, 60, -140, 'rgba(56, 189, 248, 0.4)', 1.2);
 
-      const z_metal = 40;
+      const z_metal = 30;
       let r = 71, g = 85, b_col = 105;
       if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
       if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
       
-      const ex = 55, ey = 70;
+      const ex = 45, ey = 55;
       const frontTL = projIso(-ex, ey, z_metal), frontTR = projIso(ex, ey, z_metal);
       const frontBL = projIso(-ex, -ey, z_metal), frontBR = projIso(ex, -ey, z_metal);
-      const backTL = projIso(-ex, ey, 160), backTR = projIso(ex, ey, 160);
-      const backBL = projIso(-ex, -ey, 160), backBR = projIso(ex, -ey, 160);
+      const backTL = projIso(-ex, ey, 120), backTR = projIso(ex, ey, 120);
+      const backBL = projIso(-ex, -ey, 120), backBR = projIso(ex, -ey, 120);
 
       ctx1.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
       ctx1.strokeStyle = '#94a3b8'; ctx1.lineWidth = 1;
@@ -574,38 +510,35 @@
       ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(backTL.u, backTL.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
       ctx1.beginPath(); ctx1.moveTo(frontTL.u, frontTL.v); ctx1.lineTo(frontTR.u, frontTR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.lineTo(frontBL.u, frontBL.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
 
-      ctx1.fillStyle = '#f8fafc'; ctx1.font = '10px monospace';
-      ctx1.fillText('Metal', frontTL.u + 5, frontTL.v - 8);
-
       let prevE = null, prevB = null;
-      for (let z = -180; z <= 160; z += 6) {
+      for (let z = -140; z <= 120; z += 6) {
         let decay = 1;
         if (z > z_metal) {
-          let visualDelta = Math.max(5, animData.delta * 40); 
+          let visualDelta = Math.max(5, animData.delta * 35); 
           decay = Math.exp(-(z - z_metal) / visualDelta);
         }
         if (decay < 0.015) continue; 
 
-        const wave = Math.sin((z * 0.04) - timePhase) * decay;
+        const wave = Math.sin((z * 0.05) - timePhase) * decay;
         const Ey = wave * A, Bx = wave * A * 0.9;
         const currentE = projIso(0, Ey, z), currentB = projIso(Bx, 0, z);
 
-        drawLine(ctx1, projIso, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2); 
-        drawLine(ctx1, projIso, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);  
+        drawLine(ctx1, projIso, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1); 
+        drawLine(ctx1, projIso, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1);  
 
         if (prevE) {
-          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1.5; ctx1.stroke();
-          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1.5; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevE.u, prevE.v); ctx1.lineTo(currentE.u, currentE.v); ctx1.strokeStyle = '#38bdf8'; ctx1.lineWidth = 1.2; ctx1.stroke();
+          ctx1.beginPath(); ctx1.moveTo(prevB.u, prevB.v); ctx1.lineTo(currentB.u, currentB.v); ctx1.strokeStyle = '#f43f5e'; ctx1.lineWidth = 1.2; ctx1.stroke();
         }
         prevE = currentE; prevB = currentB;
       }
 
       ctx1.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      ctx1.fillRect(8, 8, 140, 36);
-      ctx1.strokeStyle = '#334155'; ctx1.strokeRect(8, 8, 140, 36);
-      ctx1.fillStyle = '#38bdf8'; ctx1.font = '10px monospace';
-      ctx1.fillText(`Freq: ${els.freq.value} kHz`, 14, 22);
-      ctx1.fillText(`Skin (δ): ${animData.delta.toFixed(2)} mm`, 14, 36);
+      ctx1.fillRect(6, 6, 110, 28);
+      ctx1.strokeStyle = '#334155'; ctx1.strokeRect(6, 6, 110, 28);
+      ctx1.fillStyle = '#38bdf8'; ctx1.font = '9px monospace';
+      ctx1.fillText(`Freq: ${els.freq.value} kHz`, 10, 17);
+      ctx1.fillText(`Skin: ${animData.delta.toFixed(2)} mm`, 10, 27);
     }
 
     function renderCamera2() {
@@ -621,12 +554,9 @@
       ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; 
       ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
 
-      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1.2;
+      ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
       ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
       ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
-
-      ctx2.fillStyle = '#94a3b8'; ctx2.font = '9px monospace';
-      ctx2.fillText('Interfaz', cx + 8, cy - 4);
 
       const angI = Math.PI / 4, angT = Math.PI / 8; 
       const incU = { x: Math.sin(angI), y: Math.cos(angI) };
@@ -634,52 +564,46 @@
       const traU = { x: Math.sin(angT), y: Math.cos(angT) };
 
       function drawRayLine(u, startD, endD, color) {
-         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.5;
+         ctx2.beginPath(); ctx2.strokeStyle = color; ctx2.lineWidth = 1.2;
          ctx2.moveTo(cx + startD * u.x, cy + startD * u.y);
          ctx2.lineTo(cx + endD * u.x, cy + endD * u.y);
          ctx2.stroke();
       }
-      drawRayLine(incU, -200, 0, 'rgba(255,255,255,0.3)'); 
-      drawRayLine(refU, 0, 200, 'rgba(255,255,255,0.3)');  
-      drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  
+      drawRayLine(incU, -150, 0, 'rgba(255,255,255,0.3)'); 
+      drawRayLine(refU, 0, 150, 'rgba(255,255,255,0.3)');  
+      drawRayLine(traU, 0, 150, 'rgba(255,255,255,0.3)');  
 
-      const slideRange = 150;
-      let slidePhase = (timePhase * 40) % slideRange;
+      const slideRange = 120;
+      let slidePhase = (timePhase * 35) % slideRange;
 
       function drawMovingVectors(u, d, labelE, labelB, decay=1) {
          if(decay < 0.05) return;
          const px = cx + d * u.x, py = cy + d * u.y;
          const vx = -u.y, vy = u.x;
 
-         ctx2.beginPath(); ctx2.arc(px, py, 6, 0, Math.PI*2);
+         ctx2.beginPath(); ctx2.arc(px, py, 5, 0, Math.PI*2);
          ctx2.fillStyle = '#020617'; ctx2.fill();
-         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 2; ctx2.stroke();
-         ctx2.fillStyle = '#f43f5e'; ctx2.fillRect(px-1.5, py-1.5, 3, 3); 
+         ctx2.strokeStyle = '#f43f5e'; ctx2.lineWidth = 1.5; ctx2.stroke();
 
-         const eLen = 28 * decay;
+         const eLen = 22 * decay;
          ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(px + vx * eLen, py + vy * eLen);
-         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2.5; ctx2.stroke();
-         ctx2.beginPath(); ctx2.moveTo(px + vx * eLen, py + vy * eLen);
-         ctx2.lineTo(px + vx * eLen - 5*u.x - 5*vx, py + vy * eLen - 5*u.y - 5*vy); ctx2.stroke();
+         ctx2.strokeStyle = '#38bdf8'; ctx2.lineWidth = 2; ctx2.stroke();
 
-         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 11px sans-serif';
-         ctx2.fillText(labelE, px + vx*eLen + 8, py + vy*eLen + 4);
-         ctx2.fillStyle = '#f43f5e';
-         ctx2.fillText(labelB, px - 28, py + 16);
+         ctx2.fillStyle = '#38bdf8'; ctx2.font = 'bold 9px sans-serif';
+         ctx2.fillText(labelE, px + vx*eLen + 6, py + vy*eLen + 3);
       }
 
-      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
-
-      drawMovingVectors(incU, -slideRange + slidePhase, 'E_i', 'B_i');
-      drawMovingVectors(refU, slidePhase, 'E_r', 'B_r');
-      drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
+      let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 18));
+      drawMovingVectors(incU, -slideRange + slidePhase, 'Ei', 'Bi');
+      drawMovingVectors(refU, slidePhase, 'Er', 'Br');
+      drawMovingVectors(traU, slidePhase, 'Et', 'Bt', transDecay);
 
       ctx2.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      ctx2.fillRect(8, 8, 140, 36);
-      ctx2.strokeStyle = '#334155'; ctx2.strokeRect(8, 8, 140, 36);
-      ctx2.fillStyle = '#10b981'; ctx2.font = '10px monospace';
-      ctx2.fillText(`Temp: ${animData.temp} °C`, 14, 22);
-      ctx2.fillText(`Reflexión / Skin`, 14, 36);
+      ctx2.fillRect(6, 6, 110, 28);
+      ctx2.strokeStyle = '#334155'; ctx2.strokeRect(6, 6, 110, 28);
+      ctx2.fillStyle = '#10b981'; ctx2.font = '9px monospace';
+      ctx2.fillText(`Temp: ${animData.temp} °C`, 10, 17);
+      ctx2.fillText(`Reflexión / Skin`, 10, 27);
     }
 
     function renderAll() {
