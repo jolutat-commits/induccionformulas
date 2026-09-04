@@ -28,7 +28,7 @@
     .print-btn, .help-btn, .reset-btn, .excel-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.78rem; transition: opacity 0.2s; }
     .help-btn { background: var(--warning); }
     .reset-btn { background: var(--danger); color: white; }
-    .excel-btn { background: #10b981; color: #020617; } /* Verde tipo Excel */
+    .excel-btn { background: #10b981; color: #020617; }
     .print-btn:hover, .help-btn:hover, .reset-btn:hover, .excel-btn:hover { opacity: 0.85; }
 
     .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
@@ -131,7 +131,7 @@
         2. Observa en las <strong>Cámaras 3D y 2D</strong> las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
         3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C en acero/hierro).<br>
         4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla.<br>
-        5. Exporta todos los datos (incluyendo fórmulas) en <strong>Excel (.CSV)</strong> o en un informe <strong>PDF</strong>.
+        5. Exporta todos los datos (incluyendo fórmulas resueltas) en <strong>Excel (.CSV)</strong> o en un informe <strong>PDF</strong>.
       </p>
     </div>
   </div>
@@ -239,7 +239,7 @@
         <h3>
           📊 Historial de Escenarios Guardados
           <div>
-            <button id="exportExcelBtn" class="excel-btn">⬇️ Descargar Excel</button>
+            <button id="exportExcelBtn" class="excel-btn">⬇️ Excel (.CSV)</button>
             <button id="clearHistoryBtn" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem; margin-left: 5px;">Limpiar</button>
           </div>
         </h3>
@@ -458,11 +458,9 @@
       let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
-      let isCurie = false;
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
-        isCurie = true;
         warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
       }
 
@@ -476,10 +474,8 @@
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
-      let isOverpower = false;
 
       if (P_kW > 150) {
-        isOverpower = true;
         dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
@@ -521,22 +517,32 @@
 
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre };
 
-      // Se guardan los parámetros y LOS RESULTADOS DE LAS FÓRMULAS para exportar
+      // ALMACENAR DATOS PARA EL REPORTE DE EXCEL
       currentSimulationState = {
         material: mat.nombre, 
-        mass: m.toFixed(2), 
-        temp: T_fin,
-        time: t, 
-        freq: f_khz, 
-        power: P_kW.toFixed(1), 
-        skin: delta_mm.toFixed(3),
-        B_mT: (B * 1000).toFixed(1),
-        E_V: FEM_est.toFixed(1),
-        J_Amm2: (J_max / 1e6).toFixed(1),
-        Pth_kW: (P_th / 1000).toFixed(2),
-        Prad_kW: (P_rad / 1000).toFixed(2),
-        isCurie: isCurie,
-        isOverpower: isOverpower
+        mass: m.toFixed(2) + " kg", 
+        temp: T_fin + " °C",
+        time: t + " s", 
+        freq: f_khz + " kHz", 
+        power: P_kW.toFixed(1) + " kW", 
+        skin: delta_mm.toFixed(3) + " mm",
+        current: I + " A",
+        turns: N + " espiras",
+        length: lenCm + " cm",
+        f1_sub: document.getElementById('stepAmpereSub').textContent,
+        f1_res: document.getElementById('stepAmpereRes').textContent,
+        f2_sub: document.getElementById('stepFaradaySub').textContent,
+        f2_res: document.getElementById('stepFaradayRes').textContent,
+        f3_sub: document.getElementById('stepSkinSub').textContent,
+        f3_res: document.getElementById('stepSkinRes').textContent,
+        f4_sub: document.getElementById('stepJouleSub').textContent,
+        f4_res: document.getElementById('stepJouleRes').textContent,
+        f5_sub: document.getElementById('stepThermoSub').textContent,
+        f5_res: document.getElementById('stepThermoRes').textContent,
+        f6_sub: document.getElementById('stepRadSub').textContent,
+        f6_res: document.getElementById('stepRadRes').textContent,
+        f7_sub: document.getElementById('stepTotalSub').textContent,
+        f7_res: document.getElementById('stepTotalRes').textContent
       };
     }
 
@@ -561,40 +567,44 @@
       actualizarCalculos();
     });
 
-    // GENERAR EXCEL (.CSV) CON RESULTADOS DE FÓRMULAS
+    // GENERAR REPORTE DETALLADO EN EXCEL (.CSV) CON FÓRMULAS
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
       if (simulationHistory.length === 0) {
-        alert("No hay escenarios guardados para exportar.");
+        alert("Primero debes guardar al menos un escenario en el historial para exportarlo.");
         return;
       }
       
-      let csvContent = "\uFEFF"; // Para compatibilidad de tildes en Excel
-      csvContent += "Escenario,Material,Masa (kg),Temp Obj (C),Tiempo (s),Frecuencia (kHz),Potencia Req (kW),Skin (mm),Campo B (mT),FEM Inducida (V),Densidad J (A/mm2),P. Termica (kW),P. Radiacion (kW)\n";
+      let csvContent = "\uFEFF"; 
+      const sep = ";"; // SOLUCIÓN: Punto y coma para separar columnas en Excel Hispano
+      
+      csvContent += `REPORTE TÉCNICO DE SIMULACIONES - CALENTAMIENTO POR INDUCCIÓN\n\n`;
       
       simulationHistory.forEach((item, index) => {
-        let row = [
-          `Prueba ${index + 1}`,
-          item.material,
-          item.mass,
-          item.temp,
-          item.time,
-          item.freq,
-          item.power,
-          item.skin,
-          item.B_mT,
-          item.E_V,
-          item.J_Amm2,
-          item.Pth_kW,
-          item.Prad_kW
-        ];
-        csvContent += row.join(",") + "\n";
+        csvContent += `--- ESCENARIO #${index + 1} ---\n`;
+        csvContent += `[PARÁMETROS]\n`;
+        csvContent += `Material${sep}${item.material}\n`;
+        csvContent += `Masa${sep}${item.mass}\n`;
+        csvContent += `Temp. Objetivo${sep}${item.temp}\n`;
+        csvContent += `Tiempo${sep}${item.time}\n`;
+        csvContent += `Frecuencia${sep}${item.freq}\n`;
+        csvContent += `Bobina${sep}${item.current}, ${item.turns}, ${item.length}\n\n`;
+        
+        csvContent += `[CÁLCULOS Y FÓRMULAS]\n`;
+        csvContent += `Ley Física${sep}Sustitución Numérica${sep}Resultado\n`;
+        csvContent += `1. Ampère-Maxwell (Campo B)${sep}${item.f1_sub}${sep}${item.f1_res}\n`;
+        csvContent += `2. Faraday-Lenz (FEM)${sep}${item.f2_sub}${sep}${item.f2_res}\n`;
+        csvContent += `3. Efecto Skin (Penetración)${sep}${item.f3_sub}${sep}${item.f3_res}\n`;
+        csvContent += `4. Ley de Joule (Densidad)${sep}${item.f4_sub}${sep}${item.f4_res}\n`;
+        csvContent += `5. Termodinámica (Pot. Útil)${sep}${item.f5_sub}${sep}${item.f5_res}\n`;
+        csvContent += `6. Radiación (Pérdidas)${sep}${item.f6_sub}${sep}${item.f6_res}\n`;
+        csvContent += `7. Balance Global (Pot. Equipo)${sep}${item.f7_sub}${sep}${item.f7_res}\n\n`;
       });
       
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "Simulacion_Induccion_Resultados.csv");
+      link.setAttribute("download", "Reporte_Induccion_Formulas.csv");
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -609,13 +619,8 @@
       }
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
-        // Alertas visuales añadidas a la tabla
-        let tempStr = item.isCurie ? `${item.temp}°C 🔥` : `${item.temp}°C`;
-        let powerStr = item.isOverpower ? `${item.power} kW 🛑` : `${item.power} kW`;
-        let powerColor = item.isOverpower ? "var(--danger)" : "var(--accent)";
-
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${tempStr}</td><td>${item.time}s</td><td>${item.freq}</td><td style="color:${powerColor}; font-weight:bold;">${powerStr}</td><td>${item.skin}</td>`;
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
         tbody.appendChild(tr);
       });
     }
