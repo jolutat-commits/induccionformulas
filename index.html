@@ -37,124 +37,33 @@
     header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
     header p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
 
-    .print-btn {
-      background: var(--highlight);
-      color: var(--bg-main);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+    .print-btn { background: var(--highlight); color: var(--bg-main); border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }
     .print-btn:hover { opacity: 0.8; }
 
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    @media (min-width: 960px) {
-      .container { grid-template-columns: 360px 1fr; }
-      body { padding: 25px; }
-    }
+    .container { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 960px) { .container { grid-template-columns: 360px 1fr; } body { padding: 25px; } }
 
-    .panel-controls {
-      background-color: var(--bg-card);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      height: fit-content;
-    }
-    .panel-controls h2 {
-      font-size: 1.1rem;
-      margin-bottom: 15px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-      color: var(--highlight);
-    }
+    .panel-controls { background-color: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
+    .panel-controls h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--highlight); }
     .control-group { margin-bottom: 15px; }
-    .control-group label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      cursor: help;
-    }
+    .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; cursor: help; }
     .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
-    select {
-      background: var(--bg-subcard);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      cursor: pointer;
-    }
-    .tip-box {
-      background: rgba(56, 189, 248, 0.08);
-      border-left: 4px solid var(--highlight);
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-top: 15px;
-      line-height: 1.4;
-    }
+    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
+    
+    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 12px; border-radius: 6px; font-size: 0.82rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4; }
 
-    .visualizer-card {
-      background: var(--bg-subcard);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    canvas {
-      width: 100%;
-      max-width: 850px;
-      height: 310px;
-      border-radius: 8px;
-      background: #020617;
-      display: block;
-      margin: 0 auto;
-      border: 1px solid #1e293b;
-    }
-    .canvas-legend {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-    }
-    .legend-item span {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      margin-right: 5px;
-      vertical-align: middle;
-    }
+    .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; }
+    .canvases-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+    .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 8px; font-size: 0.95rem; }
+    canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
+    
+    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.78rem; color: var(--text-muted); margin-top: 15px; }
+    .legend-item span { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
 
-    .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .summary-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-    }
+    .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
     .summary-card span { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
     .summary-card strong { display: block; font-size: 1.35rem; margin-top: 5px; color: var(--accent); font-family: monospace; }
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
@@ -166,8 +75,6 @@
     .step-title { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
     .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.92rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
     .step-content.result { color: var(--success); font-weight: bold; font-size: 1.02rem; }
-    
-    /* Estilo amigable para las explicaciones */
     .step-explanation { font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; line-height: 1.5; padding-top: 10px; border-top: 1px dashed var(--border); }
     .step-explanation strong { color: var(--text-main); }
 
@@ -176,9 +83,8 @@
       .panel-controls, .print-btn { display: none; }
       .container { display: block; }
       .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
-      canvas { filter: invert(1); border: 1px solid #ccc; }
-      h3 { color: black !important; }
-      .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
+      canvas { filter: invert(1); }
+      h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
     }
   </style>
 </head>
@@ -186,7 +92,7 @@
 
   <header>
     <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
-    <p>Visualización electromagnética vectorial tridimensional y termodinámica completa</p>
+    <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
   </header>
 
@@ -215,10 +121,10 @@
       </div>
 
       <div class="control-group"><label title="Tiempo en el que necesitas que alcance la temperatura objetivo.">Tiempo (s) ℹ️: <span id="lblTime">45</span></label><input type="range" id="inputTime" min="5" max="300" step="5" value="45"></div>
-      <div class="control-group"><label title="Área total de la pieza expuesta al aire (vital para calcular pérdidas radiativas).">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <div class="control-group"><label title="Área total de la pieza expuesta al aire.">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
 
       <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
-      <div class="control-group"><label title="A mayor frecuencia, la onda penetra menos en el metal (ideal para endurecimiento).">Frecuencia (kHz) ℹ️: <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
+      <div class="control-group"><label title="A mayor frecuencia, la onda penetra menos en el metal.">Frecuencia (kHz) ℹ️: <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
       <div class="control-group"><label title="Número de vueltas del tubo de cobre.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
       <div class="control-group"><label title="Amperaje fluyendo a través de la bobina.">Corriente RMS (A) ℹ️: <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
@@ -233,12 +139,25 @@
 
     <main>
       
+      <!-- CÁMARAS DUALES -->
       <div class="visualizer-card">
-        <canvas id="simCanvas" width="850" height="310"></canvas>
+        <div class="canvases-container">
+          <!-- Cámara 1 -->
+          <div class="canvas-wrapper">
+            <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
+            <canvas id="simCanvas1" width="400" height="260"></canvas>
+          </div>
+          <!-- Cámara 2 -->
+          <div class="canvas-wrapper">
+            <h4>🎥 Cámara 2: Vista Lateral (Perfil Z-Y)</h4>
+            <canvas id="simCanvas2" width="400" height="260"></canvas>
+          </div>
+        </div>
+        
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E (Vertical)</div>
-          <div class="legend-item"><span style="background: #f43f5e;"></span>Campo Magnético B (Horizontal)</div>
-          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica (Atenuación Skin δ)</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E (Azul)</div>
+          <div class="legend-item"><span style="background: #f43f5e;"></span>Campo Magnético B (Rosa)</div>
+          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica (Efecto Skin)</div>
         </div>
       </div>
 
@@ -259,7 +178,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> La corriente al pasar por las vueltas de alambre de cobre crea un campo magnético invisible y poderoso en el centro.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético" (Teslas) que lanza hacia la pieza metálica.
+            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético" que lanza hacia la pieza metálica.
           </div>
         </div>
 
@@ -270,7 +189,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Los cambios muy rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse. <br><br>
-            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo para frenar ese cambio molesto. A eso se le llama "Corrientes de Foucault" (y por oponerse lleva el signo negativo de Lenz).
+            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo para frenar ese cambio molesto. A eso se le llama "Corrientes de Foucault".
           </div>
         </div>
 
@@ -281,7 +200,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Piensa en un tren tomando una curva a toda velocidad: los pasajeros se aplastan contra las ventanas. Mientras más rápida es la oscilación (Frecuencia en kHz), más delgada es esta "piel" externa por donde se concentra toda la energía. <em>(Juega cambiando de Aluminio a Acero en el simulador 3D para verlo en vivo)</em>.
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>"Cámara 2: Vista Lateral"</em> en el simulador. Al chocar contra la pared metálica, la onda pierde fuerza rápidamente. Mientras más rápido vibra (frecuencia), más delgada es esta capa superficial por donde viaja la energía.
           </div>
         </div>
 
@@ -292,7 +211,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Toda corriente eléctrica que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de personas (electrones) forzadas a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que termina calentando el metal al rojo vivo en segundos.
+            <strong>👉 Ejemplo práctico:</strong> Imagina a miles de personas (electrones) forzadas a correr al mismo tiempo por un pasillo muy estrecho (la capa "Skin"). Al chocar entre ellos y rozar las paredes, generan una fricción inmensa que calienta el metal al rojo vivo.
           </div>
         </div>
 
@@ -303,7 +222,7 @@
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá. Todo depende de la masa y la prisa que tengas.
+            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro de agua en solo 10 segundos, necesitas un quemador gigante (Mucha Potencia). Si tienes 10 minutos de sobra, un quemador pequeño servirá. Todo depende de la masa y la prisa.
           </div>
         </div>
 
@@ -313,8 +232,8 @@
           <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, irradiando y perdiendo energía hacia el aire que lo rodea en forma de luz y calor (Infrarrojo).<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica. Mientras más caliente está, más energía desperdicia "regalándola" al aire del taller, lo que obliga a la máquina a trabajar mucho más duro para compensar.
+            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, perdiendo energía hacia el aire que lo rodea en forma de luz infrarroja y calor.<br><br>
+            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica. Mientras más caliente está, más energía desperdicia "regalándola" al aire del taller.
           </div>
         </div>
 
@@ -325,7 +244,7 @@
           <div class="step-box"><div class="step-title">Potencia Eléctrica Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
           <div class="step-explanation">
             <strong>💡 Qué nos dice:</strong> Es el resumen de cuánta energía total necesitas consumir desde el enchufe para que la máquina logre su cometido.<br><br>
-            <strong>👉 Ejemplo práctico:</strong> Es como calcular cuánta gasolina necesitas para un viaje en auto. Debes sumar la energía real para mover el auto (Calor Termodinámico útil), más lo que se desperdicia en humo y calor del motor (Radiación térmica y Pérdidas del cobre), dividiéndolo por la eficiencia de tu equipo.
+            <strong>👉 Ejemplo práctico:</strong> Es como calcular cuánta gasolina necesitas para un viaje. Debes sumar la energía real para mover el auto, más lo que se desperdicia en calor del motor, y dividirlo por la eficiencia real de tu máquina.
           </div>
         </div>
 
@@ -338,11 +257,11 @@
     const SIGMA = 5.670374e-8;      
 
     const MATERIALES = {
-      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, comentario: "Excelente rendimiento. Permeabilidad alta atrapa el campo en la superficie." },
-      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, comentario: "Muy ferromagnético. Atenuación de onda superficial casi instantánea." },
-      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, comentario: "No es ferromagnético, pero su alta resistividad genera fuerte calentamiento por Joule." },
-      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, comentario: "No magnético: la onda penetra profundamente y su alto calor específico exige mucha energía." },
-      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, comentario: "Resistencia casi nula: conduce la corriente sin generar calentamiento apreciable." }
+      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80 },
+      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
+      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65 },
+      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
+      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
     };
 
     let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0 };
@@ -352,7 +271,6 @@
       acc['lbl' + id] = document.getElementById('lbl' + id);
       return acc;
     }, {});
-    const matComment = document.getElementById('materialComment');
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
@@ -389,7 +307,6 @@
       els.lblLength.textContent = lenCm;
       els.lblCurrent.textContent = I;
       els.lblSpeed.textContent = spd.toFixed(1) + 'x';
-      matComment.textContent = mat.comentario;
 
       // 1. Ampère-Maxwell
       const B = MU_0 * (N / lenM) * I;
@@ -448,9 +365,8 @@
       document.getElementById('conclusionAmigable').innerHTML = 
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
-        Requieres un generador que entregue al menos <strong>${(P_equipo / 1000).toFixed(1)} kW</strong> de potencia real para lograrlo en ${t} segundos.${avisoCurie}`;
+        Requieres un equipo que entregue al menos <strong>${(P_equipo / 1000).toFixed(1)} kW</strong> para lograrlo en ${t} segundos.${avisoCurie}`;
 
-      // Enviar datos al motor 3D
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd };
     }
 
@@ -458,73 +374,101 @@
     actualizarCalculos();
 
     // =========================================================
-    // MOTOR GRÁFICO 3D (ONDA EM VECTORIAL)
+    // MULTI-CÁMARA: MOTOR GRÁFICO 3D Y 2D LATERAL
     // =========================================================
-    const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+    const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
+    const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
     let timePhase = 0;
 
-    function project3D(x, y, z) {
-      const cx = canvas.width / 2, cy = canvas.height / 2 + 15;
-      return { u: cx + (z * 1.35) - (x * 0.72), v: cy - (y * 0.95) + (x * 0.38) };
+    // Proyección Cámara 1 (Isométrica 3D)
+    function projIso(x, y, z) {
+      const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
+      return { u: cx + (z * 1.0) - (x * 0.6), v: cy - (y * 0.85) + (x * 0.35) };
     }
 
-    function drawLine3D(x1, y1, z1, x2, y2, z2, color, width = 1) {
-      const p1 = project3D(x1, y1, z1), p2 = project3D(x2, y2, z2);
+    // Proyección Cámara 2 (Lateral Z-Y, ignora la X)
+    function projSide(x, y, z) {
+      const cx = canvas2.width / 2 - 20, cy = canvas2.height / 2;
+      return { u: cx + (z * 1.0), v: cy - (y * 0.85) }; 
+    }
+
+    function drawLine(ctx, projFn, x1, y1, z1, x2, y2, z2, color, width = 1) {
+      const p1 = projFn(x1, y1, z1), p2 = projFn(x2, y2, z2);
       ctx.beginPath(); ctx.moveTo(p1.u, p1.v); ctx.lineTo(p2.u, p2.v);
       ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
     }
 
-    function renderFrame() {
+    function renderView(ctx, canvas, projFn, isSideView) {
       ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      timePhase += 0.018 * animData.speed;
+      const A = 25 + (animData.current / 500) * 45;
 
-      const A = 28 + (animData.current / 500) * 55;
+      // Ejes
+      drawLine(ctx, projFn, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
+      drawLine(ctx, projFn, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
 
-      drawLine3D(0, 0, -250, 0, 0, 240, 'rgba(148, 163, 184, 0.35)', 1.5);
-      drawLine3D(0, -90, -250, 0, 90, -250, 'rgba(56, 189, 248, 0.4)', 1);
-
-      const z_metal = 60;
-      const p1 = project3D(-95, 95, z_metal), p2 = project3D(95, 95, z_metal);
-      const p3 = project3D(95, -95, z_metal), p4 = project3D(-95, -95, z_metal);
-      
-      ctx.beginPath(); ctx.moveTo(p1.u, p1.v); ctx.lineTo(p2.u, p2.v); ctx.lineTo(p3.u, p3.v); ctx.lineTo(p4.u, p4.v); ctx.closePath();
-      
+      // Bloque Metálico
+      const z_metal = 40;
       let r = 71, g = 85, b_col = 105;
       if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
       if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      
+      const ex = 55, ey = 70;
+      const frontTL = projFn(-ex, ey, z_metal), frontTR = projFn(ex, ey, z_metal);
+      const frontBL = projFn(-ex, -ey, z_metal), frontBR = projFn(ex, -ey, z_metal);
+      const backTL = projFn(-ex, ey, 160), backTR = projFn(ex, ey, 160);
+      const backBL = projFn(-ex, -ey, 160), backBR = projFn(ex, -ey, 160);
+
       ctx.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
-      ctx.fill(); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
 
-      ctx.fillStyle = '#f8fafc'; ctx.font = '11px monospace';
-      ctx.fillText('Superficie del Metal (δ)', p1.u + 5, p1.v - 8);
+      // Dibujar caras según la proyección
+      ctx.beginPath(); ctx.moveTo(frontTR.u, frontTR.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(backBR.u, backBR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Derecha
+      ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(backTL.u, backTL.v); ctx.lineTo(backTR.u, backTR.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Arriba
+      ctx.beginPath(); ctx.moveTo(frontTL.u, frontTL.v); ctx.lineTo(frontTR.u, frontTR.v); ctx.lineTo(frontBR.u, frontBR.v); ctx.lineTo(frontBL.u, frontBL.v); ctx.closePath(); ctx.fill(); ctx.stroke(); // Frente
 
-      const step = 9; let prevE = null, prevB = null;
-      for (let z = -250; z <= 240; z += step) {
+      ctx.fillStyle = '#f8fafc'; ctx.font = '10px monospace';
+      ctx.fillText('Metal (Efecto Skin)', frontTL.u + 5, frontTL.v - 8);
+
+      // Dibujar Onda
+      const step = 6; 
+      let prevE = null, prevB = null;
+
+      for (let z = -180; z <= 160; z += step) {
         let decay = 1;
         if (z > z_metal) {
-          let visualDelta = Math.max(8, animData.delta * 70); 
+          let visualDelta = Math.max(5, animData.delta * 40); 
           decay = Math.exp(-(z - z_metal) / visualDelta);
         }
         if (decay < 0.015) continue; 
 
-        const wave = Math.sin((z * 0.035) - timePhase) * decay;
+        const wave = Math.sin((z * 0.04) - timePhase) * decay;
         const Ey = wave * A, Bx = wave * A * 0.9;
-        const currentE = project3D(0, Ey, z), currentB = project3D(Bx, 0, z);
+        const currentE = projFn(0, Ey, z), currentB = projFn(Bx, 0, z);
 
-        drawLine3D(0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2);
-        drawLine3D(0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);
+        drawLine(ctx, projFn, 0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.55)', 1.2);
+        
+        // En la vista lateral, el campo magnético (eje X) se oculta para no hacer ruido visual
+        if (!isSideView) drawLine(ctx, projFn, 0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.55)', 1.2);
 
         if (prevE) {
-          ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v);
-          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v);
-          ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v); ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.stroke();
+          if (!isSideView) {
+            ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1.5; ctx.stroke();
+          }
         }
         prevE = currentE; prevB = currentB;
       }
-      requestAnimationFrame(renderFrame);
     }
-    window.onload = () => renderFrame();
+
+    function renderAll() {
+      timePhase += 0.02 * animData.speed;
+      renderView(ctx1, canvas1, projIso, false);
+      renderView(ctx2, canvas2, projSide, true);
+      requestAnimationFrame(renderAll);
+    }
+    
+    // Iniciar renderizado al instante
+    renderAll();
   </script>
 
   <script>
