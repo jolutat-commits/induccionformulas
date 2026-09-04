@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Inducción con Vectores Dinámicos</title>
+  <title>Simulador de Inducción - Campo Vectorial</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
-  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     :root {
@@ -20,7 +19,6 @@
     body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.5; }
     header { text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; border: 1px solid var(--border); }
     header h1 { font-size: 1.5rem; color: var(--accent); margin-bottom: 6px; }
-    header p { color: var(--text-muted); font-size: 0.9rem; }
 
     .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 900px) { .container { grid-template-columns: 350px 1fr; } }
@@ -30,38 +28,35 @@
     .panel-controls h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--highlight); }
     .control-group { margin-bottom: 16px; }
     .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
+    .control-group label span { color: var(--accent); font-family: monospace; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
-    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.95rem; }
+    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; }
 
-    /* Canvas / Visor */
+    /* Canvas Vectorial */
     .visualizer-container { background: #090d16; border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 20px; text-align: center; }
-    canvas { width: 100%; max-width: 800px; height: 220px; border-radius: 8px; background: #020617; }
-    .canvas-legend { display: flex; justify-content: center; gap: 20px; font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
+    canvas { width: 100%; max-width: 800px; height: 260px; border-radius: 8px; background: #020617; }
+    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
     .legend-item span { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
 
-    /* Tarjetas de Resumen */
+    /* Tarjetas y Fórmulas */
     .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
     .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
     .summary-card span { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
     .summary-card strong { display: block; font-size: 1.3rem; margin-top: 5px; color: var(--accent); font-family: monospace; }
-    .summary-card small { display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
 
-    /* Fórmulas */
     .results-area { display: flex; flex-direction: column; gap: 16px; }
     .formula-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
     .formula-card h3 { font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px; }
     .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
     .step-title { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.9rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
-    .step-content.result { color: var(--success); font-weight: bold; font-size: 1rem; }
+    .step-content { font-family: "Courier New", monospace; font-size: 0.9rem; color: var(--text-main); }
+    .step-content.result { color: var(--success); font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Simulador de Inducción con Vectores</h1>
-    <p>Visualización electromagnética en tiempo real</p>
+    <h1>Simulador de Campo Vectorial por Inducción</h1>
   </header>
 
   <div class="container">
@@ -70,9 +65,8 @@
       <div class="control-group">
         <label>Material:</label>
         <select id="materialSelect">
-          <option value="acero">Acero al Carbono</option>
-          <option value="hierro">Hierro Dulce</option>
-          <option value="aluminio">Aluminio</option>
+          <option value="acero">Acero al Carbono (Magnético)</option>
+          <option value="aluminio">Aluminio (Profundo)</option>
           <option value="cobre">Cobre</option>
         </select>
       </div>
@@ -90,53 +84,32 @@
     </aside>
 
     <main>
-      <!-- MOTOR GRÁFICO CANVAS -->
+      <!-- MOTOR GRÁFICO VECTORIAL CANVAS -->
       <div class="visualizer-container">
-        <canvas id="simCanvas" width="800" height="220"></canvas>
+        <canvas id="simCanvas" width="800" height="260"></canvas>
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Vectores Magnéticos (B)</div>
-          <div class="legend-item"><span style="background: rgba(249, 115, 22, 0.7);"></span>Corrientes Inducidas (Efecto Skin)</div>
-          <div class="legend-item"><span style="background: #ef4444;"></span>Calor Térmico</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Vectores: Campo Magnético (B)</div>
+          <div class="legend-item"><span style="background: #f97316;"></span>Vectores: Corriente Inducida (J)</div>
+          <div class="legend-item"><span style="background: #ef4444;"></span>Color: Calor Joule</div>
         </div>
       </div>
 
       <div class="summary-cards">
-        <div class="summary-card"><span>Potencia Requerida</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas</small></div>
-        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small>Penetración</small></div>
-        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Fuerza Inductora</small></div>
+        <div class="summary-card"><span>Potencia Requerida</span><strong id="cardTotalPower">0 kW</strong></div>
+        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong></div>
+        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong></div>
       </div>
 
       <div class="results-area">
-        <!-- Ampère -->
         <div class="formula-card">
-          <h3>1. Ley de Ampère-Maxwell</h3>
-          <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
-          <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepAmpereSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepAmpereRes"></div></div>
-        </div>
-
-        <!-- Skin -->
-        <div class="formula-card">
-          <h3>2. Efecto Skin (Profundidad δ)</h3>
+          <h3>Efecto Skin (Penetración Vectorial)</h3>
           <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
-          <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepSkinSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepSkinRes"></div></div>
         </div>
-
-        <!-- Termodinámica -->
         <div class="formula-card">
-          <h3>3. Calor Específico (Potencia Térmica Útil)</h3>
-          <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
-          <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepThermoSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepThermoRes"></div></div>
-        </div>
-
-        <!-- Radiación -->
-        <div class="formula-card">
-          <h3>4. Radiación (Stefan-Boltzmann)</h3>
-          <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
-          <div class="step-box"><div class="step-title">Sustitución</div><div class="step-content" id="stepRadSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado</div><div class="step-content result" id="stepRadRes"></div></div>
+          <h3>Potencia Térmica Total</h3>
+          <div class="step-box"><div class="step-title">Fórmula</div><div class="step-content">P = [(m · c · ΔT)/t] + [ε·σ·A·(T⁴-T_amb⁴)]</div></div>
+          <div class="step-box"><div class="step-title">Potencia Red</div><div class="step-content result" id="stepTotalRes"></div></div>
         </div>
       </div>
     </main>
@@ -146,13 +119,11 @@
     const MU_0 = 4 * Math.PI * 1e-7, SIGMA = 5.670374e-8;      
     const MATERIALES = {
       acero: { c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80 },
-      hierro: { c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
       aluminio: { c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
       cobre: { c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
     };
 
-    // Variables globales para el Motor Gráfico
-    let animData = { freq: 100, delta: 1, temp: 25, B: 10, current: 180 };
+    let animData = { freq: 100, delta: 1, temp: 25, B: 10, current: 180, material: 'acero' };
 
     const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current'].reduce((acc, id) => {
       acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
@@ -162,8 +133,7 @@
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
-      const m = parseFloat(els.mass.value);
-      const T_ini = parseFloat(els.tempini.value);
+      const m = parseFloat(els.mass.value), T_ini = parseFloat(els.tempini.value);
       let T_fin = parseFloat(els.tempfin.value);
       if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
       
@@ -175,7 +145,6 @@
       els.lblTime.textContent = t; els.lblArea.textContent = els.area.value; els.lblFreq.textContent = els.freq.value;
       els.lblTurns.textContent = N; els.lblLength.textContent = els.length.value; els.lblCurrent.textContent = I;
 
-      // Cálculos Matemáticos
       const B = MU_0 * (N / lenM) * I;
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
       const delta_mm = delta_m * 1000;
@@ -183,132 +152,138 @@
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin + 273, 4) - Math.pow(T_ini + 273, 4));
       const P_equipo = (P_th + P_rad) / 0.75;
 
-      // Actualizar DOM Matemático
-      document.getElementById('stepAmpereSub').textContent = `B = (4π×10⁻⁷) · (${N} / ${lenM.toFixed(3)}m) · ${I}A`;
-      document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
-      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz}Hz · 4π×10⁻⁷ · ${mat.mu_r}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
-      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c}J/kg°C · ${T_fin - T_ini}°C) / ${t}s`;
-      document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W`;
-      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)}m² · [${(T_fin+273).toFixed(1)}⁴ - ${(T_ini+273).toFixed(1)}⁴]`;
-      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
-      
+      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W`;
       document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
-      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
-      // Enviar datos al motor gráfico
-      animData.freq = parseFloat(els.freq.value);
-      animData.delta = delta_mm;
-      animData.temp = T_fin;
-      animData.B = B * 1000; // en mT
-      animData.current = I;
+      animData = { freq: parseFloat(els.freq.value), delta: delta_mm, temp: T_fin, current: I, material: els.materialselect.value };
     }
 
     Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
     actualizarCalculos();
 
     // ==========================================
-    // MOTOR GRÁFICO (CANVAS ANIMATION)
+    // MOTOR GRÁFICO: CAMPOS VECTORIALES
     // ==========================================
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
     let phase = 0;
 
+    // Función para dibujar una flecha vectorial (Vector)
+    function drawVector(ctx, x, y, magX, magY, color) {
+      const len = Math.sqrt(magX*magX + magY*magY);
+      if(len < 2) return; // No dibujar si es muy pequeño
+      
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 1.5;
+      
+      // Tallo de la flecha
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + magX, y + magY);
+      ctx.stroke();
+      
+      // Cabeza de la flecha
+      const angle = Math.atan2(magY, magX);
+      ctx.beginPath();
+      ctx.moveTo(x + magX, y + magY);
+      ctx.lineTo(x + magX - 6 * Math.cos(angle - Math.PI/7), y + magY - 6 * Math.sin(angle - Math.PI/7));
+      ctx.lineTo(x + magX - 6 * Math.cos(angle + Math.PI/7), y + magY - 6 * Math.sin(angle + Math.PI/7));
+      ctx.fill();
+    }
+
     function renderFrame() {
-      // Limpiar lienzo
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const cw = canvas.width;
-      const ch = canvas.height;
-
-      // Velocidad de oscilación (ligada a la Frecuencia en kHz)
-      phase += animData.freq * 0.0015;
-      const wave = Math.sin(phase); 
-
-      // 1. DIBUJAR LA PIEZA DE TRABAJO (Centro)
-      const rectW = 200; const rectH = 120;
-      const rectX = (cw - rectW) / 2; const rectY = (ch - rectH) / 2;
+      const cw = canvas.width, ch = canvas.height;
       
-      // Color Térmico basado en Temperatura
-      // 25C = gris, 500C = rojo oscuro, 1000C = naranja, 1500C = amarillo
-      let r = 100, g = 116, b = 139; // Gris base
-      if (animData.temp > 100) { r = Math.min(255, 100 + (animData.temp * 0.2)); }
+      // Velocidad del tiempo oscilatorio
+      phase += animData.freq * 0.001; 
+      const bWave = Math.sin(phase); // Onda del campo magnético
+      const jWave = -Math.cos(phase); // Onda de la corriente inducida (Ley de Lenz: derivada de seno es coseno, con signo negativo)
+
+      // Dibujar Pieza
+      const rectW = 200, rectH = 120;
+      const rectX = (cw - rectW) / 2, rectY = (ch - rectH) / 2;
+      
+      let r = 71, g = 85, b_color = 105;
+      if (animData.temp > 100) { r = Math.min(255, 71 + (animData.temp * 0.2)); }
       if (animData.temp > 600) { g = Math.min(255, (animData.temp - 600) * 0.3); }
-      if (animData.temp > 1100) { b = Math.min(255, (animData.temp - 1100) * 0.5); }
-      
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b_color})`;
       ctx.fillRect(rectX, rectY, rectW, rectH);
-      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
       ctx.strokeRect(rectX, rectY, rectW, rectH);
 
-      // 2. DIBUJAR CORRIENTES DE FOUCAULT (Efecto Skin)
-      // El ancho del brillo depende directamente del delta matemático
-      const skinVisualWidth = Math.min(animData.delta * 8 + 5, 80); 
-      const skinIntensity = Math.abs(wave) * 0.7 + 0.3; // Parpadea con la frecuencia
-
-      // Borde izquierdo
-      let gradLeft = ctx.createLinearGradient(rectX, 0, rectX + skinVisualWidth, 0);
-      gradLeft.addColorStop(0, `rgba(249, 115, 22, ${skinIntensity})`);
-      gradLeft.addColorStop(1, 'rgba(249, 115, 22, 0)');
-      ctx.fillStyle = gradLeft;
-      ctx.fillRect(rectX, rectY, skinVisualWidth, rectH);
-
-      // Borde derecho
-      let gradRight = ctx.createLinearGradient(rectX + rectW, 0, rectX + rectW - skinVisualWidth, 0);
-      gradRight.addColorStop(0, `rgba(249, 115, 22, ${skinIntensity})`);
-      gradRight.addColorStop(1, 'rgba(249, 115, 22, 0)');
-      ctx.fillStyle = gradRight;
-      ctx.fillRect(rectX + rectW - skinVisualWidth, rectY, skinVisualWidth, rectH);
-
-      // 3. DIBUJAR BOBINAS DE COBRE
-      ctx.fillStyle = '#b45309'; // Color cobre
-      const coilW = 30; const coilH = 40;
+      // Dibujar Bobinas (Corte transversal)
+      ctx.fillStyle = '#b45309';
       for(let i=0; i<3; i++) {
-        let yPos = rectY + 10 + (i * 35);
-        // Izquierda
-        ctx.fillRect(rectX - 50, yPos, coilW, coilH);
-        // Derecha
-        ctx.fillRect(rectX + rectW + 20, yPos, coilW, coilH);
+        ctx.fillRect(rectX - 40, rectY + 10 + (i*40), 25, 30);
+        ctx.fillRect(rectX + rectW + 15, rectY + 10 + (i*40), 25, 30);
       }
 
-      // 4. DIBUJAR VECTORES DE CAMPO MAGNÉTICO (B)
-      // La intensidad/opacidad depende de la Corriente
-      const opacidadB = Math.min(1.0, 0.2 + (animData.current / 500));
-      ctx.strokeStyle = `rgba(56, 189, 248, ${opacidadB})`;
-      ctx.lineWidth = 3;
+      // VECTORES: CORRIENTES INDUCIDAS (Naranjas - Efecto Skin)
+      // Se calculan dentro de la pieza. La intensidad decae exponencialmente según la profundidad (delta)
+      const numJRows = 5;
+      const numJCols = 18;
+      const maxJLength = 25;
       
-      const numVectors = 7;
-      const spacing = rectW / (numVectors + 1);
-      
-      for(let i=1; i<=numVectors; i++) {
-        let vx = rectX + (i * spacing);
-        let cy = ch / 2;
-        // La flecha sube y baja usando la onda seno
-        let vectorLong = wave * (rectH / 2 + 30);
-        
-        ctx.beginPath();
-        ctx.moveTo(vx, cy - vectorLong);
-        ctx.lineTo(vx, cy + vectorLong);
-        ctx.stroke();
+      for(let row = 0; row < numJRows; row++) {
+        for(let col = 0; col < numJCols; col++) {
+          let vx = rectX + 10 + (col * (rectW / numJCols));
+          let vy = rectY + 15 + (row * (rectH / numJRows));
+          
+          // Distancia a los bordes más cercanos
+          let distIzquierda = vx - rectX;
+          let distDerecha = (rectX + rectW) - vx;
+          let distBorde = Math.min(distIzquierda, distDerecha);
+          
+          // Factor de decaimiento exponencial (Ley del Efecto Skin: e^(-x/delta))
+          // Multiplicamos delta por un factor visual para que quepa en el canvas
+          let factorSkin = animData.delta * 4; 
+          let intensidad = Math.exp(-distBorde / factorSkin);
+          
+          // Si estamos en la mitad izquierda, la corriente va hacia un lado; en la derecha, hacia el otro (bucle)
+          let direccion = (distIzquierda < distDerecha) ? 1 : -1;
+          
+          // Magnitud del vector J
+          let magY = jWave * direccion * intensidad * maxJLength;
+          let magX = 0; // Circulan verticalmente en el corte
+          
+          // Color con opacidad según intensidad
+          let opacidadJ = Math.max(0.1, intensidad);
+          
+          drawVector(ctx, vx, vy - (magY/2), magX, magY, `rgba(249, 115, 22, ${opacidadJ})`);
+        }
+      }
 
-        // Cabeza de flecha
-        if (Math.abs(vectorLong) > 5) {
-          let dir = vectorLong > 0 ? 1 : -1;
-          ctx.beginPath();
-          ctx.moveTo(vx, cy + vectorLong);
-          ctx.lineTo(vx - 5, cy + vectorLong - (10 * dir));
-          ctx.lineTo(vx + 5, cy + vectorLong - (10 * dir));
-          ctx.fill();
+      // VECTORES: CAMPO MAGNÉTICO (Azules)
+      // Se calculan a través de toda la pantalla y dentro de la bobina
+      const numBRows = 4;
+      const numBCols = 24;
+      const baseBLength = (animData.current / 500) * 35; // Tamaño máximo de flecha según Corriente
+      
+      for(let row = 0; row < numBRows; row++) {
+        for(let col = 0; col < numBCols; col++) {
+          let vx = (cw / numBCols) * col + 15;
+          let vy = (ch / numBRows) * row + 30;
+          
+          // Si el vector está fuera de la pieza central, el campo se invierte por el circuito de retorno magnético
+          let dentroDeBobina = (vx > rectX - 20 && vx < rectX + rectW + 20);
+          let dirB = dentroDeBobina ? 1 : -0.3; // Fuera de la bobina el campo es más débil e inverso
+          
+          let magY = bWave * baseBLength * dirB;
+          let opacidadB = dentroDeBobina ? 0.9 : 0.3;
+
+          drawVector(ctx, vx, vy - (magY/2), 0, magY, `rgba(56, 189, 248, ${opacidadB})`);
         }
       }
 
       requestAnimationFrame(renderFrame);
     }
     
-    // Iniciar loop
     renderFrame();
-
   </script>
 </body>
 </html>
