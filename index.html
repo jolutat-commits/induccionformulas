@@ -84,7 +84,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 6px;
-      cursor: help; /* Muestra el cursor de interrogación al pasar el mouse */
+      cursor: help; /* Cursor de interrogación */
     }
     .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
@@ -176,10 +176,10 @@
     /* Estilos para impresión de informes (Anexos a PDF) */
     @media print {
       body { background: white; color: black; }
-      .panel-controls, .print-btn { display: none; } /* Oculta menú izquierdo al imprimir */
+      .panel-controls, .print-btn { display: none; }
       .container { display: block; }
       .visualizer-card, .formula-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; }
-      canvas { filter: invert(1); border: 1px solid #ccc; } /* Invierte colores oscuros para ahorrar tinta */
+      canvas { filter: invert(1); border: 1px solid #ccc; }
       h3 { color: black !important; }
       .step-content, .step-title { color: black !important; }
     }
@@ -190,13 +190,11 @@
   <header>
     <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
     <p>Visualización electromagnética vectorial tridimensional y termodinámica completa</p>
-    <!-- Botón para generar PDF del informe -->
     <button class="print-btn" onclick="window.print()">🖨️ Guardar Resultados como PDF</button>
   </header>
 
   <div class="container">
     
-    <!-- CONTROLES CON GLOBOS DE AYUDA EDUCATIVA -->
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
@@ -212,7 +210,6 @@
       <div class="control-group"><label title="El peso total del metal a calentar.">Masa (kg) ℹ️: <span id="lblMass">0.50</span></label><input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50"></div>
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       
-      <!-- Control con referencia dinámica de temperatura -->
       <div class="control-group">
         <label title="Temperatura que deseas alcanzar.">Temp. Objetivo (°C) ℹ️: 
           <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning); font-size:0.75rem;"></small></span>
@@ -221,21 +218,20 @@
       </div>
 
       <div class="control-group"><label title="Tiempo en el que necesitas que alcance la temperatura objetivo.">Tiempo (s) ℹ️: <span id="lblTime">45</span></label><input type="range" id="inputTime" min="5" max="300" step="5" value="45"></div>
-      <div class="control-group"><label title="Área total de la pieza expuesta al aire (vital para calcular pérdidas de radiación térmica).">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <div class="control-group"><label title="Área total de la pieza expuesta al aire (vital para calcular pérdidas radiativas).">Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
 
       <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
-      <div class="control-group"><label title="A mayor frecuencia, la onda penetra menos en el metal (ideal para endurecimiento superficial).">Frecuencia (kHz) ℹ️: <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
+      <div class="control-group"><label title="A mayor frecuencia, la onda penetra menos en el metal (ideal para endurecimiento).">Frecuencia (kHz) ℹ️: <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
       <div class="control-group"><label title="Número de vueltas del tubo de cobre.">Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
-      <div class="control-group"><label title="Amperaje fluyendo a través de la bobina de cobre. A mayor amperaje, mayor campo magnético.">Corriente RMS (A) ℹ️: <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
+      <div class="control-group"><label title="Amperaje fluyendo a través de la bobina.">Corriente RMS (A) ℹ️: <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
       
-      <h2 style="margin-top: 20px;">3. Control de Animación 3D</h2>
+      <h2 style="margin-top: 20px;">3. Control 3D</h2>
       <div class="control-group">
         <label>Velocidad de Onda: <span id="lblSpeed">1.0x</span></label>
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
-      <div class="tip-box" id="materialComment"></div>
     </aside>
 
     <main>
@@ -255,7 +251,6 @@
         <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad inductora</small></div>
       </div>
 
-      <!-- Conclusión Dinámica Explicativa -->
       <div id="conclusionAmigable" class="tip-box" style="border-left-color: var(--success); margin-bottom: 20px;"></div>
 
       <div class="results-area">
@@ -273,7 +268,7 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
-          <p class="step-explanation">La oscilación de alta frecuencia varía rápidamente el flujo, induciendo voltaje. El signo negativo (Lenz) indica que las corrientes inducidas se oponen al campo inductor.</p>
+          <p class="step-explanation">La oscilación varía rápidamente el flujo, induciendo voltaje. El signo negativo (Lenz) indica que las corrientes inducidas se oponen al campo inductor.</p>
         </div>
 
         <div class="formula-card">
@@ -289,7 +284,7 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
           <div class="step-box"><div class="step-title">Estimación de Densidad de Corriente Periférica</div><div class="step-content" id="stepJouleSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
-          <p class="step-explanation">El calor es producido por la resistencia que el material opone al paso forzado de las corrientes inducidas en la capa delgada superficial.</p>
+          <p class="step-explanation">El calor es producido por la resistencia que el material opone al paso forzado de las corrientes inducidas en la capa superficial.</p>
         </div>
 
         <div class="formula-card">
@@ -297,23 +292,23 @@
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
-          <p class="step-explanation">Tasa de absorción de calor requerida para elevar la temperatura de la masa en el intervalo de tiempo seleccionado.</p>
+          <p class="step-explanation">Tasa de absorción de calor requerida para elevar la temperatura de la masa en el intervalo seleccionado.</p>
         </div>
 
         <div class="formula-card">
           <h3>6. Pérdidas por Radiación Térmica (Ley de Stefan-Boltzmann)</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas Absolutas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
+          <div class="step-box"><div class="step-title">Sustitución Numérica (Temperaturas en Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
-          <p class="step-explanation">Pérdidas radiativas al entorno que se disparan exponencialmente a la cuarta potencia ($T^4$) a temperaturas incandescentes.</p>
+          <p class="step-explanation">Pérdidas radiativas al entorno que se disparan exponencialmente a la cuarta potencia ($T^4$) a altas temperaturas.</p>
         </div>
 
         <div class="formula-card">
           <h3>7. Balance de Potencia Global del Equipo (Inversor/Generador)</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
           <div class="step-box"><div class="step-title">Sustitución Numérica (Eficiencia estimada 75%)</div><div class="step-content" id="stepTotalSub"></div></div>
-          <div class="step-box"><div class="step-title">Potencia Eléctrica de Entrada Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
-          <p class="step-explanation">Potencia total que debe entregar el inversor considerando las pérdidas por radiación y el acoplamiento magnético.</p>
+          <div class="step-box"><div class="step-title">Potencia Eléctrica Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
+          <p class="step-explanation">Potencia total que debe entregar la fuente de poder, considerando radiación térmica e ineficiencias electromagnéticas.</p>
         </div>
 
       </div>
@@ -325,11 +320,11 @@
     const SIGMA = 5.670374e-8;      
 
     const MATERIALES = {
-      acero: { c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, comentario: "Excelente rendimiento. Permeabilidad alta atrapa el campo en la superficie." },
-      hierro: { c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, comentario: "Muy ferromagnético. Atenuación de onda superficial casi instantánea." },
-      inoxidable: { c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, comentario: "No es ferromagnético, pero su alta resistividad genera fuerte calentamiento por Joule." },
-      aluminio: { c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, comentario: "No magnético: la onda penetra profundamente y su alto calor específico exige mucha energía." },
-      cobre: { c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, comentario: "Resistencia casi nula: conduce la corriente sin generar calentamiento apreciable." }
+      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80 },
+      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
+      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65 },
+      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
+      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
     };
 
     let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0 };
@@ -339,7 +334,6 @@
       acc['lbl' + id] = document.getElementById('lbl' + id);
       return acc;
     }, {});
-    const matComment = document.getElementById('materialComment');
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
@@ -359,7 +353,6 @@
       const I = parseFloat(els.current.value) || 180;
       const spd = parseFloat(els.speed.value);
 
-      // Etiqueta visual de temperatura para principiantes
       let refTexto = "";
       if (T_fin < 100) refTexto = "(Tibio)";
       else if (T_fin < 400) refTexto = "(Horno doméstico)";
@@ -377,7 +370,6 @@
       els.lblLength.textContent = lenCm;
       els.lblCurrent.textContent = I;
       els.lblSpeed.textContent = spd.toFixed(1) + 'x';
-      matComment.textContent = mat.comentario;
 
       // 1. Ampère-Maxwell
       const B = MU_0 * (N / lenM) * I;
@@ -390,10 +382,18 @@
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()} Hz) · (${B.toFixed(4)} T) · 0.003 m²`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
+      // CÁLCULO DEL PUNTO DE CURIE PARA EFECTO SKIN
+      let mu_efectivo = mat.mu_r;
+      let avisoCurie = "";
+      if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
+        mu_efectivo = 1.0; 
+        avisoCurie = "<br><br>⚠️ <strong>Punto de Curie superado (>730°C):</strong> El acero/hierro ha perdido su magnetismo (μ_r cae a 1). El Efecto Skin ha aumentado drásticamente, disminuyendo la resistencia equivalente y bajando la eficiencia del calentamiento.";
+      }
+
       // 3. Efecto Skin
-      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
+      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
       const delta_mm = delta_m * 1000;
-      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mat.mu_r}) )`;
+      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} Ω·m / (π · ${f_hz.toLocaleString()} Hz · 4π×10⁻⁷ · ${mu_efectivo}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
 
       // 4. Joule / Densidad
@@ -420,15 +420,15 @@
 
       // Tarjetas de Resumen
       document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
-      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas equiv.`;
+      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
-      // Texto Explicativo Dinámico para Principiantes
+      // Texto Explicativo Dinámico
       document.getElementById('conclusionAmigable').innerHTML = 
-        `💡 <strong>Análisis Rápido:</strong> Estás intentando calentar <strong>${m.toFixed(2)} kg</strong> de <strong>${els.materialselect.options[els.materialselect.selectedIndex].text}</strong> a ${T_fin}°C. 
-        Por sus propiedades electromagnéticas, la energía ingresará al metal concentrada en una capa de apenas <strong>${delta_mm.toFixed(2)} mm</strong> de espesor. 
-        Para lograrlo en los ${t} segundos que estipulaste, necesitarás un generador capaz de entregar un mínimo de <strong>${(P_equipo / 1000).toFixed(1)} kW</strong> de potencia real.`;
+        `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
+        La energía ingresará concentrada en una capa superficial de <strong>${delta_mm.toFixed(3)} mm</strong> de espesor. 
+        Requieres un generador que entregue al menos <strong>${(P_equipo / 1000).toFixed(1)} kW</strong> de potencia real para lograrlo en ${t} segundos.${avisoCurie}`;
 
       // Enviar datos al motor 3D
       animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd };
@@ -438,7 +438,7 @@
     actualizarCalculos();
 
     // =========================================================
-    // MOTOR GRÁFICO 3D (ONDA ELECTROMAGNÉTICA VECTORIAL)
+    // MOTOR GRÁFICO 3D (ONDA EM VECTORIAL)
     // =========================================================
     const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
     let timePhase = 0;
