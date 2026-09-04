@@ -3,6 +3,308 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Maestro de Calentamiento por Inducción</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-subcard: #090d16;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #f97316;
+      --border: #334155;
+      --highlight: #38bdf8;
+      --success: #10b981;
+      --warning: #fbbf24;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.5; }
+    
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px 15px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
+    header p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 960px) {
+      .container { grid-template-columns: 360px 1fr; }
+      body { padding: 25px; }
+    }
+
+    /* Panel lateral de controles */
+    .panel-controls {
+      background-color: var(--bg-card);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      height: fit-content;
+    }
+    .panel-controls h2 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--highlight);
+    }
+    .control-group { margin-bottom: 15px; }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .control-group label span {
+      color: var(--accent);
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+    select, input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    select {
+      background: var(--bg-subcard);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+    .tip-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--highlight);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 15px;
+      line-height: 1.4;
+    }
+
+    /* Motor Gráfico de Vectores */
+    .visualizer-card {
+      background: var(--bg-subcard);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    canvas {
+      width: 100%;
+      max-width: 850px;
+      height: 250px;
+      border-radius: 8px;
+      background: #020617;
+      display: block;
+      margin: 0 auto;
+    }
+    .canvas-legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+    .legend-item span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    /* Tarjetas de Resumen */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .summary-card span {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .summary-card strong {
+      display: block;
+      font-size: 1.35rem;
+      margin-top: 5px;
+      color: var(--accent);
+      font-family: monospace;
+    }
+    .summary-card small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 4px;
+    }
+
+    /* Listado Detallado de Fórmulas */
+    .results-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .formula-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .formula-card h3 {
+      font-size: 1.05rem;
+      color: var(--highlight);
+      margin-bottom: 12px;
+    }
+    .step-box {
+      background-color: var(--bg-subcard);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    .step-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .step-content {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .step-content.result {
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.02rem;
+    }
+    .step-explanation {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Simulador Maestro de Calentamiento por Inducción</h1>
+    <p>Análisis electromagnético vectorial y termodinámico integral con sustitución matemática completa</p>
+  </header>
+
+  <div class="container">
+    
+    <aside class="panel-controls">
+      <h2>1. Propiedades de la Pieza</h2>
+
+      <div class="control-group">
+        <label for="materialSelect">Material a Calentar:</label>
+        <select id="materialSelect">
+          <option value="acero">Acero al Carbono (Magnético)</option>
+          <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
+          <option value="inoxidable">Acero Inoxidable 304 (Resistivo)</option>
+          <option value="aluminio">Aluminio (No magnético)</option>
+          <option value="cobre">Cobre (Muy conductor)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>Masa de la Pieza (kg): <span id="lblMass">0.50</span></label>
+        <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
+      </div>
+
+      <div class="control-group">
+        <label>Temperatura Inicial (°C): <span id="lblTempIni">25</span></label>
+        <input type="range" id="inputTempIni" min="10" max="100" step="5" value="25">
+      </div>
+
+      <div class="control-group">
+        <label>Temperatura Objetivo (°C): <span id="lblTempFin">800</span></label>
+        <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
+      </div>
+
+      <div class="control-group">
+        <label>Tiempo Deseado (s): <span id="lblTime">45</span></label>
+        <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
+      </div>
+
+      <div class="control-group">
+        <label>Área Superficial (cm²): <span id="lblArea">60</span></label>
+        <input type="range" id="inputArea" min="10" max="500" step="5" value="60">
+      </div>
+
+      <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
+
+      <div class="control-group">
+        <label>Frecuencia de Trabajo (kHz): <span id="lblFreq">100</span></label>
+        <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
+      </div>
+
+      <div class="control-group">
+        <label>Espiras de Bobina (N): <span id="lblTurns">6</span></label>
+        <input type="range" id="inputTurns" min="2" max="20" step="1" value="6">
+      </div>
+
+      <div class="control-group">
+        <label>Longitud de Bobina (cm): <span id="lblLength">8</span></label>
+        <input type="range" id="inputLength" min="3" max="30" step="1" value="8">
+      </div>
+
+      <div class="control-group">
+        <label>Corriente RMS en Bobina (A): <span id="lblCurrent">180</span></label>
+        <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+      </div>
+
+      <div class="tip-box" id="materialComment"></div>
+    </aside>
+
+    <main>
+      
+      <div class="visualizer-card">
+        <canvas id="simCanvas" width="850" height="250"></canvas>
+        <div class="canvas-legend">
+          <div class="<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador de Inducción - Campo Vectorial</title>
   
   <link rel="manifest" href="manifest.json">
