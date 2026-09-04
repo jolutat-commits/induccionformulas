@@ -3,58 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Maestro de Calentamiento por Inducción</title>
+  <title>Simulador de Inducción 3D (Ondas EM)</title>
   
-  <!-- Configuración PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f172a">
-  <link rel="apple-touch-icon" href="icon-192.png">
-
   <style>
     :root {
-      --bg-main: #0f172a;
-      --bg-card: #1e293b;
-      --bg-subcard: #090d16;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #f97316;
-      --border: #334155;
-      --highlight: #38bdf8;
-      --success: #10b981;
+      --bg-main: #0f172a; --bg-card: #1e293b; --bg-subcard: #090d16;
+      --text-main: #f8fafc; --text-muted: #94a3b8; --accent: #f97316;
+      --border: #334155; --highlight: #38bdf8; --success: #10b981;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; line-height: 1.5; }
-    
-    header { text-align: center; margin-bottom: 20px; padding: 20px 15px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; border: 1px solid var(--border); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; }
+    header { text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-radius: 12px; border: 1px solid var(--border); }
     header h1 { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
-    header p { color: var(--text-muted); font-size: 0.9rem; }
-
+    
     .container { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 960px) { .container { grid-template-columns: 360px 1fr; } body { padding: 25px; } }
 
-    /* Panel de controles */
+    /* Controles */
     .panel-controls { background-color: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
     .panel-controls h2 { font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--highlight); }
     .control-group { margin-bottom: 15px; }
     .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-    .control-group label span { color: var(--accent); font-family: monospace; font-size: 0.95rem; }
+    .control-group label span { color: var(--accent); font-family: monospace; }
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
-    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; cursor: pointer; }
-    .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 12px; border-radius: 6px; font-size: 0.82rem; color: var(--text-muted); margin-top: 15px; line-height: 1.4; }
-
-    /* Canvas Vectorial */
+    select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 0.92rem; }
+    
+    /* Visor 3D */
     .visualizer-card { background: var(--bg-subcard); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 20px; text-align: center; }
-    canvas { width: 100%; max-width: 850px; height: 250px; border-radius: 8px; background: #020617; display: block; margin: 0 auto; }
-    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; }
+    canvas { width: 100%; max-width: 850px; height: 300px; border-radius: 8px; background: #000; display: block; margin: 0 auto; border: 1px solid #334155; }
+    .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
 
-    /* Tarjetas de Resumen */
+    /* Resumen */
     .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
     .summary-card { background: var(--bg-card); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
-    .summary-card span { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+    .summary-card span { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
     .summary-card strong { display: block; font-size: 1.35rem; margin-top: 5px; color: var(--accent); font-family: monospace; }
-    .summary-card small { display: block; color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; }
 
     /* Fórmulas */
     .results-area { display: flex; flex-direction: column; gap: 18px; }
@@ -62,29 +46,24 @@
     .formula-card h3 { font-size: 1.05rem; color: var(--highlight); margin-bottom: 12px; }
     .step-box { background-color: var(--bg-subcard); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
     .step-title { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
-    .step-content { font-family: "Courier New", Courier, monospace; font-size: 0.92rem; color: var(--text-main); overflow-x: auto; white-space: nowrap; }
-    .step-content.result { color: var(--success); font-weight: bold; font-size: 1.02rem; }
-    .step-explanation { font-size: 0.83rem; color: var(--text-muted); margin-top: 8px; line-height: 1.45; }
+    .step-content { font-family: "Courier New", monospace; font-size: 0.92rem; color: var(--text-main); }
+    .step-content.result { color: var(--success); font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Simulador Maestro de Calentamiento por Inducción</h1>
-    <p>Análisis electromagnético vectorial y termodinámico integral con sustitución matemática completa</p>
+    <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
+    <p>Visualización de la Onda Electromagnética y Efecto Skin</p>
   </header>
 
   <div class="container">
-    
-    <!-- CONTROLES -->
     <aside class="panel-controls">
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
-        <label>Material a Calentar:</label>
+        <label>Material:</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
-          <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
-          <option value="inoxidable">Acero Inoxidable 304 (Resistivo)</option>
           <option value="aluminio">Aluminio (No magnético)</option>
           <option value="cobre">Cobre (Muy conductor)</option>
         </select>
@@ -93,93 +72,36 @@
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       <div class="control-group"><label>Temp. Objetivo (°C): <span id="lblTempFin">800</span></label><input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800"></div>
       <div class="control-group"><label>Tiempo (s): <span id="lblTime">45</span></label><input type="range" id="inputTime" min="5" max="300" step="5" value="45"></div>
-      <div class="control-group"><label>Área Superficial (cm²): <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
 
       <h2 style="margin-top: 20px;">2. Bobina y Parámetros AC</h2>
       <div class="control-group"><label>Frecuencia (kHz): <span id="lblFreq">100</span></label><input type="range" id="inputFreq" min="10" max="300" step="5" value="100"></div>
       <div class="control-group"><label>Espiras (N): <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
       <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
-      <div class="control-group"><label>Corriente RMS (A): <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
-
-      <div class="tip-box" id="materialComment"></div>
+      <div class="control-group"><label>Corriente (A): <span id="lblCurrent">180</span></label><input type="range" id="inputCurrent" min="20" max="500" step="10" value="180"></div>
     </aside>
 
-    <!-- VISOR Y FÓRMULAS -->
     <main>
-      
-      <!-- MOTOR GRÁFICO VECTORIAL -->
       <div class="visualizer-card">
-        <canvas id="simCanvas" width="850" height="250"></canvas>
+        <canvas id="simCanvas" width="850" height="300"></canvas>
         <div class="canvas-legend">
-          <div class="legend-item"><span style="background: #38bdf8;"></span>Vectores: Campo Magnético (B)</div>
-          <div class="legend-item"><span style="background: #f97316;"></span>Vectores: Corrientes de Foucault (J - Lenz)</div>
-          <div class="legend-item"><span style="background: #ef4444;"></span>Color: Temperatura (Efecto Joule)</div>
+          <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico (E)</div>
+          <div class="legend-item"><span style="background: #f43f5e;"></span>Campo Magnético (B)</div>
+          <div class="legend-item"><span style="background: rgba(255,255,255,0.2); border:1px solid #fff;"></span>Superficie del Metal (Efecto Skin)</div>
         </div>
       </div>
 
-      <!-- RESUMEN -->
       <div class="summary-cards">
-        <div class="summary-card"><span>Potencia Recomendada</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas equiv.</small></div>
-        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small>Capa superficial activa</small></div>
-        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad inductora</small></div>
+        <div class="summary-card"><span>Potencia Requerida</span><strong id="cardTotalPower">0 kW</strong></div>
+        <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong></div>
+        <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong></div>
       </div>
 
-      <!-- DESGLOSE DE LEYES -->
       <div class="results-area">
         <div class="formula-card">
-          <h3>1. Ley de Ampère-Maxwell (Generación del Campo Magnético)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">B = μ₀ · (N / l) · I</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepAmpereSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
-          <p class="step-explanation">La corriente alterna circulando por el solenoide excita el medio generando densidad de flujo magnético <strong>B</strong>.</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>2. Ley de Faraday-Lenz (Inducción de FEM y Oposición)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">E_ind = - dΦ_B / dt ≈ 2π · f · B · A_pieza</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepFaradaySub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
-          <p class="step-explanation">La variación de flujo induce voltaje. El signo negativo explica por qué las corrientes (naranjas) se oponen al campo primario (azul).</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>3. Efecto Skin o Pelicular (Profundidad de Penetración δ)</h3>
+          <h3>Efecto Skin (Profundidad de Penetración δ)</h3>
           <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">δ = √( ρ / (π · f · μ₀ · μ_r) )</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepSkinSub"></div></div>
           <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
-          <p class="step-explanation">Las corrientes se concentran en una capa superficial de espesor <strong>δ</strong>. En el simulador, cambia entre Acero y Aluminio para ver la diferencia de penetración.</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>4. Ley de Joule (Densidad de Disipación de Potencia)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">p = ρ · J²   |   P_Joule = I_ind² · R_equivalente</div></div>
-          <div class="step-box"><div class="step-title">Estimación de Densidad de Corriente</div><div class="step-content" id="stepJouleSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
-          <p class="step-explanation">El calor es producido por la fricción de los electrones a través de la resistencia natural del metal.</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>5. Termodinámica: Potencia Térmica Neta (Energía Útil)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_th = (m · c · ΔT) / t</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepThermoSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
-          <p class="step-explanation">Tasa neta de calor requerida para subir la temperatura en el tiempo estipulado.</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>6. Pérdidas por Radiación Térmica (Stefan-Boltzmann)</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_rad = ε · σ · A · (T_pieza⁴ - T_amb⁴)</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica (En Kelvin)</div><div class="step-content" id="stepRadSub"></div></div>
-          <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
-          <p class="step-explanation">Las pérdidas radiativas crecen a la cuarta potencia ($T^4$) al subir la temperatura.</p>
-        </div>
-
-        <div class="formula-card">
-          <h3>7. Balance de Potencia Global del Equipo</h3>
-          <div class="step-box"><div class="step-title">Fórmula Teórica</div><div class="step-content">P_equipo ≈ (P_th + P_rad) / η_acoplamiento</div></div>
-          <div class="step-box"><div class="step-title">Sustitución Numérica</div><div class="step-content" id="stepTotalSub"></div></div>
-          <div class="step-box"><div class="step-title">Potencia Eléctrica de Entrada</div><div class="step-content result" id="stepTotalRes"></div></div>
-          <p class="step-explanation">Potencia real que debe suministrar tu fuente para vencer pérdidas.</p>
+          <p style="font-size:0.85rem; color:#94a3b8; margin-top:8px;">Observa en el simulador 3D cómo la onda electromagnética choca con la pared gris (el metal) y su amplitud disminuye rápidamente según este valor δ.</p>
         </div>
       </div>
     </main>
@@ -187,165 +109,166 @@
 
   <script>
     const MU_0 = 4 * Math.PI * 1e-7; 
-    const SIGMA = 5.670374e-8;      
-
     const MATERIALES = {
-      acero: { c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, comentario: "Excelente rendimiento. Permeabilidad alta atrapa el campo en la superficie." },
-      hierro: { c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, comentario: "Muy magnético. Fuerte efecto de calentamiento superficial." },
-      inoxidable: { c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, comentario: "No ferromagnético, pero altísima resistividad genera mucho calor." },
-      aluminio: { c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, comentario: "Requiere el doble de energía calórica que el acero y la corriente penetra mucho." },
-      cobre: { c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, comentario: "Resistencia casi nula; casi no genera calor." }
+      acero: { c: 490, rho: 1.43e-7, mu_r: 200 },
+      aluminio: { c: 897, rho: 2.82e-8, mu_r: 1.0 },
+      cobre: { c: 385, rho: 1.68e-8, mu_r: 1.0 }
     };
 
-    let animData = { freq: 100, delta: 1, temp: 25, current: 180 };
+    // Objeto seguro para evitar variables undefined
+    let animData = { freq: 100, delta: 1, current: 180 };
 
-    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current'].reduce((acc, id) => {
+    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Freq', 'Turns', 'Length', 'Current'].reduce((acc, id) => {
       acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
       acc['lbl' + id] = document.getElementById('lbl' + id);
       return acc;
     }, {});
-    const matComment = document.getElementById('materialComment');
 
     function actualizarCalculos() {
       const mat = MATERIALES[els.materialselect.value];
-      const m = parseFloat(els.mass.value), T_ini = parseFloat(els.tempini.value);
-      let T_fin = parseFloat(els.tempfin.value);
-      if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
-      
-      const t = parseFloat(els.time.value), areaM2 = parseFloat(els.area.value) * 1e-4;
-      const f_hz = parseFloat(els.freq.value) * 1000, N = parseFloat(els.turns.value);
-      const lenM = parseFloat(els.length.value) * 1e-2, I = parseFloat(els.current.value);
+      const m = parseFloat(els.mass.value) || 0;
+      const t = parseFloat(els.time.value) || 1;
+      const f_hz = (parseFloat(els.freq.value) || 10) * 1000;
+      const N = parseFloat(els.turns.value) || 1;
+      const lenM = (parseFloat(els.length.value) || 1) * 1e-2;
+      const I = parseFloat(els.current.value) || 0;
+      const T_ini = parseFloat(els.tempini.value) || 25;
+      const T_fin = parseFloat(els.tempfin.value) || 100;
 
       els.lblMass.textContent = m.toFixed(2); els.lblTempIni.textContent = T_ini; els.lblTempFin.textContent = T_fin;
-      els.lblTime.textContent = t; els.lblArea.textContent = els.area.value; els.lblFreq.textContent = els.freq.value;
-      els.lblTurns.textContent = N; els.lblLength.textContent = els.length.value; els.lblCurrent.textContent = I;
-      matComment.textContent = mat.comentario;
+      els.lblTime.textContent = t; els.lblFreq.textContent = f_hz / 1000;
+      els.lblTurns.textContent = N; els.lblLength.textContent = lenM * 100; els.lblCurrent.textContent = I;
 
-      // 1. Ampère
       const B = MU_0 * (N / lenM) * I;
-      document.getElementById('stepAmpereSub').textContent = `B = (4π×10⁻⁷) · (${N} / ${lenM.toFixed(3)}m) · ${I}A`;
-      document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
-
-      // 2. Faraday
-      const A_pieza = 0.003; 
-      const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
-      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz.toLocaleString()}Hz) · (${B.toFixed(4)}T) · 0.003m²`;
-      document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
-
-      // 3. Skin
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
       const delta_mm = delta_m * 1000;
-      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz}Hz · 4π×10⁻⁷ · ${mat.mu_r}) )`;
-      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm (${(delta_m * 1e6).toFixed(1)} µm)`;
-
-      // 4. Joule
-      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.0001) * 100));
-      document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)} Ω·m, δ = ${delta_mm.toFixed(3)} mm`;
-      document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
-
-      // 5. Termodinámica
+      
       const P_th = (m * mat.c * (T_fin - T_ini)) / t;
-      document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c}J/kg°C · ${T_fin - T_ini}°C) / ${t}s`;
-      document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W`;
+      const P_equipo = P_th / 0.75; // Simplificado
 
-      // 6. Radiación
-      const T_fin_K = T_fin + 273.15, T_amb_K = T_ini + 273.15;
-      const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
-      document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · 5.67×10⁻⁸ · ${areaM2.toFixed(4)}m² · [${T_fin_K.toFixed(1)}⁴ - ${T_amb_K.toFixed(1)}⁴]`;
-      document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
-
-      // 7. Balance
-      const P_equipo = (P_th + P_rad) / 0.75;
-      document.getElementById('stepTotalSub').textContent = `P_equipo = (${Math.round(P_th)}W + ${Math.round(P_rad)}W) / 0.75`;
-      document.getElementById('stepTotalRes').textContent = `P_equipo ≈ ${Math.round(P_equipo).toLocaleString()} W`;
-
-      // Tarjetas
+      document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
       document.getElementById('cardTotalPower').textContent = `${(P_equipo / 1000).toFixed(1)} kW`;
-      document.getElementById('cardMicrowaves').textContent = `~${(P_equipo / 900).toFixed(1)} microondas`;
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B * 1000).toFixed(0)} mT`;
 
-      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I };
+      // Alimentar el motor 3D
+      animData.freq = f_hz / 1000;
+      animData.delta = delta_mm;
+      animData.current = I;
     }
 
     Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
     actualizarCalculos();
 
-    // MOTOR VECTORIAL
-    const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
-    let phase = 0;
+    // =========================================================
+    // MOTOR GRÁFICO 3D (PROYECCIÓN ISOMÉTRICA DE ONDA EM)
+    // =========================================================
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let timePhase = 0;
 
-    function drawVector(ctx, x, y, magX, magY, color) {
-      const len = Math.sqrt(magX*magX + magY*magY);
-      if(len < 3) return; // Filtro para no dibujar puntos microscópicos
-      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2; // Flechas más gruesas
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + magX, y + magY); ctx.stroke();
-      const angle = Math.atan2(magY, magX);
-      const arrowSize = Math.min(6, len * 0.3);
+    // Función matemática para proyectar 3D (x, y, z) a 2D de pantalla
+    function project3D(x, y, z) {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2 + 20;
+      // Proyección isométrica adaptada
+      const u = cx + (z * 1.2) - (x * 0.7);
+      const v = cy - y + (x * 0.4);
+      return { u, v };
+    }
+
+    // Dibuja una línea en el espacio 3D
+    function drawLine3D(x1, y1, z1, x2, y2, z2, color, width = 1) {
+      const p1 = project3D(x1, y1, z1);
+      const p2 = project3D(x2, y2, z2);
       ctx.beginPath();
-      ctx.moveTo(x + magX, y + magY);
-      ctx.lineTo(x + magX - arrowSize*Math.cos(angle - Math.PI/7), y + magY - arrowSize*Math.sin(angle - Math.PI/7));
-      ctx.lineTo(x + magX - arrowSize*Math.cos(angle + Math.PI/7), y + magY - arrowSize*Math.sin(angle + Math.PI/7));
-      ctx.fill();
+      ctx.moveTo(p1.u, p1.v);
+      ctx.lineTo(p2.u, p2.v);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
     }
 
     function renderFrame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      phase += animData.freq * 0.0012; 
-      const bWave = Math.sin(phase), jWave = -Math.cos(phase);
-
-      const rectW = 220, rectH = 130;
-      const rectX = (canvas.width - rectW) / 2, rectY = (canvas.height - rectH) / 2;
+      // Limpiar lienzo con negro puro
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Control de color térmico sólido
-      let r = 71, g = 85, b_color = 105;
-      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.2));
-      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.3);
-      if (animData.temp > 1100) b_color = Math.min(255, (animData.temp - 1100) * 0.5);
+      timePhase += animData.freq * 0.002; 
       
-      ctx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_color)})`;
-      ctx.fillRect(rectX, rectY, rectW, rectH);
-      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.strokeRect(rectX, rectY, rectW, rectH);
+      // Amplitud base (depende de la corriente)
+      const A = 30 + (animData.current / 500) * 80;
 
-      ctx.fillStyle = '#b45309';
-      for(let i=0; i<3; i++) {
-        ctx.fillRect(rectX - 45, rectY + 12 + (i*42), 26, 32);
-        ctx.fillRect(rectX + rectW + 18, rectY + 12 + (i*42), 26, 32);
-      }
+      // Eje Z (Eje de propagación central)
+      drawLine3D(0, 0, -250, 0, 0, 250, 'rgba(255,255,255,0.4)', 2);
+      
+      // DIBUJAR LA PARED DE METAL (Plano en Z = 80)
+      const z_metal = 80;
+      const p1 = project3D(-120, 120, z_metal);
+      const p2 = project3D(120, 120, z_metal);
+      const p3 = project3D(120, -120, z_metal);
+      const p4 = project3D(-120, -120, z_metal);
+      
+      ctx.beginPath();
+      ctx.moveTo(p1.u, p1.v); ctx.lineTo(p2.u, p2.v); ctx.lineTo(p3.u, p3.v); ctx.lineTo(p4.u, p4.v);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(100, 116, 139, 0.3)'; // Gris translúcido
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.stroke();
 
-      // Vectores Naranjas (Efecto Skin)
-      const numJRows = 5, numJCols = 16, maxJLength = 40;
-      for(let row=0; row<numJRows; row++) {
-        for(let col=0; col<numJCols; col++) {
-          let colRatio = col / (numJCols - 1);
-          let vx = rectX + 4 + (colRatio * (rectW - 8));
-          let vy = rectY + 16 + (row * (rectH/numJRows));
-          
-          let distBorde = Math.min(vx - rectX, (rectX + rectW) - vx);
-          // Escala multiplicadora para que el efecto skin se aprecie visualmente
-          let factorSkin = Math.max(8, animData.delta * 120); 
-          let intensidad = Math.exp(-distBorde / factorSkin);
-          
-          let magY = jWave * (colRatio < 0.5 ? 1 : -1) * intensidad * maxJLength;
-          drawVector(ctx, vx, vy - (magY/2), 0, magY, `rgba(249, 115, 22, ${Math.max(0.15, intensidad)})`);
+      // DIBUJAR LAS ONDAS ELECTROMAGNÉTICAS
+      const step = 8;
+      let prevE = null;
+      let prevB = null;
+
+      for (let z = -250; z <= 250; z += step) {
+        
+        // Efecto Skin: Decaimiento exponencial de la amplitud si z está dentro del metal
+        let decay = 1;
+        if (z > z_metal) {
+          // Ajuste visual del delta para que quepa en la pantalla
+          let visualDelta = Math.max(5, animData.delta * 30); 
+          decay = Math.exp(-(z - z_metal) / visualDelta);
         }
+
+        // Si la onda ya murió por completo (decay casi cero), no la dibujamos
+        if (decay < 0.01) continue;
+
+        const wave = Math.sin((z * 0.04) - timePhase) * decay;
+        
+        // Campo Eléctrico E (Oscila en el eje Y - Vertical)
+        const Ey = wave * A;
+        // Campo Magnético B (Oscila en el eje X - Profundidad)
+        const Bx = wave * A;
+
+        const currentE = project3D(0, Ey, z);
+        const currentB = project3D(Bx, 0, z);
+
+        // Dibujar vectores verticales y horizontales
+        drawLine3D(0, 0, z, 0, Ey, z, 'rgba(56, 189, 248, 0.6)', 1.5); // Línea azul E
+        drawLine3D(0, 0, z, Bx, 0, z, 'rgba(244, 63, 94, 0.6)', 1.5);  // Línea roja B
+
+        // Dibujar la envolvente (la curva que conecta las puntas)
+        if (prevE) {
+          ctx.beginPath(); ctx.moveTo(prevE.u, prevE.v); ctx.lineTo(currentE.u, currentE.v);
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+          
+          ctx.beginPath(); ctx.moveTo(prevB.u, prevB.v); ctx.lineTo(currentB.u, currentB.v);
+          ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2; ctx.stroke();
+        }
+
+        prevE = currentE;
+        prevB = currentB;
       }
 
-      // Vectores Azules (Campo Magnético B)
-      const numBRows = 5, numBCols = 24;
-      const baseBLength = 30 + (animData.current / 500) * 50; 
-      
-      for(let row=0; row<numBRows; row++) {
-        for(let col=0; col<numBCols; col++) {
-          let vx = (canvas.width/numBCols)*col + 16, vy = (canvas.height/numBRows)*row + 20;
-          let dentro = (vx > rectX - 25 && vx < rectX + rectW + 25);
-          let magY = bWave * baseBLength * (dentro ? 1 : -0.3);
-          drawVector(ctx, vx, vy - (magY/2), 0, magY, `rgba(56, 189, 248, ${dentro ? 0.9 : 0.25})`);
-        }
-      }
       requestAnimationFrame(renderFrame);
     }
-    renderFrame();
+    
+    // Evitar fallos asegurando que todo esté listo antes de arrancar
+    window.onload = () => {
+      renderFrame();
+    };
   </script>
 </body>
 </html>
