@@ -9,6 +9,9 @@
   <meta name="theme-color" content="#0f172a">
   <link rel="apple-touch-icon" href="icon-192.png">
 
+  <!-- LIBRERÍA SHEETJS PARA EXPORTACIÓN PROFESIONAL A EXCEL (.xlsx) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
     :root {
       --bg-main: #0f172a; --bg-card: #1e293b; --bg-subcard: #090d16;
@@ -31,6 +34,8 @@
     .excel-btn { background: #10b981; color: #020617; }
     .print-btn:hover, .help-btn:hover, .reset-btn:hover, .excel-btn:hover { opacity: 0.85; }
 
+    .btn-blocked { background: #475569 !important; color: #94a3b8 !important; cursor: not-allowed !important; border: 1px dashed #ef4444 !important; }
+
     .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 1024px) { 
       .container { grid-template-columns: 350px 1fr; align-items: start; } 
@@ -44,16 +49,19 @@
     select, input[type="range"] { width: 100%; accent-color: var(--accent); }
     select { background: var(--bg-subcard); color: var(--text-main); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
     
-    .material-info-box { background: var(--bg-subcard); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+    .material-info-box { background: var(--bg-subcard); border: 1px solid var(--border); padding: 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
     .material-info-box span { color: var(--highlight); font-family: monospace; font-weight: bold; }
+    .human-explain { font-style: italic; color: #cbd5e1; margin-top: 4px; border-top: 1px dashed #334155; padding-top: 4px; font-size: 0.72rem; }
 
-    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 15px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; }
+    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 10px; margin-bottom: 10px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-optimal strong { color: var(--success); }
     .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
     .status-warning strong { color: var(--warning); }
-    .status-danger { background: rgba(239, 68, 68, 0.1); border-left-color: var(--danger); color: #fca5a5; }
+    .status-danger { background: rgba(239, 68, 68, 0.15); border-left-color: var(--danger); color: #fca5a5; }
     .status-danger strong { color: var(--danger); }
+
+    .process-info-box { background: rgba(56, 189, 248, 0.05); border: 1px dashed var(--highlight); padding: 8px; border-radius: 6px; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 10px; line-height: 1.35; display: none; }
 
     .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 10px; border-radius: 6px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; }
 
@@ -114,7 +122,7 @@
   <header>
     <div>
       <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
-      <p>Visualización electromagnética multi-cámara y termodinámica completa</p>
+      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia Tapia y Axel Aros</p>
     </div>
     <div class="header-actions">
       <button class="help-btn" id="openHelpBtn">❓ Guía de Uso</button>
@@ -127,11 +135,11 @@
       <span class="close-modal" id="closeHelpBtn">&times;</span>
       <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-        1. <strong>Mueve los deslizadores</strong> del panel izquierdo para cambiar propiedades de la pieza o bobina.<br>
-        2. Observa en las <strong>Cámaras 3D y 2D</strong> las ondas electromagnéticas y la penetración superficial (Efecto Skin).<br>
-        3. El sistema experto te avisará si superas el <strong>Punto de Curie</strong> (>730°C en acero/hierro).<br>
-        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas y compararlas en la tabla.<br>
-        5. Exporta todos los datos (incluyendo fórmulas resueltas) en <strong>Excel (.CSV)</strong> o en un informe <strong>PDF</strong>.
+        <strong>Desarrollado por:</strong> José Luis Tapia Tapia y Axel Aros (IPChile)<br><br>
+        1. <strong>Límite Mecánico:</strong> Selecciona el material y la barra de temperatura se bloqueará automáticamente antes del Punto de Fusión.<br>
+        2. <strong>Restricción Física:</strong> Cuidado con la Frecuencia, la Corriente RMS o geometrías extremas en la bobina. Si superan los límites seguros, el sistema se bloquea.<br>
+        3. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas.<br>
+        4. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con doble hoja tabulada y diseñada profesionalmente.
       </p>
     </div>
   </div>
@@ -153,8 +161,14 @@
 
       <div class="material-info-box" id="materialJustification">
         <div>Resistividad (ρ): <span id="infoRho">-</span></div>
-        <div>Calor Específico (c): <span id="infoC">-</span></div>
-        <div>Permeabilidad (μr): <span id="infoMu">-</span></div>
+        <div class="human-explain" id="humanRho">-</div>
+        <div style="margin-top: 6px;">Calor Específico (c): <span id="infoC">-</span></div>
+        <div class="human-explain" id="humanC">-</div>
+        <div style="margin-top: 6px;">Permeabilidad (μr): <span id="infoMu">-</span></div>
+        <div class="human-explain" id="humanMu">-</div>
+        <div style="border-top: 1px solid #334155; margin-top: 6px; padding-top: 4px; color:var(--accent);">
+          Punto Fusión (Tope): <span id="infoFusion">-</span>
+        </div>
       </div>
 
       <div class="control-group">
@@ -167,11 +181,14 @@
       <div class="control-group">
         <label>Temp. Objetivo (°C) ℹ️: <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning);"></small></span></label>
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
+        <div style="text-align: right; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;" id="limiteTempText"></div>
+        <div id="tempProcessInfo" class="process-info-box"></div>
       </div>
 
       <div class="control-group">
         <label>Tiempo (s) ℹ️: <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
+        <div id="timeProcessInfo" class="process-info-box"></div>
       </div>
 
       <div class="control-group"><label>Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
@@ -183,12 +200,24 @@
         <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
       </div>
 
-      <div class="control-group"><label>Espiras (N) ℹ️: <span id="lblTurns">6</span></label><input type="range" id="inputTurns" min="2" max="20" step="1" value="6"></div>
-      <div class="control-group"><label>Long. Bobina (cm): <span id="lblLength">8</span></label><input type="range" id="inputLength" min="3" max="30" step="1" value="8"></div>
+      <div id="statusPanel" class="status-panel status-optimal"></div>
+
+      <div class="control-group">
+        <label>Espiras (N) ℹ️: <span id="lblTurns">6</span></label>
+        <input type="range" id="inputTurns" min="2" max="20" step="1" value="6">
+        <div id="turnsWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
+      </div>
+
+      <div class="control-group">
+        <label>Long. Bobina (cm): <span id="lblLength">8</span></label>
+        <input type="range" id="inputLength" min="3" max="30" step="1" value="8">
+        <div id="lengthWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
+      </div>
       
       <div class="control-group">
         <label>Corriente RMS (A) ℹ️: <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
+        <div id="currentWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
       </div>
       
       <h2 style="margin-top: 15px;">3. Control de Animación</h2>
@@ -201,8 +230,6 @@
         <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; flex: 2;">💾 Guardar Escenario</button>
         <button id="resetBtn" class="reset-btn" style="flex: 1;">🔄 Reiniciar</button>
       </div>
-
-      <div id="statusPanel" class="status-panel status-optimal"></div>
 
     </aside>
 
@@ -239,7 +266,7 @@
         <h3>
           📊 Historial de Escenarios Guardados
           <div>
-            <button id="exportExcelBtn" class="excel-btn">⬇️ Excel (.CSV)</button>
+            <button id="exportExcelBtn" class="excel-btn">📗 Descargar Excel Pro (.xlsx)</button>
             <button id="clearHistoryBtn" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem; margin-left: 5px;">Limpiar</button>
           </div>
         </h3>
@@ -353,7 +380,7 @@
   </div>
 
   <footer class="academic-footer">
-    Simulador Académico de Ingeniería Electromagnética y Termodinámica — ITPA (2026)
+    IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia Tapia y Axel Aros (2026)
   </footer>
 
   <script>
@@ -361,14 +388,39 @@
     const SIGMA = 5.670374e-8;      
 
     const MATERIALES = {
-      acero: { nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80 },
-      hierro: { nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75 },
-      inoxidable: { nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65 },
-      aluminio: { nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20 },
-      cobre: { nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15 }
+      acero: { 
+        nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, fusion: 1450,
+        descRho: "Resistencia media; permite un excelente acoplamiento magnético.",
+        descC: "Requiere una cantidad moderada de energía por cada kilo para elevar su temperatura.",
+        descMu: "Altamente magnético (Atrae imanes fácilmente y concentra mejor el campo)."
+      },
+      hierro: { 
+        nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, fusion: 1538,
+        descRho: "Buena conductividad eléctrica inicial.",
+        descC: "Baja inercia térmica; se calienta con relativa facilidad.",
+        descMu: "Permeabilidad muy alta (Excelente concentración de líneas de campo magnético)."
+      },
+      inoxidable: { 
+        nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, fusion: 1400,
+        descRho: "Alta resistencia eléctrica (genera fricción de electrones muy intensa).",
+        descC: "Capacidad estándar de almacenamiento térmico.",
+        descMu: "No magnético (Prácticamente no interactúa con imanes permanentes)."
+      },
+      aluminio: { 
+        nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, fusion: 660,
+        descRho: "Muy baja resistencia (la electricidad fluye libremente, cuesta más calentar por Joule).",
+        descC: "Alto calor específico (absorbe mucha energía antes de cambiar de temperatura).",
+        descMu: "No magnético (Requiere frecuencias más altas para inducir corrientes eficaces)."
+      },
+      cobre: { 
+        nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, fusion: 1085,
+        descRho: "Excelente conductor eléctrico (mínima oposición al paso de corriente).",
+        descC: "Bajo calor específico; absorbe y conduce el calor muy rápido.",
+        descMu: "No magnético (Ideal para fabricar las bobinas inductoras)."
+      }
     };
 
-    let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono" };
+    let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono", time: 45 };
     let currentSimulationState = {};
     let simulationHistory = [];
 
@@ -379,11 +431,24 @@
     }, {});
 
     function actualizarCalculos() {
+      if(!els.current) return;
+
       const mat = MATERIALES[els.materialselect.value];
       
       document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
+      document.getElementById('humanRho').textContent = mat.descRho;
       document.getElementById('infoC').textContent = mat.c + " J/kg·K";
-      document.getElementById('infoMu').textContent = mat.mu_r + (mat.mu_r > 1 ? " (Magnético)" : " (No magnético)");
+      document.getElementById('humanC').textContent = mat.descC;
+      document.getElementById('infoMu').textContent = mat.mu_r;
+      document.getElementById('humanMu').textContent = mat.descMu;
+      document.getElementById('infoFusion').textContent = mat.fusion + " °C";
+
+      const limiteFusionSeguro = mat.fusion - 10;
+      els.tempfin.max = limiteFusionSeguro;
+      document.getElementById('limiteTempText').textContent = `Protección Activa: Límite fijado en ${limiteFusionSeguro}°C`;
+      if (parseFloat(els.tempfin.value) > limiteFusionSeguro) {
+          els.tempfin.value = limiteFusionSeguro;
+      }
 
       const m = parseFloat(els.mass.value) || 0.5;
       const T_ini = parseFloat(els.tempini.value) || 25;
@@ -400,6 +465,52 @@
       const lenM = lenCm * 1e-2;
       const I = parseFloat(els.current.value) || 180;
       const spd = parseFloat(els.speed.value);
+
+      const tempInfoBox = document.getElementById('tempProcessInfo');
+      tempInfoBox.style.display = 'block';
+      if (T_fin < 150) {
+          tempInfoBox.innerHTML = "ℹ️ <strong>Proceso:</strong> Deshumidificación / Precalentamiento leve. Mínima alteración estructural.";
+      } else if (T_fin >= 150 && T_fin < 600) {
+          tempInfoBox.innerHTML = "🔧 <strong>Proceso:</strong> Revenido o alivio de tensiones mecánicas post-mecanizado.";
+      } else {
+          tempInfoBox.innerHTML = "🔥 <strong>Proceso:</strong> Zona crítica de transformación (Templado / Forja). Se cruza el Punto de Curie en aceros.";
+      }
+
+      const timeInfoBox = document.getElementById('timeProcessInfo');
+      timeInfoBox.style.display = 'block';
+      if (t < 15) {
+          timeInfoBox.innerHTML = "⚠️ <strong>Rampa Ultrarrápida:</strong> Requiere alta potencia y genera un choque térmico agresivo.";
+      } else if (t >= 15 && t <= 90) {
+          timeInfoBox.innerHTML = "✅ <strong>Ciclo Industrial Estándar:</strong> Balance óptimo entre potencia y estabilidad térmica.";
+      } else {
+          timeInfoBox.innerHTML = "⏳ <strong>Calentamiento Lento:</strong> Atención a las pérdidas excesivas por radiación hacia el aire.";
+      }
+
+      const turnsWarnBox = document.getElementById('turnsWarning');
+      if (N < 4) {
+          turnsWarnBox.style.display = 'block';
+          turnsWarnBox.style.color = 'var(--warning)';
+          turnsWarnBox.innerHTML = "⚠️ <strong>Pocas espiras:</strong> Acoplamiento magnético débil con la pieza.";
+      } else if (N > 14) {
+          turnsWarnBox.style.display = 'block';
+          turnsWarnBox.style.color = 'var(--warning)';
+          turnsWarnBox.innerHTML = "⚠️ <strong>Exceso de espiras:</strong> Alta inductancia y resistencia en el cable de cobre.";
+      } else {
+          turnsWarnBox.style.display = 'none';
+      }
+
+      const lengthWarnBox = document.getElementById('lengthWarning');
+      if (lenCm < 5) {
+          lengthWarnBox.style.display = 'block';
+          lengthWarnBox.style.color = 'var(--highlight)';
+          lengthWarnBox.innerHTML = "ℹ️ <strong>Bobina compacta:</strong> Enfoque de campo muy localizado (ideal temple).";
+      } else if (lenCm > 18) {
+          lengthWarnBox.style.display = 'block';
+          lengthWarnBox.style.color = 'var(--warning)';
+          lengthWarnBox.innerHTML = "⚠️ <strong>Bobina muy alargada:</strong> Dispersión del flujo magnético ($B$ disminuye).";
+      } else {
+          lengthWarnBox.style.display = 'none';
+      }
 
       let refTemp = "";
       if (T_fin < 100) refTemp = "(Tibio)";
@@ -458,6 +569,7 @@
       let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
+      let isRestricted = false;
 
       if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
         mu_efectivo = 1.0; 
@@ -475,11 +587,50 @@
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
+      if (delta_mm < 0.05) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN FÍSICA:</strong> Efecto Skin minúsculo (${delta_mm.toFixed(3)} mm). Riesgo de daño al inversor y fusión superficial. <strong>Baje la frecuencia.</strong>`);
+      } else if (f_khz < 20) {
+          warnings.push("📻 <strong>Frecuencia Baja (&lt; 20 kHz):</strong> Penetración profunda hacia el núcleo.");
+      } else if (f_khz > 200) {
+          warnings.push("⚡ <strong>Frecuencia Alta (&gt; 200 kHz):</strong> Calentamiento superficial.");
+      }
+
+      const currentWarnBox = document.getElementById('currentWarning');
+      if (I > 450) {
+          isRestricted = true;
+          currentWarnBox.style.display = 'block';
+          currentWarnBox.style.color = 'var(--danger)';
+          currentWarnBox.innerHTML = '⛔ <strong>Corriente Crítica (&gt;450 A):</strong> Excede la capacidad segura del inversor. Operación bloqueada.';
+          dangers.push("🛑 <strong>Corriente RMS Excesiva:</strong> Rango no soportado por componentes estándar.");
+      } else if (I > 350) {
+          currentWarnBox.style.display = 'block';
+          currentWarnBox.style.color = 'var(--warning)';
+          currentWarnBox.innerHTML = '⚠️ <strong>Corriente Elevada (&gt;350 A):</strong> Alto estrés en semiconductores y riesgo térmico en la bobina de cobre.';
+          warnings.push("⚠️ Corriente RMS elevada cercana al límite térmico de la bobina.");
+      } else {
+          currentWarnBox.style.display = 'none';
+          currentWarnBox.innerHTML = '';
+      }
+
       if (P_kW > 150) {
         dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
       const statusBox = document.getElementById('statusPanel');
+      const btnSave = document.getElementById('saveHistoryBtn');
+      
+      if (isRestricted) {
+          btnSave.disabled = true;
+          btnSave.className = "btn-blocked";
+          btnSave.innerHTML = "⛔ RESTRICCIÓN FÍSICA (No Guardable)";
+      } else {
+          btnSave.disabled = false;
+          btnSave.className = "print-btn";
+          btnSave.style.background = "var(--success)";
+          btnSave.innerHTML = "💾 Guardar Escenario";
+      }
+
       if (dangers.length > 0) {
         statusBox.className = "status-panel status-danger";
         statusBox.innerHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
@@ -493,16 +644,12 @@
 
       document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz} · μ₀ · ${mu_efectivo}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
-
       document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
-
       document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT}°C) / ${t}s`;
       document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
-
       document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · σ · A · (${T_fin_K.toFixed(0)}⁴ - ${T_amb_K.toFixed(0)}⁴)`;
       document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
-
       document.getElementById('stepTotalSub').textContent = `P_eq = (${Math.round(P_th)} + ${Math.round(P_rad)}) / 0.75`;
       document.getElementById('stepTotalRes').textContent = `P_eq ≈ ${P_kW.toFixed(2)} kW`;
 
@@ -515,20 +662,32 @@
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
 
-      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre };
+      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre, time: t };
 
-      // ALMACENAR DATOS PARA EL REPORTE DE EXCEL
       currentSimulationState = {
         material: mat.nombre, 
-        mass: m.toFixed(2) + " kg", 
+        rhoVal: mat.rho.toExponential(2) + " Ω·m",
+        cVal: mat.c + " J/kg·K",
+        muVal: mat.mu_r,
+        descMat: mat.descRho + " " + mat.descMu,
+        mass: m.toFixed(2), 
         temp: T_fin + " °C",
+        tempRaw: T_fin,
         time: t + " s", 
+        timeRaw: t,
         freq: f_khz + " kHz", 
+        freqRaw: f_khz,
         power: P_kW.toFixed(1) + " kW", 
+        powerRaw: P_kW.toFixed(1),
         skin: delta_mm.toFixed(3) + " mm",
+        skinRaw: delta_mm.toFixed(3),
         current: I + " A",
         turns: N + " espiras",
+        turnsRaw: N,
         length: lenCm + " cm",
+        lengthRaw: lenCm,
+        B_mT: (B * 1000).toFixed(1),
+        E_V: FEM_est.toFixed(1),
         f1_sub: document.getElementById('stepAmpereSub').textContent,
         f1_res: document.getElementById('stepAmpereRes').textContent,
         f2_sub: document.getElementById('stepFaradaySub').textContent,
@@ -550,6 +709,7 @@
     actualizarCalculos();
 
     document.getElementById('saveHistoryBtn').addEventListener('click', () => {
+      if (document.getElementById('saveHistoryBtn').disabled) return;
       simulationHistory.push({...currentSimulationState});
       updateHistoryTable();
     });
@@ -567,48 +727,72 @@
       actualizarCalculos();
     });
 
-    // GENERAR REPORTE DETALLADO EN EXCEL (.CSV) CON FÓRMULAS
+    // EXPORTACIÓN EXCEL (.XLSX) PROFESIONAL - CON DATOS Y DESCRIPCIÓN DE MATERIALES
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
+      if (typeof XLSX === 'undefined') {
+        alert("La librería de Excel no ha cargado. Revisa tu conexión a internet.");
+        return;
+      }
       if (simulationHistory.length === 0) {
         alert("Primero debes guardar al menos un escenario en el historial para exportarlo.");
         return;
       }
       
-      let csvContent = "\uFEFF"; 
-      const sep = ";"; // SOLUCIÓN: Punto y coma para separar columnas en Excel Hispano
-      
-      csvContent += `REPORTE TÉCNICO DE SIMULACIONES - CALENTAMIENTO POR INDUCCIÓN\n\n`;
-      
+      let wb = XLSX.utils.book_new();
+
+      // HOJA 1: RESUMEN EJECUTIVO (Con propiedades físicas y descripción humana)
+      let ws1_data = [
+        ["IPChile — Ingeniería en Electricidad y Electrónica"],
+        ["Autores: José Luis Tapia Tapia y Axel Aros"],
+        ["REPORTE EJECUTIVO DE INGENIERÍA - SIMULACIÓN DE INDUCCIÓN ELECTROMAGNÉTICA"],
+        ["Fecha de Emisión:", new Date().toLocaleString()],
+        [],
+        [
+          "Escenario", "Material", "Resistividad (ρ)", "Calor Específico (c)", "Permeabilidad (μr)", 
+          "Descripción del Material", "Masa (kg)", "Espiras (N)", "Long. Bobina (cm)", 
+          "Frecuencia (kHz)", "Corriente (A)", "Potencia (kW)", "Skin (mm)", "Temp Obj (°C)", "Tiempo (s)"
+        ]
+      ];
       simulationHistory.forEach((item, index) => {
-        csvContent += `--- ESCENARIO #${index + 1} ---\n`;
-        csvContent += `[PARÁMETROS]\n`;
-        csvContent += `Material${sep}${item.material}\n`;
-        csvContent += `Masa${sep}${item.mass}\n`;
-        csvContent += `Temp. Objetivo${sep}${item.temp}\n`;
-        csvContent += `Tiempo${sep}${item.time}\n`;
-        csvContent += `Frecuencia${sep}${item.freq}\n`;
-        csvContent += `Bobina${sep}${item.current}, ${item.turns}, ${item.length}\n\n`;
-        
-        csvContent += `[CÁLCULOS Y FÓRMULAS]\n`;
-        csvContent += `Ley Física${sep}Sustitución Numérica${sep}Resultado\n`;
-        csvContent += `1. Ampère-Maxwell (Campo B)${sep}${item.f1_sub}${sep}${item.f1_res}\n`;
-        csvContent += `2. Faraday-Lenz (FEM)${sep}${item.f2_sub}${sep}${item.f2_res}\n`;
-        csvContent += `3. Efecto Skin (Penetración)${sep}${item.f3_sub}${sep}${item.f3_res}\n`;
-        csvContent += `4. Ley de Joule (Densidad)${sep}${item.f4_sub}${sep}${item.f4_res}\n`;
-        csvContent += `5. Termodinámica (Pot. Útil)${sep}${item.f5_sub}${sep}${item.f5_res}\n`;
-        csvContent += `6. Radiación (Pérdidas)${sep}${item.f6_sub}${sep}${item.f6_res}\n`;
-        csvContent += `7. Balance Global (Pot. Equipo)${sep}${item.f7_sub}${sep}${item.f7_res}\n\n`;
+        ws1_data.push([
+          `Prueba #${index + 1}`, item.material, item.rhoVal, item.cVal, item.muVal,
+          item.descMat, parseFloat(item.mass), parseFloat(item.turnsRaw), parseFloat(item.lengthRaw),
+          parseFloat(item.freqRaw), parseFloat(item.current), parseFloat(item.powerRaw),
+          parseFloat(item.skinRaw), parseFloat(item.tempRaw), parseFloat(item.timeRaw)
+        ]);
       });
-      
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", "Reporte_Induccion_Formulas.csv");
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      let ws1 = XLSX.utils.aoa_to_sheet(ws1_data);
+      ws1['!cols'] = [
+        {wch:12}, {wch:22}, {wch:18}, {wch:18}, {wch:16}, 
+        {wch:45}, {wch:10}, {wch:12}, {wch:16}, {wch:16}, 
+        {wch:14}, {wch:16}, {wch:14}, {wch:14}, {wch:10}
+      ];
+      XLSX.utils.book_append_sheet(wb, ws1, "Resumen Ejecutivo");
+
+      // HOJA 2: MEMORIA DE CÁLCULO
+      let ws2_data = [
+        ["IPChile — Ingeniería en Electricidad y Electrónica"],
+        ["Autores: José Luis Tapia Tapia y Axel Aros"],
+        ["MEMORIA DE CÁLCULO Y DESGLOSE DE LEYES FÍSICAS"],
+        []
+      ];
+      simulationHistory.forEach((item, index) => {
+        ws2_data.push([`=== ESCENARIO #${index + 1}: ${item.material} (${item.power}) ===`]);
+        ws2_data.push(["Principio / Ley Física", "Fórmula / Sustitución Numérica", "Resultado Final"]);
+        ws2_data.push(["1. Ley de Ampère-Maxwell (Campo B)", item.f1_sub, item.f1_res]);
+        ws2_data.push(["2. Ley de Faraday-Lenz (FEM Inducida)", item.f2_sub, item.f2_res]);
+        ws2_data.push(["3. Efecto Skin o Pelicular (δ)", item.f3_sub, item.f3_res]);
+        ws2_data.push(["4. Densidad por Ley de Joule", item.f4_sub, item.f4_res]);
+        ws2_data.push(["5. Potencia Térmica Neta (P_th)", item.f5_sub, item.f5_res]);
+        ws2_data.push(["6. Pérdidas por Radiación (Stefan-Boltzmann)", item.f6_sub, item.f6_res]);
+        ws2_data.push(["7. Balance Global de Potencia (P_eq)", item.f7_sub, item.f7_res]);
+        ws2_data.push([], []);
+      });
+      let ws2 = XLSX.utils.aoa_to_sheet(ws2_data);
+      ws2['!cols'] = [{wch:42}, {wch:65}, {wch:30}];
+      XLSX.utils.book_append_sheet(wb, ws2, "Memoria de Cálculo");
+
+      XLSX.writeFile(wb, "Reporte_Induccion_IPChile.xlsx");
     });
 
     function updateHistoryTable() {
@@ -620,7 +804,7 @@
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass}</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass} kg</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
         tbody.appendChild(tr);
       });
     }
@@ -673,6 +857,14 @@
       ctx1.fillStyle = '#f8fafc'; ctx1.font = '10px monospace';
       ctx1.fillText(animData.materialName, frontTL.u + 5, frontTL.v - 8);
 
+      ctx1.fillStyle = '#38bdf8'; ctx1.font = '12px monospace';
+      ctx1.fillText(`Material: ${animData.materialName}`, 10, 20);
+      ctx1.fillText(`Temp Obj: ${animData.temp}°C`, 10, 36);
+      ctx1.fillText(`Tiempo: ${animData.time} s`, 10, 52);
+
+      const waveSpatialFreq = 0.02 + (animData.freq / 300) * 0.08; 
+      const timeMultiplier = 1 + (animData.freq / 100);
+
       let prevE = null, prevB = null;
       for (let z = -180; z <= 160; z += 6) {
         let decay = 1;
@@ -682,7 +874,7 @@
         }
         if (decay < 0.015) continue; 
 
-        const wave = Math.sin((z * 0.04) - timePhase) * decay;
+        const wave = Math.sin((z * waveSpatialFreq) - timePhase * timeMultiplier) * decay;
         const Ey = wave * A, Bx = wave * A * 0.9;
         const currentE = projIso(0, Ey, z), currentB = projIso(Bx, 0, z);
 
@@ -714,6 +906,11 @@
       ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
       ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
 
+      ctx2.fillStyle = '#f43f5e'; ctx2.font = '12px monospace';
+      ctx2.fillText(`Freq AC: ${animData.freq} kHz`, 10, 20);
+      ctx2.fillStyle = '#a7f3d0';
+      ctx2.fillText(`Penetración (δ): ${animData.delta.toFixed(3)} mm`, 10, 36);
+
       const angI = Math.PI / 4, angT = Math.PI / 8; 
       const incU = { x: Math.sin(angI), y: Math.cos(angI) };
       const refU = { x: Math.sin(angI), y: -Math.cos(angI) };
@@ -730,7 +927,7 @@
       drawRayLine(traU, 0, 200, 'rgba(255,255,255,0.3)');  
 
       const slideRange = 150;
-      let slidePhase = (timePhase * 40) % slideRange;
+      let slidePhase = (timePhase * 40 * (1 + animData.freq/150)) % slideRange;
 
       function drawMovingVectors(u, d, labelE, labelB, decay=1) {
          if(decay < 0.05) return;
@@ -761,8 +958,8 @@
       drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
 
       ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
-      ctx2.fillText('Aire', 10, 20);
-      ctx2.fillText('Metal (Conductor)', 10, cy + 20);
+      ctx2.fillText('Aire', 10, 208);
+      ctx2.fillText('Metal (Conductor)', cx + 10, 208);
     }
 
     function renderAll() {
