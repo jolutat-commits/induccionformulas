@@ -36,6 +36,16 @@
 
     .btn-blocked { background: #475569 !important; color: #94a3b8 !important; cursor: not-allowed !important; border: 1px dashed #ef4444 !important; }
 
+    /* BOTÓN DE ENCENDIDO */
+    .power-btn { 
+      width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; 
+      text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border: none; 
+      margin-bottom: 15px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .power-off { background: var(--danger); color: white; }
+    .power-on { background: var(--warning); color: #020617; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+    .power-btn:hover { transform: translateY(-2px); }
+
     .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 1024px) { 
       .container { grid-template-columns: 350px 1fr; align-items: start; } 
@@ -53,7 +63,7 @@
     .material-info-box span { color: var(--highlight); font-family: monospace; font-weight: bold; }
     .human-explain { font-style: italic; color: #cbd5e1; margin-top: 4px; border-top: 1px dashed #334155; padding-top: 4px; font-size: 0.72rem; }
 
-    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 10px; margin-bottom: 10px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; }
+    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 15px; margin-bottom: 10px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-optimal strong { color: var(--success); }
     .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
@@ -66,10 +76,12 @@
     .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 10px; border-radius: 6px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; }
 
     .visualizer-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 15px; text-align: center; }
+    
     .canvases-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .canvas-wrapper { flex: 1; min-width: 280px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; }
-    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; }
-    canvas { width: 100% !important; height: 210px !important; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
+    .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; display: flex; flex-direction: column; align-items: center; }
+    .canvas-wrapper.full-width { flex: 1 1 100%; min-width: 100%; }
+    .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; width: 100%; }
+    canvas { width: 100% !important; max-width: 600px; height: 210px !important; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
@@ -137,9 +149,10 @@
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
         <strong>Desarrollado por:</strong> José Luis Tapia Tapia y Axel Aros (IPChile)<br><br>
         1. <strong>Límite Mecánico:</strong> Selecciona el material y la barra de temperatura se bloqueará automáticamente antes del Punto de Fusión.<br>
-        2. <strong>Restricción Física:</strong> Cuidado con la Frecuencia, la Corriente RMS o geometrías extremas en la bobina. Si superan los límites seguros, el sistema se bloquea.<br>
-        3. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas.<br>
-        4. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con doble hoja tabulada y diseñada profesionalmente.
+        2. <strong>Temporizador Automático:</strong> Presiona ENCENDER y el equipo operará por los segundos definidos en el deslizador "Tiempo (s)", apagándose solo al terminar.<br>
+        3. <strong>Restricciones Estrictas de Diseño:</strong> Frecuencias excesivas (≥ 250 kHz), rampas de tiempo críticas (muy rápidas o muy lentas), exceso de espiras o longitudes extremas bloquean el sistema por malas prácticas de ingeniería.<br>
+        4. Haz clic en <strong>💾 Guardar Escenario</strong> para almacenar pruebas válidas.<br>
+        5. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con doble hoja tabulada y diseñada profesionalmente.
       </p>
     </div>
   </div>
@@ -147,13 +160,16 @@
   <div class="container">
     
     <aside class="panel-controls">
+      
+      <button id="powerBtn" class="power-btn power-off">🛑 Equipo Apagado (OFF)</button>
+
       <h2>1. Propiedades de la Pieza</h2>
       <div class="control-group">
         <label>Material a Calentar: ℹ️</label>
         <select id="materialSelect">
           <option value="acero">Acero al Carbono (Magnético)</option>
           <option value="hierro">Hierro Dulce (Alta Permeabilidad)</option>
-          <option value="inoxidable">Acero Inoxidable 304 (Resistivo)</option>
+          <option value="inoxidable">Acero Inoxidable 304 (Austenítico)</option>
           <option value="aluminio">Aluminio (No magnético)</option>
           <option value="cobre">Cobre (Muy conductor)</option>
         </select>
@@ -179,7 +195,7 @@
       <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
       
       <div class="control-group">
-        <label>Temp. Objetivo (°C) ℹ️: <span><span id="lblTempFin">800</span> <small id="lblTempRef" style="color:var(--warning);"></small></span></label>
+        <label>Temp. Objetivo (°C) ℹ️: <span><span id="lblTempFin">800</span> <small id="lblTempRef"></small></span></label>
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
         <div style="text-align: right; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;" id="limiteTempText"></div>
         <div id="tempProcessInfo" class="process-info-box"></div>
@@ -199,8 +215,6 @@
         <label>Frecuencia (kHz) ℹ️: <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
       </div>
-
-      <div id="statusPanel" class="status-panel status-optimal"></div>
 
       <div class="control-group">
         <label>Espiras (N) ℹ️: <span id="lblTurns">6</span></label>
@@ -226,6 +240,8 @@
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
+      <div id="statusPanel" class="status-panel status-optimal"></div>
+
       <div style="display: flex; gap: 8px; margin-top: 12px;">
         <button id="saveHistoryBtn" class="print-btn" style="background: var(--success); color: #020617; flex: 2;">💾 Guardar Escenario</button>
         <button id="resetBtn" class="reset-btn" style="flex: 1;">🔄 Reiniciar</button>
@@ -239,22 +255,27 @@
         <div class="canvases-container">
           <div class="canvas-wrapper">
             <h4>🎥 Cámara 1: Vista Isométrica 3D</h4>
-            <canvas id="simCanvas1" width="400" height="220"></canvas>
+            <canvas id="simCanvas1" width="350" height="220"></canvas>
           </div>
           <div class="canvas-wrapper">
+            <h4>🎥 Cámara 3: Vista Industrial Realista</h4>
+            <canvas id="simCanvas3" width="350" height="220"></canvas>
+          </div>
+          <div class="canvas-wrapper full-width">
             <h4>🎥 Cámara 2: Reflexión y Efecto Skin</h4>
-            <canvas id="simCanvas2" width="400" height="220"></canvas>
+            <canvas id="simCanvas2" width="700" height="150" style="height: 150px !important;"></canvas>
           </div>
         </div>
-        
         <div class="canvas-legend">
           <div class="legend-item"><span style="background: #38bdf8;"></span>Campo Eléctrico E</div>
           <div class="legend-item"><span style="background: #f43f5e; border-radius: 50%;"></span>Campo Magnético B</div>
-          <div class="legend-item"><span style="background: rgba(148, 163, 184, 0.4); border: 1px solid #94a3b8;"></span>Superficie Metálica</div>
+          <div class="legend-item"><span style="background: #94a3b8; border: 1px solid #94a3b8;"></span>Metal Frío</div>
+          <div class="legend-item"><span style="background: #ef4444; border: 1px solid #f97316; box-shadow: 0 0 5px #f97316;"></span>Metal Caliente</div>
         </div>
       </div>
 
       <div class="summary-cards">
+        <div class="summary-card"><span>Temp. Real del Metal</span><strong id="cardVisualTemp">25 °C</strong><small id="cardTempStatus">Apagado</small></div>
         <div class="summary-card"><span>Potencia Recomendada</span><strong id="cardTotalPower">0 kW</strong><small id="cardMicrowaves">0 microondas</small></div>
         <div class="summary-card"><span>Efecto Skin (δ)</span><strong id="cardSkinDepth">0 mm</strong><small id="cardSkinNote">Capa superficial</small></div>
         <div class="summary-card"><span>Campo Magnético</span><strong id="cardMagneticB">0 mT</strong><small>Densidad inductora</small></div>
@@ -292,8 +313,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepAmpereRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> La corriente al pasar por las vueltas de alambre de cobre crea un campo magnético invisible y poderoso en el centro.<br>
-            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético".
+            <strong>💡 Qué nos dice:</strong> La corriente al pasar por las vueltas de alambre de cobre crea un campo magnético invisible y poderoso en el centro.
           </div>
         </div>
 
@@ -305,8 +325,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepFaradayRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Los cambios rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse.<br>
-            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo (Corrientes de Foucault).
+            <strong>💡 Qué nos dice:</strong> Los cambios rápidos de magnetismo asustan a los electrones del metal, creando un voltaje de la nada que los hace moverse.
           </div>
         </div>
 
@@ -318,8 +337,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepSkinRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.<br>
-            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Al chocar contra la pared metálica, la onda rebota y la que entra pierde fuerza rápidamente.
+            <strong>💡 Qué nos dice:</strong> Las corrientes eléctricas de alta frecuencia no pueden viajar por el centro del metal; se quedan atrapadas en los bordes.
           </div>
         </div>
 
@@ -331,8 +349,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepJouleRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Toda corriente que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.<br>
-            <strong>👉 Ejemplo práctico:</strong> Miles de electrones forzados a correr por un pasillo muy estrecho (la capa "Skin") generan fricción inmensa que calienta el metal.
+            <strong>💡 Qué nos dice:</strong> Toda corriente que choca contra la resistencia natural de un material termina convirtiéndose en calor extremo.
           </div>
         </div>
 
@@ -344,8 +361,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepThermoRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.<br>
-            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro en 10 segundos, necesitas un quemador gigante (Mucha Potencia).
+            <strong>💡 Qué nos dice:</strong> Es la cantidad bruta de energía que el metal necesita "tragarse" para alcanzar la temperatura que quieres.
           </div>
         </div>
 
@@ -357,8 +373,7 @@
             <div class="step-box"><div class="step-title">Resultado Calculado</div><div class="step-content result" id="stepRadRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, perdiendo energía hacia el aire en forma de luz infrarroja y calor.<br>
-            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica, irradiando calor al taller.
+            <strong>💡 Qué nos dice:</strong> Todo objeto muy caliente actúa como una lámpara, perdiendo energía hacia el aire en forma de luz infrarroja y calor.
           </div>
         </div>
 
@@ -370,8 +385,7 @@
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Potencia Recomendada</div><div class="step-content result" id="stepTotalRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Es el resumen de cuánta energía total necesitas consumir desde el enchufe para que la máquina logre su cometido.<br>
-            <strong>👉 Ejemplo práctico:</strong> Como calcular la gasolina de un auto sumando el movimiento real más lo que se desperdicia en calor del motor.
+            <strong>💡 Qué nos dice:</strong> Es el resumen de cuánta energía total necesitas consumir desde el enchufe para que la máquina logre su cometido.
           </div>
         </div>
 
@@ -387,53 +401,125 @@
     const MU_0 = 4 * Math.PI * 1e-7; 
     const SIGMA = 5.670374e-8;      
 
+    // DICCIONARIO DE MATERIALES CON RESTRICCIÓN DE TIEMPO INCORPORADA (MIN Y MAX)
     const MATERIALES = {
       acero: { 
         nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, fusion: 1450,
+        defaultFreq: 100, minTimePerKg: 15, maxTimePerKg: 80,
+        descErrorTiempo: "Oxidación severa (cascarilla) y descarburación superficial.",
         descRho: "Resistencia media; permite un excelente acoplamiento magnético.",
         descC: "Requiere una cantidad moderada de energía por cada kilo para elevar su temperatura.",
         descMu: "Altamente magnético (Atrae imanes fácilmente y concentra mejor el campo)."
       },
       hierro: { 
         nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, fusion: 1538,
+        defaultFreq: 80, minTimePerKg: 12, maxTimePerKg: 80,
+        descErrorTiempo: "Formación masiva de cascarilla magnética y degradación estructural.",
         descRho: "Buena conductividad eléctrica inicial.",
         descC: "Baja inercia térmica; se calienta con relativa facilidad.",
         descMu: "Permeabilidad muy alta (Excelente concentración de líneas de campo magnético)."
       },
       inoxidable: { 
         nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, fusion: 1400,
+        defaultFreq: 120, minTimePerKg: 20, maxTimePerKg: 100,
+        descErrorTiempo: "Pérdida de cromo superficial, destruyendo su propiedad anticorrosiva.",
         descRho: "Alta resistencia eléctrica (genera fricción de electrones muy intensa).",
         descC: "Capacidad estándar de almacenamiento térmico.",
-        descMu: "No magnético (Prácticamente no interactúa con imanes permanentes)."
+        descMu: "Austenítico/No magnético (Prácticamente no interactúa con imanes permanentes)."
       },
       aluminio: { 
         nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, fusion: 660,
+        defaultFreq: 150, minTimePerKg: 10, maxTimePerKg: 60,
+        descErrorTiempo: "Disipación térmica crítica. El calor se fuga impidiendo concentrar la temperatura.",
         descRho: "Muy baja resistencia (la electricidad fluye libremente, cuesta más calentar por Joule).",
         descC: "Alto calor específico (absorbe mucha energía antes de cambiar de temperatura).",
         descMu: "No magnético (Requiere frecuencias más altas para inducir corrientes eficaces)."
       },
       cobre: { 
         nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, fusion: 1085,
+        defaultFreq: 150, minTimePerKg: 6, maxTimePerKg: 40,
+        descErrorTiempo: "Disipación extrema. Actúa como disipador gigante; el equipo gasta luz sin calentar el núcleo.",
         descRho: "Excelente conductor eléctrico (mínima oposición al paso de corriente).",
         descC: "Bajo calor específico; absorbe y conduce el calor muy rápido.",
         descMu: "No magnético (Ideal para fabricar las bobinas inductoras)."
       }
     };
 
-    let animData = { freq: 100, delta: 1, temp: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono", time: 45 };
+    let isPowerOn = false;
+    let visualTemp = 25;
+    let countdownTimer = null;
+    let timeRemaining = 0;
+
+    let animData = { freq: 100, delta: 1, temp: 800, tempIni: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono", time: 45, turns: 6, lengthCm: 8, area: 60 };
     let currentSimulationState = {};
     let simulationHistory = [];
 
-    const els = ['MaterialSelect', 'Mass', 'TempIni', 'TempFin', 'Time', 'Area', 'Freq', 'Turns', 'Length', 'Current', 'Speed'].reduce((acc, id) => {
-      acc[id.toLowerCase()] = document.getElementById(id.startsWith('Material') ? 'materialSelect' : 'input' + id);
-      acc['lbl' + id] = document.getElementById('lbl' + id);
-      return acc;
-    }, {});
+    const powerBtn = document.getElementById('powerBtn');
+    
+    function turnOffPower() {
+        isPowerOn = false;
+        clearInterval(countdownTimer);
+        powerBtn.className = "power-btn power-off";
+        powerBtn.innerHTML = "🛑 Equipo Apagado (OFF)";
+        document.getElementById('cardTempStatus').textContent = "Enfriando...";
+        document.getElementById('cardTempStatus').style.color = "var(--text-muted)";
+    }
+
+    function updateTimerDisplay() {
+        powerBtn.innerHTML = `⚡ EQUIPO OPERANDO - Se detendrá en ${timeRemaining}s (Click para Parada de Emergencia)`;
+    }
+
+    powerBtn.addEventListener('click', () => {
+      if (powerBtn.classList.contains('btn-blocked')) return;
+
+      if (!isPowerOn) {
+        isPowerOn = true;
+        timeRemaining = parseInt(document.getElementById('inputTime').value) || 45; 
+        
+        powerBtn.className = "power-btn power-on";
+        document.getElementById('cardTempStatus').textContent = "Calentando...";
+        document.getElementById('cardTempStatus').style.color = "var(--accent)";
+        
+        updateTimerDisplay();
+        
+        countdownTimer = setInterval(() => {
+            timeRemaining--;
+            if (timeRemaining <= 0) {
+                turnOffPower();
+            } else {
+                updateTimerDisplay();
+            }
+        }, 1000);
+      } else {
+        turnOffPower();
+      }
+    });
+
+    const inputIds = [
+      'materialSelect', 'inputMass', 'inputTempIni', 'inputTempFin', 
+      'inputTime', 'inputArea', 'inputFreq', 'inputTurns', 
+      'inputLength', 'inputCurrent', 'inputSpeed'
+    ];
+
+    inputIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) {
+        el.addEventListener('input', actualizarCalculos);
+        if(el.tagName === 'SELECT') {
+            el.addEventListener('change', () => {
+                const selectedMat = MATERIALES[el.value];
+                if (selectedMat && selectedMat.defaultFreq) {
+                    document.getElementById('inputFreq').value = selectedMat.defaultFreq;
+                }
+                actualizarCalculos();
+            });
+        }
+      }
+    });
 
     function actualizarCalculos() {
-      if(!els.current) return;
-
-      const mat = MATERIALES[els.materialselect.value];
+      const matSelect = document.getElementById('materialSelect');
+      const mat = MATERIALES[matSelect.value];
       
       document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
       document.getElementById('humanRho').textContent = mat.descRho;
@@ -444,46 +530,44 @@
       document.getElementById('infoFusion').textContent = mat.fusion + " °C";
 
       const limiteFusionSeguro = mat.fusion - 10;
-      els.tempfin.max = limiteFusionSeguro;
+      const inputTempFin = document.getElementById('inputTempFin');
+      inputTempFin.max = limiteFusionSeguro;
       document.getElementById('limiteTempText').textContent = `Protección Activa: Límite fijado en ${limiteFusionSeguro}°C`;
-      if (parseFloat(els.tempfin.value) > limiteFusionSeguro) {
-          els.tempfin.value = limiteFusionSeguro;
+      
+      let T_fin = parseFloat(inputTempFin.value) || 800;
+      if (T_fin > limiteFusionSeguro) {
+          T_fin = limiteFusionSeguro;
+          inputTempFin.value = limiteFusionSeguro;
       }
 
-      const m = parseFloat(els.mass.value) || 0.5;
-      const T_ini = parseFloat(els.tempini.value) || 25;
-      let T_fin = parseFloat(els.tempfin.value) || 800;
-      if (T_fin <= T_ini) { T_fin = T_ini + 10; els.tempfin.value = T_fin; }
+      const m = parseFloat(document.getElementById('inputMass').value) || 0.5;
+      const T_ini = parseFloat(document.getElementById('inputTempIni').value) || 25;
+      if (T_fin <= T_ini) { T_fin = T_ini + 10; inputTempFin.value = T_fin; }
+
+      if(!isPowerOn && visualTemp === 25) visualTemp = T_ini;
       
-      const t = parseFloat(els.time.value) || 45;
-      const areaCm2 = parseFloat(els.area.value) || 60;
+      const t = parseFloat(document.getElementById('inputTime').value) || 45;
+      const areaCm2 = parseFloat(document.getElementById('inputArea').value) || 60;
       const areaM2 = areaCm2 * 1e-4;
-      const f_khz = parseFloat(els.freq.value) || 100;
+      
+      const f_khz = parseFloat(document.getElementById('inputFreq').value) || 100;
       const f_hz = f_khz * 1000;
-      const N = parseFloat(els.turns.value) || 6;
-      const lenCm = parseFloat(els.length.value) || 8;
+      const N = parseFloat(document.getElementById('inputTurns').value) || 6;
+      const lenCm = parseFloat(document.getElementById('inputLength').value) || 8;
       const lenM = lenCm * 1e-2;
-      const I = parseFloat(els.current.value) || 180;
-      const spd = parseFloat(els.speed.value);
+      const I = parseFloat(document.getElementById('inputCurrent').value) || 180;
+      const spd = parseFloat(document.getElementById('inputSpeed').value) || 1.0;
 
       const tempInfoBox = document.getElementById('tempProcessInfo');
       tempInfoBox.style.display = 'block';
       if (T_fin < 150) {
-          tempInfoBox.innerHTML = "ℹ️ <strong>Proceso:</strong> Deshumidificación / Precalentamiento leve. Mínima alteración estructural.";
+          tempInfoBox.innerHTML = "ℹ️ <strong>Proceso:</strong> Precalentamiento leve. Mínima alteración estructural.";
       } else if (T_fin >= 150 && T_fin < 600) {
-          tempInfoBox.innerHTML = "🔧 <strong>Proceso:</strong> Revenido o alivio de tensiones mecánicas post-mecanizado.";
+          tempInfoBox.innerHTML = "🔧 <strong>Proceso:</strong> Revenido o alivio de tensiones mecánicas.";
+      } else if (T_fin >= mat.fusion - 100) {
+          tempInfoBox.innerHTML = "🌋 <strong>Proceso:</strong> Forja extrema / Riesgo de fusión inminente.";
       } else {
-          tempInfoBox.innerHTML = "🔥 <strong>Proceso:</strong> Zona crítica de transformación (Templado / Forja). Se cruza el Punto de Curie en aceros.";
-      }
-
-      const timeInfoBox = document.getElementById('timeProcessInfo');
-      timeInfoBox.style.display = 'block';
-      if (t < 15) {
-          timeInfoBox.innerHTML = "⚠️ <strong>Rampa Ultrarrápida:</strong> Requiere alta potencia y genera un choque térmico agresivo.";
-      } else if (t >= 15 && t <= 90) {
-          timeInfoBox.innerHTML = "✅ <strong>Ciclo Industrial Estándar:</strong> Balance óptimo entre potencia y estabilidad térmica.";
-      } else {
-          timeInfoBox.innerHTML = "⏳ <strong>Calentamiento Lento:</strong> Atención a las pérdidas excesivas por radiación hacia el aire.";
+          tempInfoBox.innerHTML = "🔥 <strong>Proceso:</strong> Zona crítica de transformación térmica (Templado / Forja).";
       }
 
       const turnsWarnBox = document.getElementById('turnsWarning');
@@ -491,7 +575,7 @@
           turnsWarnBox.style.display = 'block';
           turnsWarnBox.style.color = 'var(--warning)';
           turnsWarnBox.innerHTML = "⚠️ <strong>Pocas espiras:</strong> Acoplamiento magnético débil con la pieza.";
-      } else if (N > 14) {
+      } else if (N > 14 && N < 19) {
           turnsWarnBox.style.display = 'block';
           turnsWarnBox.style.color = 'var(--warning)';
           turnsWarnBox.innerHTML = "⚠️ <strong>Exceso de espiras:</strong> Alta inductancia y resistencia en el cable de cobre.";
@@ -504,7 +588,7 @@
           lengthWarnBox.style.display = 'block';
           lengthWarnBox.style.color = 'var(--highlight)';
           lengthWarnBox.innerHTML = "ℹ️ <strong>Bobina compacta:</strong> Enfoque de campo muy localizado (ideal temple).";
-      } else if (lenCm > 18) {
+      } else if (lenCm > 18 && lenCm < 28) {
           lengthWarnBox.style.display = 'block';
           lengthWarnBox.style.color = 'var(--warning)';
           lengthWarnBox.innerHTML = "⚠️ <strong>Bobina muy alargada:</strong> Dispersión del flujo magnético ($B$ disminuye).";
@@ -513,11 +597,16 @@
       }
 
       let refTemp = "";
-      if (T_fin < 100) refTemp = "(Tibio)";
-      else if (T_fin < 400) refTemp = "(Horno doméstico)";
-      else if (T_fin < 900) refTemp = "(Al rojo vivo)";
-      else refTemp = "(Punto de fusión)";
-      document.getElementById('lblTempRef').textContent = refTemp;
+      let tempColor = "var(--success)";
+      if (T_fin < 100) { refTemp = "(Tibio)"; } 
+      else if (T_fin < 400) { refTemp = "(Calentamiento medio)"; } 
+      else if (T_fin < mat.fusion - 200) { refTemp = "(Al rojo vivo)"; tempColor = "var(--warning)"; } 
+      else if (T_fin < mat.fusion - 10) { refTemp = "(Incandescente / Forja)"; tempColor = "var(--accent)"; } 
+      else { refTemp = "(Límite de fusión)"; tempColor = "var(--danger)"; }
+      
+      const lblTempRef = document.getElementById('lblTempRef');
+      lblTempRef.textContent = refTemp;
+      lblTempRef.style.color = tempColor;
 
       let refMass = "";
       if (m <= 1.0) refMass = "(Pieza ligera)";
@@ -526,18 +615,36 @@
       document.getElementById('lblMassRef').textContent = refMass;
       document.getElementById('lblMassRef').style.color = m > 3.0 ? "var(--warning)" : "var(--success)";
 
+      // CÁLCULO DE LÍMITES DE TIEMPO
+      const tiempoMinimoSeguro = mat.minTimePerKg * m;
+      const tiempoMaximoSeguro = 30 + (mat.maxTimePerKg * m); // Límite elástico inercial de 30s + ratio de masa
+
       let refTime = "";
-      if (t < 15) refTime = "(⚠️ Violento)";
-      else if (t <= 90) refTime = "(Óptimo)";
-      else refTime = "(Lento)";
+      if (t < tiempoMinimoSeguro) { refTime = "(⛔ Rápido Crítico)"; }
+      else if (t > tiempoMaximoSeguro) { refTime = "(⛔ Lento Crítico)"; }
+      else { refTime = "(Óptimo)"; }
       document.getElementById('lblTimeRef').textContent = refTime;
-      document.getElementById('lblTimeRef').style.color = t < 15 ? "var(--danger)" : "var(--success)";
+      document.getElementById('lblTimeRef').style.color = (t < tiempoMinimoSeguro || t > tiempoMaximoSeguro) ? "var(--danger)" : "var(--success)";
+
+      // CAJA DE INFORMACIÓN DEL TIEMPO
+      const timeInfoBox = document.getElementById('timeProcessInfo');
+      timeInfoBox.style.display = 'block';
+      if (t < tiempoMinimoSeguro) {
+          timeInfoBox.innerHTML = "⚠️ <strong>Choque Térmico:</strong> Rampa ultrarrápida destructiva para la pieza y el inversor.";
+      } else if (t > tiempoMaximoSeguro) {
+          timeInfoBox.innerHTML = "⚠️ <strong>Disipación / Oxidación:</strong> Calentamiento ineficiente que daña la metalurgia de la pieza.";
+      } else {
+          timeInfoBox.innerHTML = "✅ <strong>Ciclo Industrial Estándar:</strong> Balance óptimo de transferencia térmica.";
+      }
 
       let refFreq = "";
-      if (f_khz < 30) refFreq = "(Baja)";
-      else if (f_khz <= 150) refFreq = "(Óptimo)";
-      else refFreq = "(Superficial)";
+      let freqColor = "var(--success)";
+      if (f_khz < 30) { refFreq = "(Baja)"; } 
+      else if (f_khz <= 150) { refFreq = "(Óptimo)"; } 
+      else if (f_khz < 250) { refFreq = "(Alta)"; freqColor = "var(--warning)"; } 
+      else { refFreq = "(⛔ Crítica)"; freqColor = "var(--danger)"; } 
       document.getElementById('lblFreqRef').textContent = refFreq;
+      document.getElementById('lblFreqRef').style.color = freqColor;
 
       let refCurr = "";
       if (I < 100) refCurr = "(Baja)";
@@ -546,37 +653,31 @@
       document.getElementById('lblCurrentRef').textContent = refCurr;
       document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
 
-      els.lblMass.textContent = m.toFixed(2);
-      els.lblTempIni.textContent = T_ini;
-      els.lblTempFin.textContent = T_fin;
-      els.lblTime.textContent = t;
-      els.lblArea.textContent = areaCm2;
-      els.lblFreq.textContent = f_khz;
-      els.lblTurns.textContent = N;
-      els.lblLength.textContent = lenCm;
-      els.lblCurrent.textContent = I;
-      els.lblSpeed.textContent = spd.toFixed(1) + 'x';
+      document.getElementById('lblMass').textContent = m.toFixed(2);
+      document.getElementById('lblTempIni').textContent = T_ini;
+      document.getElementById('lblTempFin').textContent = T_fin;
+      document.getElementById('lblTime').textContent = t;
+      document.getElementById('lblArea').textContent = areaCm2;
+      document.getElementById('lblFreq').textContent = f_khz;
+      document.getElementById('lblTurns').textContent = N;
+      document.getElementById('lblLength').textContent = lenCm;
+      document.getElementById('lblCurrent').textContent = I;
+      document.getElementById('lblSpeed').textContent = spd.toFixed(1) + 'x';
 
       const B = MU_0 * (N / lenM) * I;
       document.getElementById('stepAmpereSub').textContent = `B = (4π × 10⁻⁷) · (${N} / ${lenM.toFixed(3)}) · ${I}`;
       document.getElementById('stepAmpereRes').textContent = `B = ${B.toFixed(4)} T (${(B * 1000).toFixed(1)} mT)`;
 
-      const A_pieza = 0.003; 
+      const A_pieza = areaM2; 
       const FEM_est = 2 * Math.PI * f_hz * B * A_pieza;
-      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz} Hz) · (${B.toFixed(3)} T) · 0.003`;
+      document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz} Hz) · (${B.toFixed(3)} T) · ${A_pieza.toFixed(4)}`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      let mu_efectivo = mat.mu_r;
       let warnings = [];
       let dangers = [];
       let isRestricted = false;
 
-      if ((mat.nombre.includes("Acero") || mat.nombre.includes("Hierro")) && T_fin >= 730) {
-        mu_efectivo = 1.0; 
-        warnings.push("🔥 <strong>Punto de Curie superado (>730°C):</strong> El material pierde su magnetismo (μ_r cae a 1). La eficiencia decae.");
-      }
-
-      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mu_efectivo));
+      const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
       const delta_mm = delta_m * 1000;
       const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100));
       
@@ -587,15 +688,41 @@
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
-      if (delta_mm < 0.05) {
+      // 1. RESTRICCIÓN FÍSICA: EFECTO SKIN
+      if (delta_mm < 0.015) {
           isRestricted = true;
-          dangers.push(`⛔ <strong>RESTRICCIÓN FÍSICA:</strong> Efecto Skin minúsculo (${delta_mm.toFixed(3)} mm). Riesgo de daño al inversor y fusión superficial. <strong>Baje la frecuencia.</strong>`);
+          dangers.push(`⛔ <strong>RESTRICCIÓN FÍSICA:</strong> Efecto Skin microscópico (${delta_mm.toFixed(3)} mm). Riesgo de daño al inversor y fusión superficial extrema. <strong>Baje la frecuencia.</strong>`);
+      } 
+      else if (f_khz >= 250) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN DE FRECUENCIA:</strong> Frecuencia crítica (${f_khz} kHz). Alto riesgo de arco eléctrico y sobrecarga del inversor. <strong>Baje la frecuencia a un rango operativo (&lt;250 kHz).</strong>`);
+      }
+      else if (f_khz >= 200 && f_khz < 250) {
+          warnings.push("⚡ <strong>Frecuencia Alta:</strong> Calentamiento predominantemente superficial. Vigile el estrés del equipo.");
       } else if (f_khz < 20) {
-          warnings.push("📻 <strong>Frecuencia Baja (&lt; 20 kHz):</strong> Penetración profunda hacia el núcleo.");
-      } else if (f_khz > 200) {
-          warnings.push("⚡ <strong>Frecuencia Alta (&gt; 200 kHz):</strong> Calentamiento superficial.");
+          warnings.push("📻 <strong>Frecuencia Baja (&lt; 20 kHz):</strong> Penetración profunda hacia el núcleo. Menor eficiencia energética.");
       }
 
+      // 2. Restricción Estricta de Geometría
+      if (N >= 19) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN GEOMÉTRICA:</strong> Exceso extremo de espiras ($N = ${N}$). Inductancia parásita y caída térmica inaceptables en el devanado.`);
+      }
+      if (lenCm >= 28) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN GEOMÉTRICA:</strong> Longitud de bobina excesiva ($l = ${lenCm}\\text{ cm}$). Dispersión severa del flujo magnético ($B \\approx 0$).`);
+      }
+
+      // 3. NUEVA RESTRICCIÓN TÉRMICA ESTRICTA (DEMASIADO RÁPIDO O DEMASIADO LENTO)
+      if (t < tiempoMinimoSeguro) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN TÉRMICA (${mat.nombre}):</strong> Tiempo demasiado corto ($t = ${t}\\text{ s}$). Por su conductividad, calentar ${m.toFixed(2)} kg tan rápido provocará fractura por choque térmico. <strong>El mínimo seguro es de ${Math.ceil(tiempoMinimoSeguro)} segundos.</strong>`);
+      } else if (t > tiempoMaximoSeguro) {
+          isRestricted = true;
+          dangers.push(`⛔ <strong>RESTRICCIÓN TÉRMICA (${mat.nombre}):</strong> Tiempo excesivamente largo ($t = ${t}\\text{ s}$). ${mat.descErrorTiempo} El calor radiado supera la inyección térmica. <strong>El máximo seguro recomendado es de ${Math.floor(tiempoMaximoSeguro)} segundos.</strong>`);
+      }
+
+      // 4. Restricción de Inversor Estricta
       const currentWarnBox = document.getElementById('currentWarning');
       if (I > 450) {
           isRestricted = true;
@@ -613,6 +740,7 @@
           currentWarnBox.innerHTML = '';
       }
 
+      // 5. Restricción de Potencia
       if (P_kW > 150) {
         dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
@@ -624,25 +752,38 @@
           btnSave.disabled = true;
           btnSave.className = "btn-blocked";
           btnSave.innerHTML = "⛔ RESTRICCIÓN FÍSICA (No Guardable)";
+          
+          if(isPowerOn) turnOffPower(); 
+          powerBtn.disabled = true;
+          powerBtn.className = "btn-blocked";
+          powerBtn.innerHTML = "⛔ RESTRICCIÓN FÍSICA - EQUIPO BLOQUEADO";
       } else {
           btnSave.disabled = false;
           btnSave.className = "print-btn";
           btnSave.style.background = "var(--success)";
           btnSave.innerHTML = "💾 Guardar Escenario";
+
+          powerBtn.disabled = false;
+          if(!isPowerOn) {
+            powerBtn.className = "power-btn power-off";
+            powerBtn.innerHTML = "🛑 Equipo Apagado (OFF)";
+          }
       }
 
+      let finalStatusHTML = "";
       if (dangers.length > 0) {
         statusBox.className = "status-panel status-danger";
-        statusBox.innerHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
+        finalStatusHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
       } else if (warnings.length > 0) {
         statusBox.className = "status-panel status-warning";
-        statusBox.innerHTML = warnings.join("<br><br>");
+        finalStatusHTML = warnings.join("<br><br>");
       } else {
         statusBox.className = "status-panel status-optimal";
-        statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones:</strong> Todos los parámetros se encuentran dentro de rangos viables.";
+        finalStatusHTML = "✅ <strong>Sistema en Óptimas Condiciones.</strong>";
       }
+      statusBox.innerHTML = finalStatusHTML;
 
-      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz} · μ₀ · ${mu_efectivo}) )`;
+      document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz} · μ₀ · ${mat.mu_r}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
       document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
@@ -662,7 +803,7 @@
         `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. 
         Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
 
-      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, current: I, speed: spd, materialName: mat.nombre, time: t };
+      animData = { freq: f_khz, delta: delta_mm, temp: T_fin, tempIni: T_ini, current: I, speed: spd, materialName: mat.nombre, time: t, turns: N, lengthCm: lenCm, area: areaCm2 };
 
       currentSimulationState = {
         material: mat.nombre, 
@@ -705,7 +846,6 @@
       };
     }
 
-    Object.values(els).forEach(el => { if(el && el.tagName) el.addEventListener('input', actualizarCalculos); });
     actualizarCalculos();
 
     document.getElementById('saveHistoryBtn').addEventListener('click', () => {
@@ -720,14 +860,20 @@
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
-      els.mass.value = 0.5; els.tempini.value = 25; els.tempfin.value = 800;
-      els.time.value = 45; els.area.value = 60; els.freq.value = 100;
-      els.turns.value = 6; els.length.value = 8; els.current.value = 180;
-      els.speed.value = 1.0; els.materialselect.value = 'acero';
+      document.getElementById('inputMass').value = 0.5; 
+      document.getElementById('inputTempIni').value = 25; 
+      document.getElementById('inputTempFin').value = 800;
+      document.getElementById('inputTime').value = 45; 
+      document.getElementById('inputArea').value = 60; 
+      document.getElementById('inputFreq').value = 100;
+      document.getElementById('inputTurns').value = 6; 
+      document.getElementById('inputLength').value = 8; 
+      document.getElementById('inputCurrent').value = 180;
+      document.getElementById('inputSpeed').value = 1.0; 
+      document.getElementById('materialSelect').value = 'acero';
       actualizarCalculos();
     });
 
-    // EXPORTACIÓN EXCEL (.XLSX) PROFESIONAL - CON DATOS Y DESCRIPCIÓN DE MATERIALES
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
       if (typeof XLSX === 'undefined') {
         alert("La librería de Excel no ha cargado. Revisa tu conexión a internet.");
@@ -740,7 +886,6 @@
       
       let wb = XLSX.utils.book_new();
 
-      // HOJA 1: RESUMEN EJECUTIVO (Con propiedades físicas y descripción humana)
       let ws1_data = [
         ["IPChile — Ingeniería en Electricidad y Electrónica"],
         ["Autores: José Luis Tapia Tapia y Axel Aros"],
@@ -769,7 +914,6 @@
       ];
       XLSX.utils.book_append_sheet(wb, ws1, "Resumen Ejecutivo");
 
-      // HOJA 2: MEMORIA DE CÁLCULO
       let ws2_data = [
         ["IPChile — Ingeniería en Electricidad y Electrónica"],
         ["Autores: José Luis Tapia Tapia y Axel Aros"],
@@ -816,7 +960,16 @@
 
     const canvas1 = document.getElementById('simCanvas1'), ctx1 = canvas1.getContext('2d');
     const canvas2 = document.getElementById('simCanvas2'), ctx2 = canvas2.getContext('2d');
+    const canvas3 = document.getElementById('simCanvas3'), ctx3 = canvas3.getContext('2d');
     let timePhase = 0;
+
+    function getHeatColor(temp) {
+      if (temp < 400) return { r: 100, g: 116, b: 139, hex: '#64748b' }; 
+      if (temp < 600) return { r: 153, g: 27, b: 27, hex: '#991b1b' }; 
+      if (temp < 800) return { r: 220, g: 38, b: 38, hex: '#dc2626' }; 
+      if (temp < 1100) return { r: 249, g: 115, b: 22, hex: '#f97316' }; 
+      return { r: 253, g: 224, b: 71, hex: '#fde047' }; 
+    }
 
     function projIso(x, y, z) {
       const cx = canvas1.width / 2, cy = canvas1.height / 2 + 10;
@@ -831,23 +984,24 @@
 
     function renderCamera1() {
       ctx1.fillStyle = '#020617'; ctx1.fillRect(0, 0, canvas1.width, canvas1.height);
-      const A = 25 + (animData.current / 500) * 45;
+      const A = isPowerOn ? 25 + (animData.current / 500) * 45 : 0; 
 
       drawLine(ctx1, projIso, 0, 0, -180, 0, 0, 160, 'rgba(148, 163, 184, 0.35)', 1.5);
       drawLine(ctx1, projIso, 0, -80, -180, 0, 80, -180, 'rgba(56, 189, 248, 0.4)', 1);
 
       const z_metal = 40;
-      let r = 71, g = 85, b_col = 105;
-      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
-      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
+      const col = getHeatColor(visualTemp);
       
-      const ex = 55, ey = 70;
+      const areaScale = animData.area / 500;
+      const ex = 25 + (areaScale * 60); 
+      const ey = 35 + (areaScale * 70); 
+      
       const frontTL = projIso(-ex, ey, z_metal), frontTR = projIso(ex, ey, z_metal);
       const frontBL = projIso(-ex, -ey, z_metal), frontBR = projIso(ex, -ey, z_metal);
       const backTL = projIso(-ex, ey, 160), backTR = projIso(ex, ey, 160);
       const backBL = projIso(-ex, -ey, 160), backBR = projIso(ex, -ey, 160);
 
-      ctx1.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.45)`;
+      ctx1.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, 0.45)`;
       ctx1.strokeStyle = '#94a3b8'; ctx1.lineWidth = 1;
 
       ctx1.beginPath(); ctx1.moveTo(frontTR.u, frontTR.v); ctx1.lineTo(backTR.u, backTR.v); ctx1.lineTo(backBR.u, backBR.v); ctx1.lineTo(frontBR.u, frontBR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
@@ -861,6 +1015,8 @@
       ctx1.fillText(`Material: ${animData.materialName}`, 10, 20);
       ctx1.fillText(`Temp Obj: ${animData.temp}°C`, 10, 36);
       ctx1.fillText(`Tiempo: ${animData.time} s`, 10, 52);
+
+      if (!isPowerOn) return; 
 
       const waveSpatialFreq = 0.02 + (animData.freq / 300) * 0.08; 
       const timeMultiplier = 1 + (animData.freq / 100);
@@ -896,10 +1052,8 @@
       ctx2.fillStyle = 'rgba(16, 185, 129, 0.08)'; 
       ctx2.fillRect(0, 0, canvas2.width, cy);
 
-      let r = 71, g = 85, b_col = 105;
-      if (animData.temp > 100) r = Math.min(255, 71 + (animData.temp * 0.18));
-      if (animData.temp > 600) g = Math.min(255, (animData.temp - 600) * 0.28);
-      ctx2.fillStyle = `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b_col)}, 0.4)`; 
+      const col = getHeatColor(visualTemp);
+      ctx2.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, 0.4)`; 
       ctx2.fillRect(0, cy, canvas2.width, canvas2.height - cy);
 
       ctx2.strokeStyle = '#475569'; ctx2.lineWidth = 1;
@@ -930,7 +1084,7 @@
       let slidePhase = (timePhase * 40 * (1 + animData.freq/150)) % slideRange;
 
       function drawMovingVectors(u, d, labelE, labelB, decay=1) {
-         if(decay < 0.05) return;
+         if(decay < 0.05 || !isPowerOn) return; 
          const px = cx + d * u.x, py = cy + d * u.y;
          const vx = -u.y, vy = u.x;
 
@@ -958,13 +1112,75 @@
       drawMovingVectors(traU, slidePhase, 'E_t', 'B_t', transDecay);
 
       ctx2.fillStyle = '#94a3b8'; ctx2.font = '11px sans-serif';
-      ctx2.fillText('Aire', 10, 208);
-      ctx2.fillText('Metal (Conductor)', cx + 10, 208);
+      ctx2.fillText('Aire', 10, 140);
+      ctx2.fillText('Metal (Conductor)', cx + 10, 140);
+    }
+
+    function renderCamera3() {
+      ctx3.fillStyle = '#020617'; ctx3.fillRect(0, 0, canvas3.width, canvas3.height);
+      const cx = canvas3.width / 2, cy = canvas3.height / 2;
+      
+      const coilVisualHeight = animData.lengthCm * 6; 
+      const radius = 45;
+      
+      let cylWidth = 15 + (animData.area / 500) * 65; 
+
+      ctx3.lineWidth = 6;
+      ctx3.strokeStyle = '#92400e'; 
+      ctx3.beginPath();
+      for(let i=0; i<animData.turns; i++) {
+        let yBase = cy - coilVisualHeight/2 + (i * (coilVisualHeight/animData.turns));
+        ctx3.moveTo(cx - radius, yBase);
+        ctx3.quadraticCurveTo(cx, yBase - 15, cx + radius, yBase + (coilVisualHeight/animData.turns)/2);
+      }
+      ctx3.stroke();
+
+      const colCenter = getHeatColor(visualTemp);
+      const colEdge = getHeatColor(Math.max(animData.tempIni, visualTemp - 300));
+      
+      let gradient = ctx3.createLinearGradient(0, cy - 80, 0, cy + 80);
+      gradient.addColorStop(0, colEdge.hex);
+      gradient.addColorStop(0.5, colCenter.hex);
+      gradient.addColorStop(1, colEdge.hex);
+      
+      if (visualTemp > 500) {
+        ctx3.shadowBlur = (visualTemp - 500) * 0.05;
+        ctx3.shadowColor = colCenter.hex;
+      } else {
+        ctx3.shadowBlur = 0;
+      }
+
+      ctx3.fillStyle = gradient;
+      ctx3.fillRect(cx - cylWidth/2, cy - 90, cylWidth, 180);
+      ctx3.shadowBlur = 0;
+      
+      ctx3.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx3.fillRect(cx - cylWidth/2 + 5, cy - 90, cylWidth/4, 180);
+
+      ctx3.lineWidth = 7;
+      ctx3.strokeStyle = isPowerOn ? '#f59e0b' : '#d97706'; 
+      ctx3.lineCap = 'round';
+      ctx3.beginPath();
+      for(let i=0; i<animData.turns; i++) {
+        let yBase = cy - coilVisualHeight/2 + (i * (coilVisualHeight/animData.turns));
+        ctx3.moveTo(cx - radius, yBase);
+        ctx3.quadraticCurveTo(cx, yBase + 25, cx + radius, yBase + (coilVisualHeight/animData.turns)/2);
+      }
+      ctx3.stroke();
     }
 
     function renderAll() {
+      if (isPowerOn) {
+        visualTemp += (animData.temp - visualTemp) * 0.03 * animData.speed;
+      } else {
+        visualTemp += (animData.tempIni - visualTemp) * 0.01;
+        if(visualTemp < animData.tempIni + 1) document.getElementById('cardTempStatus').textContent = "Sistema Apagado";
+      }
+      document.getElementById('cardVisualTemp').textContent = `${Math.round(visualTemp)} °C`;
+
       timePhase += 0.02 * animData.speed;
       renderCamera1();
+      renderCamera3();
       renderCamera2();
       requestAnimationFrame(renderAll);
     }
