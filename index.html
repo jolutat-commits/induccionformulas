@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Maestro 3D de Calentamiento por Inducción</title>
+  <title>Simulador Calentamiento por Inducción</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
@@ -133,8 +133,8 @@
 
   <header>
     <div>
-      <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
-      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia Tapia y Axel Aros</p>
+      <h1>Simulador Calentamiento por Inducción</h1>
+      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia y Axel Aros Romero </p>
     </div>
     <div class="header-actions">
       <button class="help-btn" id="openHelpBtn">❓ Guía de Uso</button>
@@ -147,12 +147,12 @@
       <span class="close-modal" id="closeHelpBtn">&times;</span>
       <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-        <strong>Desarrollado por:</strong> José Luis Tapia Tapia y Axel Aros (IPChile)<br><br>
+        <strong>Desarrollado por:</strong> José Luis Tapia y Axel Aros Romero (IPChile)<br><br>
         1. <strong>Geometría Auto-Ajustable:</strong> El diámetro de la pieza y la bobina se calculan en tiempo real basándose en la Masa, Densidad y Longitud. Visualízalo en la Cámara 3.<br>
         2. <strong>Temporizador Automático:</strong> Presiona ENCENDER y el equipo operará por los segundos definidos.<br>
         3. <strong>HMI y Restricciones:</strong> Si configuras un parámetro peligroso, el simulador se bloqueará y la alerta aparecerá exactamente debajo del deslizador que causó el error.<br>
         4. <strong>Blindaje Protector:</strong> Activa el escudo de Cobre/Shunt para bloquear matemáticamente el campo magnético e impedir el calentamiento.<br>
-        5. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con doble hoja tabulada y diseñada profesionalmente.
+        5. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con un diseño tipo Dashboard Ejecutivo en la primera pestaña y <strong>fórmulas matemáticas nativas vinculadas por celda</strong> en la memoria de cálculo.
       </p>
     </div>
   </div>
@@ -420,7 +420,7 @@
 
   <footer class="academic-footer">
     IPChile — Ingeniería en Electricidad y Electrónica<br>
-    © 2026 José Luis Tapia Tapia y Axel Aros. Todos los derechos reservados.<br>
+    © 2026 José Luis Tapia y Axel Aros Romero. Todos los derechos reservados.<br>
     <small>Prohibida su reproducción, copia o uso comercial sin autorización expresa de los autores.</small>
   </footer>
 
@@ -433,7 +433,7 @@
         nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, fusion: 1450,
         defaultFreq: 100, minTimePerKg: 15, maxTimePerKg: 80, densidad: 7850,
         descErrorTiempo: "Oxidación severa (cascarilla) y descarburación superficial.",
-        descRho: "Resistencia media; excelente acoplamiento magnético.",
+        descRho: "Resistencia media; permite un excelente acoplamiento magnético.",
         descC: "Requiere energía moderada por kilo para elevar su temperatura.",
         descMu: "Altamente magnético (Atrae imanes y concentra mejor el campo)."
       },
@@ -752,7 +752,6 @@
               isRestricted = true;
               mostrarAlertaLocal('timeWarning', 'danger', `⛔ <strong>Tiempo Excesivo:</strong> Calor radiado supera inyección térmica. Máximo: ${Math.floor(tiempoMaximoSeguro)}s.`);
           } else {
-              // Muestra que el ciclo es correcto (sin error)
               const el = document.getElementById('timeWarning');
               el.style.display = 'block';
               el.innerHTML = `✅ Ciclo Industrial Estándar`;
@@ -768,7 +767,7 @@
           mostrarAlertaLocal('currentWarning', 'warning', `⚠️ <strong>Corriente Elevada:</strong> Requiere refrigeración por agua a presión (Chiller).`);
       }
 
-      // VALIDACIÓN POTENCIA IRREAL (Afecta Masa o Tiempo)
+      // VALIDACIÓN POTENCIA IRREAL
       if (P_kW > 150 && !hasShield) {
         isRestricted = true;
         mostrarAlertaLocal('massWarning', 'danger', `⛔ <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
@@ -836,28 +835,38 @@
 
       let matNameStr = hasShield ? `${mat.nombre} (Con Blindaje)` : mat.nombre;
 
+      // ESTADO GUARDADO CON VALORES NUMÉRICOS PUROS PARA FÓRMULAS EXCEL DINÁMICAS
       currentSimulationState = {
+        materialName: mat.nombre,
+        rho: mat.rho,
+        c: mat.c,
+        mu_r: mat.mu_r,
+        emissivity: mat.emissivity,
+        mass: m,
+        tempIni: T_ini,
+        temp: T_fin_efectiva,
+        time: t,
+        freq: f_khz,
+        turns: N,
+        lengthCm: lenCm,
+        current: I,
+        areaM2: areaM2,
+        powerKw: P_kW,
+        skinMm: delta_mm,
+        // Textos para la interfaz visual
         material: matNameStr, 
         rhoVal: mat.rho.toExponential(2) + " Ω·m",
         cVal: mat.c + " J/kg·K",
         muVal: mat.mu_r,
-        descMat: mat.descRho + " " + mat.descMu, 
-        mass: m.toFixed(2), 
-        temp: T_fin_efectiva.toFixed(0) + " °C",
-        tempRaw: T_fin_efectiva,
-        time: t + " s", 
-        timeRaw: t,
-        freq: f_khz + " kHz", 
-        freqRaw: f_khz,
-        power: P_kW.toFixed(1) + " kW", 
-        powerRaw: P_kW.toFixed(1),
-        skin: delta_mm.toFixed(3) + " mm",
-        skinRaw: delta_mm.toFixed(3),
-        current: I + " A",
-        turns: N + " esp",
-        turnsRaw: N,
-        length: lenCm + " cm",
-        lengthRaw: lenCm,
+        massStr: m.toFixed(2) + " kg",
+        tempStr: T_fin_efectiva.toFixed(0) + " °C",
+        timeStr: t + " s",
+        freqStr: f_khz + " kHz",
+        powerStr: P_kW.toFixed(1) + " kW",
+        skinStr: delta_mm.toFixed(3) + " mm",
+        currentStr: I + " A",
+        turnsStr: N + " esp",
+        lengthStr: lenCm + " cm",
         B_mT: (B_pieza * 1000).toFixed(1),
         E_V: FEM_est.toFixed(1),
         f1_sub: document.getElementById('stepAmpereSub').innerText.replace(/<[^>]*>?/gm, ''),
@@ -905,52 +914,147 @@
       actualizarCalculos();
     });
 
+    // MOTOR DE EXPORTACIÓN A EXCEL PRO CORREGIDO (Fila de inicio de datos r = 11)
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
       if (typeof XLSX === 'undefined') { alert("La librería de Excel no ha cargado."); return; }
-      if (simulationHistory.length === 0) { alert("Primero debes guardar un escenario."); return; }
+      if (simulationHistory.length === 0) { alert("Primero debes guardar un escenario en el simulador."); return; }
       
       let wb = XLSX.utils.book_new();
+      let ultimo = simulationHistory[simulationHistory.length - 1]; // Escenario más reciente para los KPIs del Dashboard
+
+      // --- PESTAÑA 1: DASHBOARD EJECUTIVO (KPIs + Tabla de Historial con Columnas de A a O) ---
       let ws1_data = [
-        ["IPChile — Ingeniería en Electricidad y Electrónica"],
-        ["Autores: José Luis Tapia Tapia y Axel Aros"],
-        ["REPORTE EJECUTIVO DE INGENIERÍA - SIMULACIÓN DE INDUCCIÓN ELECTROMAGNÉTICA"],
-        ["Fecha de Emisión:", new Date().toLocaleString()],
-        [],
+        ["IPChile — Ingeniería en Electricidad y Electrónica", "", "", "", "", "", "", ""],
+        ["AUTORES:", "José Luis Tapia Tapia & Axel Aros", "", "", "FECHA DE EMISIÓN:", new Date().toLocaleString(), "", ""],
+        ["PROYECTO:", "Simulador Maestro 3D de Calentamiento por Inducción", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        // Bloque Tarjetas KPI
+        ["📊 PANEL DE CONTROL KHI (ESTADO DE LA ÚLTIMA SIMULACIÓN)", "", "", "", "", "", "", ""],
+        ["Potencia Requerida (kW)", "Temp. Alcanzada (°C)", "Campo Magnético (mT)", "Efecto Skin (mm)", "Frecuencia (kHz)", "Corriente RMS (A)", "Masa Pieza (kg)", "Tiempo (s)"],
         [
-          "Escenario", "Material", "Resistividad (ρ)", "Calor Específico (c)", "Permeabilidad (μr)", 
-          "Masa (kg)", "Espiras (N)", "Long. Bobina (cm)", 
-          "Frecuencia (kHz)", "Corriente (A)", "Potencia Obtenida (kW)", "Skin (mm)", "Temp Alcanzada (°C)", "Tiempo (s)"
+          ultimo.powerKw, 
+          ultimo.temp, 
+          parseFloat(ultimo.B_mT), 
+          ultimo.skinMm, 
+          ultimo.freq, 
+          ultimo.current, 
+          ultimo.mass, 
+          ultimo.time
+        ],
+        ["", "", "", "", "", "", "", ""],
+        ["📋 HISTORIAL MAESTRO DE ESCENARIOS SIMULADOS", "", "", "", "", "", "", ""],
+        [
+          "Escenario",                // A (col 1)
+          "Material / Configuración", // B (col 2)
+          "Resistividad (ρ)",         // C (col 3)
+          "Calor Específico (c)",     // D (col 4)
+          "Permeabilidad (μr)",       // E (col 5)
+          "Masa (kg)",                // F (col 6)
+          "Temp. Inicial (°C)",       // G (col 7)
+          "Espiras (N)",              // H (col 8)
+          "Long. Bobina (cm)",        // I (col 9)
+          "Frecuencia (kHz)",         // J (col 10)
+          "Corriente (A)",            // K (col 11)
+          "Área Transversal (m²)",    // L (col 12)
+          "Emisividad (ε)",           // M (col 13)
+          "Temp. Alcanzada (°C)",     // N (col 14)
+          "Tiempo (s)"                // O (col 15)
         ]
       ];
+
       simulationHistory.forEach((item, index) => {
         ws1_data.push([
-          `Prueba #${index + 1}`, item.material, item.rhoVal, item.cVal, item.muVal,
-          parseFloat(item.mass), parseFloat(item.turnsRaw), parseFloat(item.lengthRaw),
-          parseFloat(item.freqRaw), parseFloat(item.current), parseFloat(item.powerRaw),
-          parseFloat(item.skinRaw), parseFloat(item.tempRaw), parseFloat(item.timeRaw)
+          `Prueba #${index + 1}`, // A
+          item.materialName,      // B
+          item.rho,               // C
+          item.c,                 // D
+          item.mu_r,              // E
+          item.mass,              // F
+          item.tempIni,           // G
+          item.turns,             // H
+          item.lengthCm,          // I
+          item.freq,              // J
+          item.current,           // K
+          item.areaM2,            // L
+          item.emissivity,        // M
+          item.temp,              // N
+          item.time               // O
         ]);
       });
-      let ws1 = XLSX.utils.aoa_to_sheet(ws1_data);
-      XLSX.utils.book_append_sheet(wb, ws1, "Resumen Ejecutivo");
 
-      let ws2_data = [ ["IPChile — Ingeniería en Electricidad y Electrónica"], ["Autores: José Luis Tapia Tapia y Axel Aros"], ["MEMORIA DE CÁLCULO Y DESGLOSE DE LEYES FÍSICAS"], [] ];
+      let ws1 = XLSX.utils.aoa_to_sheet(ws1_data);
+      ws1['!cols'] = [
+        {wch:15}, {wch:25}, {wch:16}, {wch:18}, {wch:16}, 
+        {wch:12}, {wch:16}, {wch:12}, {wch:16}, {wch:16}, 
+        {wch:14}, {wch:18}, {wch:14}, {wch:20}, {wch:12}
+      ];
+      XLSX.utils.book_append_sheet(wb, ws1, "Dashboard Ejecutivo");
+
+      // --- PESTAÑA 2: MEMORIA DE CÁLCULO TÉCNICA (Fórmulas Nativas con Referencias Exactas a Fila 11+) ---
+      let ws2_data = [
+        ["IPChile — Ingeniería en Electricidad y Electrónica", "", ""],
+        ["AUTORES:", "José Luis Tapia Tapia & Axel Aros", ""],
+        ["MEMORIA DE CÁLCULO TÉCNICO-MATEMÁTICA", "", ""],
+        ["(Evaluación dinámica vinculada mediante fórmulas nativas de celda)", "", ""],
+        []
+      ];
+
       simulationHistory.forEach((item, index) => {
-        ws2_data.push([`=== ESCENARIO #${index + 1}: ${item.material} (${item.power}) ===`]);
-        ws2_data.push(["Principio / Ley Física", "Fórmula / Sustitución Numérica", "Resultado Final"]);
-        ws2_data.push(["1. Ley de Ampère-Maxwell (Campo B)", item.f1_sub, item.f1_res]);
-        ws2_data.push(["2. Ley de Faraday-Lenz (FEM Inducida)", item.f2_sub, item.f2_res]);
-        ws2_data.push(["3. Efecto Skin o Pelicular (δ)", item.f3_sub, item.f3_res]);
-        ws2_data.push(["4. Densidad por Ley de Joule", item.f4_sub, item.f4_res]);
-        ws2_data.push(["5. Potencia Térmica Neta (P_th)", item.f5_sub, item.f5_res]);
-        ws2_data.push(["6. Pérdidas por Radiación (Stefan-Boltzmann)", item.f6_sub, item.f6_res]);
-        ws2_data.push(["7. Balance Global de Potencia (P_eq)", item.f7_sub, item.f7_res]);
+        let r = 11 + index; // Fila exacta en la Hoja 'Dashboard Ejecutivo' (comienza en la fila 11 numérica)
+        
+        ws2_data.push([`=== ESCENARIO DE PRUEBA #${index + 1}: ${item.materialName} ===`, "", ""]);
+        ws2_data.push(["Principio / Ley Física", "Fórmula Teórica Aplicada", "Fórmula Nativa de Excel Operativa"]);
+        
+        // 1. Campo B (Ampère-Maxwell) -> H=Espiras(Col 8=H), I=Long(Col 9=I), K=Corriente(Col 11=K)
+        ws2_data.push([
+          "1. Ley de Ampère-Maxwell (Campo B)", 
+          "B = μ₀ · (N / l) · I", 
+          { t: 'n', f: `=4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r} / ('Dashboard Ejecutivo'!I${r}*0.01)) * 'Dashboard Ejecutivo'!K${r}` }
+        ]);
+
+        // 2. Voltaje Inducido (Faraday-Lenz) -> J=Freq(Col 10=J), H=Espiras(H), I=Long(I), K=Corr(K), L=Area(Col 12=L)
+        ws2_data.push([
+          "2. Ley de Faraday-Lenz (FEM Inducida)", 
+          "E_ind ≈ 2π · f · B · A", 
+          { t: 'n', f: `=2*PI() * ('Dashboard Ejecutivo'!J${r}*1000) * (4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r} / ('Dashboard Ejecutivo'!I${r}*0.01)) * 'Dashboard Ejecutivo'!K${r}) * 'Dashboard Ejecutivo'!L${r}` }
+        ]);
+
+        // 3. Efecto Skin -> C=Resistividad(Col 3=C), J=Freq(Col 10=J), E=Permeabilidad(Col 5=E)
+        ws2_data.push([
+          "3. Efecto Skin o Pelicular (δ)", 
+          "δ = √( ρ / (π · f · μ₀ · μ_r) )", 
+          { t: 'n', f: `=SQRT('Dashboard Ejecutivo'!C${r} / (PI() * ('Dashboard Ejecutivo'!J${r}*1000) * 4*PI()*10^-7 * 'Dashboard Ejecutivo'!E${r})) * 1000` }
+        ]);
+
+        // 4. Potencia Térmica Neta -> F=Masa(Col 6=F), D=Calor(Col 4=D), N=TempFinal(Col 14=N), G=TempIni(Col 7=G), O=Tiempo(Col 15=O)
+        ws2_data.push([
+          "4. Potencia Térmica Neta (P_th)", 
+          "P_th = (m · c · ΔT) / t", 
+          { t: 'n', f: `=('Dashboard Ejecutivo'!F${r} * 'Dashboard Ejecutivo'!D${r} * ('Dashboard Ejecutivo'!N${r} - 'Dashboard Ejecutivo'!G${r})) / 'Dashboard Ejecutivo'!O${r}` }
+        ]);
+
+        // 5. Pérdidas por Radiación -> M=Emisividad(Col 13=M), L=Area(Col 12=L), N=TempFinal(N), G=TempIni(G)
+        ws2_data.push([
+          "5. Pérdidas por Radiación (Stefan-Boltzmann)", 
+          "P_rad = ε · σ · A · (T_K⁴ - T_amb_K⁴)", 
+          { t: 'n', f: `='Dashboard Ejecutivo'!M${r} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r} * ( (('Dashboard Ejecutivo'!N${r}+273.15)^4) - (('Dashboard Ejecutivo'!G${r}+273.15)^4) )` }
+        ]);
+
+        // 6. Balance Global de Potencia (kW) -> Combina P_th y P_rad dividido por rendimiento (0.75) y 1000
+        ws2_data.push([
+          "6. Balance Global de Potencia de Pieza (P_eq)", 
+          "P_eq ≈ (P_th + P_rad) / η", 
+          { t: 'n', f: `=( (('Dashboard Ejecutivo'!F${r} * 'Dashboard Ejecutivo'!D${r} * ('Dashboard Ejecutivo'!N${r} - 'Dashboard Ejecutivo'!G${r})) / 'Dashboard Ejecutivo'!O${r}) + ('Dashboard Ejecutivo'!M${r} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r} * ( (('Dashboard Ejecutivo'!N${r}+273.15)^4) - (('Dashboard Ejecutivo'!G${r}+273.15)^4) )) ) / 0.75 / 1000` }
+        ]);
+
         ws2_data.push([], []);
       });
+
       let ws2 = XLSX.utils.aoa_to_sheet(ws2_data);
-      ws2['!cols'] = [{wch:45}, {wch:75}, {wch:35}];
+      ws2['!cols'] = [{wch:45}, {wch:50}, {wch:65}];
       XLSX.utils.book_append_sheet(wb, ws2, "Memoria de Cálculo");
 
-      XLSX.writeFile(wb, "Reporte_Induccion_IPChile.xlsx");
+      XLSX.writeFile(wb, "Dashboard_Induccion_IPChile.xlsx");
     });
 
     function updateHistoryTable() {
@@ -959,7 +1063,7 @@
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.mass} kg</td><td>${item.temp}</td><td>${item.time}</td><td>${item.freq}</td><td style="color:var(--accent); font-weight:bold;">${item.power}</td><td>${item.skin}</td>`;
+        tr.innerHTML = `<td>#${index + 1}</td><td>${item.material}</td><td>${item.massStr}</td><td>${item.tempStr}</td><td>${item.timeStr}</td><td>${item.freqStr}</td><td style="color:var(--accent); font-weight:bold;">${item.powerStr}</td><td>${item.skinStr}</td>`;
         tbody.appendChild(tr);
       });
     }
