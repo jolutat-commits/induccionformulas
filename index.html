@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Calentamiento por Inducción</title>
+  <title>Simulador Maestro 3D de Calentamiento por Inducción</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
@@ -63,7 +63,7 @@
     .material-info-box span { color: var(--highlight); font-family: monospace; font-weight: bold; }
     .human-explain { font-style: italic; color: #cbd5e1; margin-top: 4px; border-top: 1px dashed #334155; padding-top: 4px; font-size: 0.72rem; }
 
-    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.78rem; margin-top: 15px; margin-bottom: 10px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; }
+    .status-panel { padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 15px; margin-bottom: 10px; line-height: 1.4; border-left: 5px solid; transition: all 0.3s ease; text-align: center; }
     .status-optimal { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #a7f3d0; }
     .status-optimal strong { color: var(--success); }
     .status-warning { background: rgba(245, 158, 11, 0.1); border-left-color: var(--warning); color: #fde68a; }
@@ -71,7 +71,7 @@
     .status-danger { background: rgba(239, 68, 68, 0.15); border-left-color: var(--danger); color: #fca5a5; }
     .status-danger strong { color: var(--danger); }
 
-    .process-info-box { background: rgba(56, 189, 248, 0.05); border: 1px dashed var(--highlight); padding: 8px; border-radius: 6px; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 10px; line-height: 1.35; display: none; }
+    .process-info-box { font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none; }
 
     .tip-box { background: rgba(56, 189, 248, 0.08); border-left: 4px solid var(--highlight); padding: 10px; border-radius: 6px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; }
 
@@ -81,7 +81,7 @@
     .canvas-wrapper { flex: 1; min-width: 300px; background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 8px; position: relative; display: flex; flex-direction: column; align-items: center; }
     .canvas-wrapper.full-width { flex: 1 1 100%; min-width: 100%; }
     .canvas-wrapper h4 { color: var(--highlight); margin-bottom: 6px; font-size: 0.85rem; text-align: left; padding-left: 5px; width: 100%; }
-    canvas { width: 100% !important; max-width: 600px; height: 210px !important; display: block; margin: 0 auto; background: #020617; border-radius: 4px; }
+    canvas { width: 100% !important; max-width: 600px; height: 210px !important; display: block; margin: 0 auto; background: #020617; border-radius: 4px; position: relative; }
     
     .canvas-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; }
     .legend-item span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
@@ -148,10 +148,10 @@
       <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
       <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
         <strong>Desarrollado por:</strong> José Luis Tapia Tapia y Axel Aros (IPChile)<br><br>
-        1. <strong>Límite Mecánico:</strong> Selecciona el material y la barra de temperatura se bloqueará automáticamente antes del Punto de Fusión.<br>
-        2. <strong>Temporizador Automático:</strong> Presiona ENCENDER y el equipo operará por los segundos definidos en el deslizador "Tiempo (s)", apagándose solo al terminar.<br>
-        3. <strong>Restricciones Estrictas de Diseño:</strong> Frecuencias excesivas (≥ 250 kHz), rampas de tiempo críticas, exceso de espiras o longitudes extremas bloquean el sistema.<br>
-        4. <strong>NUEVO - Blindaje Protector:</strong> Activa el escudo de Cobre/Shunt para bloquear matemáticamente el campo magnético e impedir el calentamiento.<br>
+        1. <strong>Geometría Auto-Ajustable:</strong> El diámetro de la pieza y la bobina se calculan en tiempo real basándose en la Masa, Densidad y Longitud. Visualízalo en la Cámara 3.<br>
+        2. <strong>Temporizador Automático:</strong> Presiona ENCENDER y el equipo operará por los segundos definidos.<br>
+        3. <strong>HMI y Restricciones:</strong> Si configuras un parámetro peligroso, el simulador se bloqueará y la alerta aparecerá exactamente debajo del deslizador que causó el error.<br>
+        4. <strong>Blindaje Protector:</strong> Activa el escudo de Cobre/Shunt para bloquear matemáticamente el campo magnético e impedir el calentamiento.<br>
         5. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con doble hoja tabulada y diseñada profesionalmente.
       </p>
     </div>
@@ -175,19 +175,20 @@
         </select>
       </div>
 
-      <!-- NUEVO: BOTÓN DE BLINDAJE DE COBRE / SHUNT -->
       <div class="control-group" style="background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px; border: 1px dashed var(--warning); margin-bottom: 15px;">
         <label style="margin:0; cursor:pointer; color: var(--warning); font-size: 0.85rem; justify-content: flex-start;">
           <input type="checkbox" id="chkShield" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle; accent-color: var(--warning);">
           🛡️ Activar Blindaje de Cobre / Shunt
         </label>
-        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; margin-left: 26px;">
+        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; margin-left: 26px;" id="shieldInfo">
           Desvía el 95% del campo magnético B. Evita el calentamiento induciendo Foucault en el escudo en lugar de la pieza.
         </div>
       </div>
 
       <div class="material-info-box" id="materialJustification">
-        <div>Resistividad (ρ): <span id="infoRho">-</span></div>
+        <div>Densidad: <span id="infoDensidad">-</span></div>
+        <div class="human-explain">Metales ligeros ocuparán mayor volumen, expandiendo la bobina.</div>
+        <div style="margin-top: 6px;">Resistividad (ρ): <span id="infoRho">-</span></div>
         <div class="human-explain" id="humanRho">-</div>
         <div style="margin-top: 6px;">Calor Específico (c): <span id="infoC">-</span></div>
         <div class="human-explain" id="humanC">-</div>
@@ -201,48 +202,53 @@
       <div class="control-group">
         <label>Masa (kg) ℹ️: <span><span id="lblMass">0.50</span> <small id="lblMassRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputMass" min="0.05" max="5.0" step="0.05" value="0.50">
+        <div id="massWarning" class="process-info-box"></div>
       </div>
 
-      <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="10" max="100" step="5" value="25"></div>
+      <div class="control-group"><label>Temp. Inicial (°C): <span id="lblTempIni">25</span></label><input type="range" id="inputTempIni" min="0" max="45" step="1" value="25"></div>
       
       <div class="control-group">
         <label>Temp. Objetivo Máx (°C) ℹ️: <span><span id="lblTempFin">800</span> <small id="lblTempRef"></small></span></label>
         <input type="range" id="inputTempFin" min="100" max="1500" step="25" value="800">
         <div style="text-align: right; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;" id="limiteTempText"></div>
-        <div id="tempProcessInfo" class="process-info-box"></div>
       </div>
 
       <div class="control-group">
         <label>Tiempo (s) ℹ️: <span><span id="lblTime">45</span> <small id="lblTimeRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputTime" min="5" max="300" step="5" value="45">
-        <div id="timeProcessInfo" class="process-info-box"></div>
+        <div id="timeWarning" class="process-info-box"></div>
       </div>
 
-      <div class="control-group"><label>Área Superficial (cm²) ℹ️: <span id="lblArea">60</span></label><input type="range" id="inputArea" min="10" max="500" step="5" value="60"></div>
+      <div class="control-group" style="margin-bottom: 5px;">
+        <label>Área Superficial (cm²) ℹ️: <span><span id="lblArea">Calculada</span></span></label>
+        <input type="range" id="inputArea" min="10" max="500" step="5" value="60" disabled style="opacity: 0.4;">
+        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;" id="geoProcessInfo">El área ahora es auto-calculada mediante la Densidad y Masa.</div>
+      </div>
 
       <h2 style="margin-top: 15px;">2. Bobina y Parámetros AC</h2>
       
       <div class="control-group">
         <label>Frecuencia (kHz) ℹ️: <span><span id="lblFreq">100</span> <small id="lblFreqRef" style="color:var(--success);"></small></span></label>
         <input type="range" id="inputFreq" min="10" max="300" step="5" value="100">
+        <div id="freqWarning" class="process-info-box"></div>
       </div>
 
       <div class="control-group">
-        <label>Espiras (N) ℹ️: <span id="lblTurns">6</span></label>
-        <input type="range" id="inputTurns" min="2" max="20" step="1" value="6">
-        <div id="turnsWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
+        <label>Espiras (N) ℹ️: <span id="lblTurns">5</span></label>
+        <input type="range" id="inputTurns" min="2" max="12" step="1" value="5">
+        <div id="turnsWarning" class="process-info-box"></div>
       </div>
 
       <div class="control-group">
-        <label>Long. Bobina (cm): <span id="lblLength">8</span></label>
-        <input type="range" id="inputLength" min="3" max="30" step="1" value="8">
-        <div id="lengthWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
+        <label>Long. Bobina (cm): <span id="lblLength">6</span></label>
+        <input type="range" id="inputLength" min="3" max="20" step="1" value="6">
+        <div id="lengthWarning" class="process-info-box"></div>
       </div>
       
       <div class="control-group">
-        <label>Corriente RMS (A) ℹ️: <span><span id="lblCurrent">180</span> <small id="lblCurrentRef" style="color:var(--success);"></small></span></label>
-        <input type="range" id="inputCurrent" min="20" max="500" step="10" value="180">
-        <div id="currentWarning" style="font-size: 0.72rem; margin-top: 4px; line-height: 1.3; display: none;"></div>
+        <label>Corriente RMS (A) ℹ️: <span><span id="lblCurrent">100</span> <small id="lblCurrentRef" style="color:var(--success);"></small></span></label>
+        <input type="range" id="inputCurrent" min="20" max="250" step="10" value="100">
+        <div id="currentWarning" class="process-info-box"></div>
       </div>
       
       <h2 style="margin-top: 15px;">3. Control de Animación</h2>
@@ -251,6 +257,7 @@
         <input type="range" id="inputSpeed" min="0.0" max="2.5" step="0.1" value="1.0">
       </div>
 
+      <!-- PANEL DE SEMÁFORO GLOBAL -->
       <div id="statusPanel" class="status-panel status-optimal"></div>
 
       <div style="display: flex; gap: 8px; margin-top: 12px;">
@@ -316,7 +323,6 @@
       </div>
 
       <div class="results-area">
-        
         <div class="formula-card">
           <h3>1. Ley de Ampère-Maxwell</h3>
           <div>
@@ -325,7 +331,8 @@
             <div class="step-box"><div class="step-title">Campo B en la Pieza</div><div class="step-content result" id="stepAmpereRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> La corriente al pasar por el alambre crea un campo magnético invisible. Si activas el blindaje, este flujo es desviado antes de tocar la pieza.
+            <strong>💡 Qué nos dice:</strong> La corriente al pasar por el alambre crea un campo magnético invisible. Si activas el blindaje, este flujo es desviado antes de tocar la pieza.<br>
+            <strong>👉 Ejemplo práctico:</strong> Imagina una manguera de agua (la bobina). Cuanta más agua pasa (Corriente) y más juntas están las vueltas (Espiras), más potente es el "chorro magnético".
           </div>
         </div>
 
@@ -337,7 +344,8 @@
             <div class="step-box"><div class="step-title">Voltaje Inducido Real</div><div class="step-content result" id="stepFaradayRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Los cambios de magnetismo crean voltaje de la nada que hace mover los electrones. Con un blindaje, casi no hay magnetismo residual que induzca voltaje.
+            <strong>💡 Qué nos dice:</strong> Los cambios de magnetismo crean voltaje de la nada que hace mover los electrones. Con un blindaje, casi no hay magnetismo residual que induzca voltaje.<br>
+            <strong>👉 Ejemplo práctico:</strong> Si agitas rápidamente un imán cerca de una placa de metal, obligas a los electrones a correr en círculos intentando crear un escudo (Corrientes de Foucault).
           </div>
         </div>
 
@@ -349,7 +357,8 @@
             <div class="step-box"><div class="step-title">Profundidad Efectiva</div><div class="step-content result" id="stepSkinRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Las ondas de alta frecuencia se quedan atrapadas en los bordes del metal. Esta regla física se mantiene independiente del blindaje.
+            <strong>💡 Qué nos dice:</strong> Las ondas de alta frecuencia se quedan atrapadas en los bordes del metal. Esta regla física se mantiene independiente del blindaje.<br>
+            <strong>👉 Ejemplo práctico:</strong> Observa la <em>Cámara 2</em>. Al chocar contra la pared metálica, la onda rebota y la que entra pierde fuerza rápidamente.
           </div>
         </div>
 
@@ -361,7 +370,8 @@
             <div class="step-box"><div class="step-title">Corriente Superficial</div><div class="step-content result" id="stepJouleRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> La corriente que choca contra el material se convierte en calor. El blindaje absorbe esta corriente, dejando a la pieza original sin fricción.
+            <strong>💡 Qué nos dice:</strong> La corriente que choca contra el material se convierte en calor. El blindaje absorbe esta corriente, dejando a la pieza original sin fricción.<br>
+            <strong>👉 Ejemplo práctico:</strong> Miles de electrones forzados a correr por un pasillo muy estrecho (la capa "Skin") generan fricción inmensa que calienta el metal.
           </div>
         </div>
 
@@ -373,7 +383,8 @@
             <div class="step-box"><div class="step-title">Energía Térmica Requerida</div><div class="step-content result" id="stepThermoRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Energía bruta que la pieza logra "tragarse". Con el escudo puesto, el ΔT (cambio de temperatura) colapsa, requiriendo mínima energía térmica.
+            <strong>💡 Qué nos dice:</strong> Energía bruta que la pieza logra "tragarse". Con el escudo puesto, el cambio de temperatura (ΔT) colapsa, requiriendo mínima energía térmica en la pieza.<br>
+            <strong>👉 Ejemplo práctico:</strong> Como hervir agua para el té. Si quieres calentar un litro en 10 segundos, necesitas un quemador gigante (Mucha Potencia).
           </div>
         </div>
 
@@ -385,7 +396,8 @@
             <div class="step-box"><div class="step-title">Pérdida al Ambiente</div><div class="step-content result" id="stepRadRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Todo objeto caliente irradia calor al aire. Una pieza blindada se mantiene fría, por lo que casi no irradia energía térmica.
+            <strong>💡 Qué nos dice:</strong> Todo objeto caliente irradia calor al aire. Una pieza blindada se mantiene fría, por lo que casi no irradia energía térmica.<br>
+            <strong>👉 Ejemplo práctico:</strong> Cuando el metal se pone "al rojo vivo", actúa literalmente como una estufa eléctrica, irradiando calor al taller.
           </div>
         </div>
 
@@ -397,7 +409,8 @@
             <div class="step-box" style="margin-bottom:0;"><div class="step-title">Potencia Absorbida por la Pieza</div><div class="step-content result" id="stepTotalRes"></div></div>
           </div>
           <div class="step-explanation">
-            <strong>💡 Qué nos dice:</strong> Cuánta energía final necesita el equipo para lograr el objetivo. Si el escudo está activo, la máquina funciona pero la pieza original absorbe una potencia insignificante.
+            <strong>💡 Qué nos dice:</strong> Cuánta energía final necesita el equipo para lograr el objetivo. Si el escudo está activo, la máquina funciona pero la pieza original absorbe una potencia insignificante.<br>
+            <strong>👉 Ejemplo práctico:</strong> Como calcular la gasolina de un auto sumando el movimiento real más lo que se desperdicia en calor del motor.
           </div>
         </div>
 
@@ -406,7 +419,9 @@
   </div>
 
   <footer class="academic-footer">
-    IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia y Axel Aros Romero (2026)
+    IPChile — Ingeniería en Electricidad y Electrónica<br>
+    © 2026 José Luis Tapia Tapia y Axel Aros. Todos los derechos reservados.<br>
+    <small>Prohibida su reproducción, copia o uso comercial sin autorización expresa de los autores.</small>
   </footer>
 
   <script>
@@ -416,42 +431,42 @@
     const MATERIALES = {
       acero: { 
         nombre: "Acero al Carbono", c: 490, rho: 1.43e-7, mu_r: 200, emissivity: 0.80, fusion: 1450,
-        defaultFreq: 100, minTimePerKg: 15, maxTimePerKg: 80,
+        defaultFreq: 100, minTimePerKg: 15, maxTimePerKg: 80, densidad: 7850,
         descErrorTiempo: "Oxidación severa (cascarilla) y descarburación superficial.",
-        descRho: "Resistencia media; permite un excelente acoplamiento magnético.",
-        descC: "Requiere una cantidad moderada de energía por cada kilo para elevar su temperatura.",
-        descMu: "Altamente magnético (Atrae imanes fácilmente y concentra mejor el campo)."
+        descRho: "Resistencia media; excelente acoplamiento magnético.",
+        descC: "Requiere energía moderada por kilo para elevar su temperatura.",
+        descMu: "Altamente magnético (Atrae imanes y concentra mejor el campo)."
       },
       hierro: { 
         nombre: "Hierro Dulce", c: 450, rho: 1.00e-7, mu_r: 600, emissivity: 0.75, fusion: 1538,
-        defaultFreq: 80, minTimePerKg: 12, maxTimePerKg: 80,
+        defaultFreq: 80, minTimePerKg: 12, maxTimePerKg: 80, densidad: 7870,
         descErrorTiempo: "Formación masiva de cascarilla magnética y degradación estructural.",
         descRho: "Buena conductividad eléctrica inicial.",
-        descC: "Baja inercia térmica; se calienta con relativa facilidad.",
-        descMu: "Permeabilidad muy alta (Excelente concentración de líneas de campo magnético)."
+        descC: "Baja inercia térmica; se calienta con facilidad.",
+        descMu: "Permeabilidad muy alta (Excelente concentración de líneas B)."
       },
       inoxidable: { 
-        nombre: "Acero Inoxidable 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, fusion: 1400,
-        defaultFreq: 120, minTimePerKg: 20, maxTimePerKg: 100,
+        nombre: "Acero Inox 304", c: 500, rho: 7.20e-7, mu_r: 1.02, emissivity: 0.65, fusion: 1400,
+        defaultFreq: 120, minTimePerKg: 20, maxTimePerKg: 100, densidad: 8000,
         descErrorTiempo: "Pérdida de cromo superficial, destruyendo su propiedad anticorrosiva.",
-        descRho: "Alta resistencia eléctrica (genera fricción de electrones muy intensa).",
+        descRho: "Alta resistencia eléctrica (genera fricción interna muy intensa).",
         descC: "Capacidad estándar de almacenamiento térmico.",
-        descMu: "Austenítico/No magnético (Prácticamente no interactúa con imanes permanentes)."
+        descMu: "Austenítico/No magnético (Prácticamente no interactúa con imanes)."
       },
       aluminio: { 
         nombre: "Aluminio", c: 897, rho: 2.82e-8, mu_r: 1.0, emissivity: 0.20, fusion: 660,
-        defaultFreq: 150, minTimePerKg: 10, maxTimePerKg: 60,
-        descErrorTiempo: "Disipación térmica crítica. El calor se fuga impidiendo concentrar la temperatura.",
-        descRho: "Muy baja resistencia (la electricidad fluye libremente, cuesta más calentar por Joule).",
+        defaultFreq: 150, minTimePerKg: 10, maxTimePerKg: 60, densidad: 2700,
+        descErrorTiempo: "Disipación térmica crítica. El calor se fuga impidiendo concentrar temperatura.",
+        descRho: "Muy baja resistencia (la electricidad fluye libremente, cuesta calentar).",
         descC: "Alto calor específico (absorbe mucha energía antes de cambiar de temperatura).",
         descMu: "No magnético (Requiere frecuencias más altas para inducir corrientes eficaces)."
       },
       cobre: { 
         nombre: "Cobre", c: 385, rho: 1.68e-8, mu_r: 1.0, emissivity: 0.15, fusion: 1085,
-        defaultFreq: 150, minTimePerKg: 6, maxTimePerKg: 40,
-        descErrorTiempo: "Disipación extrema. Actúa como disipador gigante; el equipo gasta luz sin calentar el núcleo.",
+        defaultFreq: 150, minTimePerKg: 6, maxTimePerKg: 40, densidad: 8960,
+        descErrorTiempo: "Actúa como disipador gigante; el equipo gasta energía sin calentar el núcleo.",
         descRho: "Excelente conductor eléctrico (mínima oposición al paso de corriente).",
-        descC: "Bajo calor específico; absorbe y conduce el calor muy rápido.",
+        descC: "Bajo calor específico; absorbe y conduce el calor rapidísimo.",
         descMu: "No magnético (Ideal para fabricar las bobinas inductoras)."
       }
     };
@@ -461,8 +476,7 @@
     let countdownTimer = null;
     let timeRemaining = 0;
 
-    // AÑADIDO: Soporte para Blindaje en animData
-    let animData = { freq: 100, delta: 1, temp: 800, tempIni: 25, current: 180, speed: 1.0, materialName: "Acero al Carbono", time: 45, turns: 6, lengthCm: 8, area: 60, hasShield: false };
+    let animData = { freq: 100, delta: 1, temp: 800, tempIni: 25, current: 100, speed: 1.0, materialName: "Acero al Carbono", time: 45, turns: 5, lengthCm: 6, area: 60, hasShield: false, dPieza: 3.0, dBobina: 4.0 };
     let currentSimulationState = {};
     let simulationHistory = [];
 
@@ -509,8 +523,8 @@
 
     const inputIds = [
       'materialSelect', 'inputMass', 'inputTempIni', 'inputTempFin', 
-      'inputTime', 'inputArea', 'inputFreq', 'inputTurns', 
-      'inputLength', 'inputCurrent', 'inputSpeed', 'chkShield' // <-- AÑADIDO CHKSHIELD
+      'inputTime', 'inputFreq', 'inputTurns', 
+      'inputLength', 'inputCurrent', 'inputSpeed', 'chkShield'
     ];
 
     inputIds.forEach(id => {
@@ -532,16 +546,49 @@
       }
     });
 
+    // Función para ocultar y resetear alertas locales
+    function limpiarAlertasLocales() {
+      const boxes = ['massWarning', 'timeWarning', 'freqWarning', 'turnsWarning', 'lengthWarning', 'currentWarning'];
+      boxes.forEach(id => {
+        const el = document.getElementById(id);
+        el.style.display = 'none';
+        el.innerHTML = '';
+        el.style.backgroundColor = 'rgba(56, 189, 248, 0.05)';
+        el.style.border = '1px dashed var(--highlight)';
+        el.style.color = 'var(--text-muted)';
+        el.style.padding = '8px';
+      });
+    }
+
+    // Función auxiliar para mostrar alertas locales
+    function mostrarAlertaLocal(id, tipo, htmlTexto) {
+      const el = document.getElementById(id);
+      el.style.display = 'block';
+      el.innerHTML = htmlTexto;
+      if (tipo === 'danger') {
+        el.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+        el.style.border = '1px solid var(--danger)';
+        el.style.color = '#fca5a5';
+      } else if (tipo === 'warning') {
+        el.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+        el.style.border = '1px solid var(--warning)';
+        el.style.color = '#fde68a';
+      }
+    }
+
     function actualizarCalculos() {
       const matSelect = document.getElementById('materialSelect');
       const mat = MATERIALES[matSelect.value];
       
+      limpiarAlertasLocales();
+
+      document.getElementById('infoDensidad').textContent = mat.densidad + " kg/m³";
       document.getElementById('infoRho').textContent = mat.rho.toExponential(2) + " Ω·m";
-      document.getElementById('humanRho').textContent = mat.descRho;
+      document.getElementById('humanRho').textContent = mat.descRho; 
       document.getElementById('infoC').textContent = mat.c + " J/kg·K";
-      document.getElementById('humanC').textContent = mat.descC;
+      document.getElementById('humanC').textContent = mat.descC; 
       document.getElementById('infoMu').textContent = mat.mu_r;
-      document.getElementById('humanMu').textContent = mat.descMu;
+      document.getElementById('humanMu').textContent = mat.descMu; 
       document.getElementById('infoFusion').textContent = mat.fusion + " °C";
 
       const limiteFusionSeguro = mat.fusion - 10;
@@ -550,10 +597,7 @@
       document.getElementById('limiteTempText').textContent = `Protección Activa: Límite fijado en ${limiteFusionSeguro}°C`;
       
       let T_fin = parseFloat(inputTempFin.value) || 800;
-      if (T_fin > limiteFusionSeguro) {
-          T_fin = limiteFusionSeguro;
-          inputTempFin.value = limiteFusionSeguro;
-      }
+      if (T_fin > limiteFusionSeguro) { T_fin = limiteFusionSeguro; inputTempFin.value = limiteFusionSeguro; }
 
       const m = parseFloat(document.getElementById('inputMass').value) || 0.5;
       const T_ini = parseFloat(document.getElementById('inputTempIni').value) || 25;
@@ -562,61 +606,28 @@
       if(!isPowerOn && visualTemp === 25) visualTemp = T_ini;
       
       const t = parseFloat(document.getElementById('inputTime').value) || 45;
-      const areaCm2 = parseFloat(document.getElementById('inputArea').value) || 60;
-      const areaM2 = areaCm2 * 1e-4;
+      const lenCm = parseFloat(document.getElementById('inputLength').value) || 6; 
+      const lenM = lenCm * 1e-2;
       
+      const volumenM3 = m / mat.densidad; 
+      const radioM = Math.sqrt(volumenM3 / (Math.PI * lenM)); 
+      const diametroPiezaCm = (radioM * 2) * 100;
+      const diametroBobinaCm = diametroPiezaCm + 1.0; 
+      const areaM2 = Math.PI * Math.pow(radioM, 2);
+      const areaCm2 = areaM2 * 10000;
+
+      document.getElementById('lblArea').textContent = areaCm2.toFixed(1) + " (Auto-calculada)";
+      document.getElementById('geoProcessInfo').innerHTML = `📏 <strong>Diámetro de Pieza:</strong> ${diametroPiezaCm.toFixed(1)} cm <br> 🔄 <strong>Bobina Ajustada a:</strong> ${diametroBobinaCm.toFixed(1)} cm`;
+
       const f_khz = parseFloat(document.getElementById('inputFreq').value) || 100;
       const f_hz = f_khz * 1000;
-      const N = parseFloat(document.getElementById('inputTurns').value) || 6;
-      const lenCm = parseFloat(document.getElementById('inputLength').value) || 8;
-      const lenM = lenCm * 1e-2;
-      const I = parseFloat(document.getElementById('inputCurrent').value) || 180;
+      const N = parseFloat(document.getElementById('inputTurns').value) || 5; 
+      const I = parseFloat(document.getElementById('inputCurrent').value) || 100; 
       const spd = parseFloat(document.getElementById('inputSpeed').value) || 1.0;
 
-      // === LÓGICA DE BLINDAJE (NUEVO) ===
       const hasShield = document.getElementById('chkShield').checked;
-      const attenuation = hasShield ? 0.05 : 1.0; // Desvía el 95% del campo
-      
-      // Temperatura máxima que la pieza logrará alcanzar con el escudo puesto
+      const attenuation = hasShield ? 0.05 : 1.0; 
       const T_fin_efectiva = T_ini + ((T_fin - T_ini) * attenuation);
-
-      const tempInfoBox = document.getElementById('tempProcessInfo');
-      tempInfoBox.style.display = 'block';
-      if (T_fin < 150) {
-          tempInfoBox.innerHTML = "ℹ️ <strong>Proceso:</strong> Precalentamiento leve. Mínima alteración estructural.";
-      } else if (T_fin >= 150 && T_fin < 600) {
-          tempInfoBox.innerHTML = "🔧 <strong>Proceso:</strong> Revenido o alivio de tensiones mecánicas.";
-      } else if (T_fin >= mat.fusion - 100) {
-          tempInfoBox.innerHTML = "🌋 <strong>Proceso:</strong> Forja extrema / Riesgo de fusión inminente.";
-      } else {
-          tempInfoBox.innerHTML = "🔥 <strong>Proceso:</strong> Zona crítica de transformación térmica (Templado / Forja).";
-      }
-
-      const turnsWarnBox = document.getElementById('turnsWarning');
-      if (N < 4) {
-          turnsWarnBox.style.display = 'block';
-          turnsWarnBox.style.color = 'var(--warning)';
-          turnsWarnBox.innerHTML = "⚠️ <strong>Pocas espiras:</strong> Acoplamiento magnético débil con la pieza.";
-      } else if (N > 14 && N < 19) {
-          turnsWarnBox.style.display = 'block';
-          turnsWarnBox.style.color = 'var(--warning)';
-          turnsWarnBox.innerHTML = "⚠️ <strong>Exceso de espiras:</strong> Alta inductancia y resistencia en el cable de cobre.";
-      } else {
-          turnsWarnBox.style.display = 'none';
-      }
-
-      const lengthWarnBox = document.getElementById('lengthWarning');
-      if (lenCm < 5) {
-          lengthWarnBox.style.display = 'block';
-          lengthWarnBox.style.color = 'var(--highlight)';
-          lengthWarnBox.innerHTML = "ℹ️ <strong>Bobina compacta:</strong> Enfoque de campo muy localizado (ideal temple).";
-      } else if (lenCm > 18 && lenCm < 28) {
-          lengthWarnBox.style.display = 'block';
-          lengthWarnBox.style.color = 'var(--warning)';
-          lengthWarnBox.innerHTML = "⚠️ <strong>Bobina muy alargada:</strong> Dispersión del flujo magnético ($B$ disminuye).";
-      } else {
-          lengthWarnBox.style.display = 'none';
-      }
 
       let refTemp = "";
       let tempColor = "var(--success)";
@@ -626,9 +637,8 @@
       else if (T_fin < mat.fusion - 10) { refTemp = "(Incandescente / Forja)"; tempColor = "var(--accent)"; } 
       else { refTemp = "(Límite de fusión)"; tempColor = "var(--danger)"; }
       
-      const lblTempRef = document.getElementById('lblTempRef');
-      lblTempRef.textContent = refTemp;
-      lblTempRef.style.color = tempColor;
+      document.getElementById('lblTempRef').textContent = refTemp;
+      document.getElementById('lblTempRef').style.color = tempColor;
 
       let refMass = "";
       if (m <= 1.0) refMass = "(Pieza ligera)";
@@ -647,16 +657,6 @@
       document.getElementById('lblTimeRef').textContent = refTime;
       document.getElementById('lblTimeRef').style.color = (t < tiempoMinimoSeguro || t > tiempoMaximoSeguro) ? "var(--danger)" : "var(--success)";
 
-      const timeInfoBox = document.getElementById('timeProcessInfo');
-      timeInfoBox.style.display = 'block';
-      if (t < tiempoMinimoSeguro) {
-          timeInfoBox.innerHTML = "⚠️ <strong>Choque Térmico:</strong> Rampa ultrarrápida destructiva para la pieza y el inversor.";
-      } else if (t > tiempoMaximoSeguro) {
-          timeInfoBox.innerHTML = "⚠️ <strong>Disipación / Oxidación:</strong> Calentamiento ineficiente que daña la metalurgia de la pieza.";
-      } else {
-          timeInfoBox.innerHTML = "✅ <strong>Ciclo Industrial Estándar:</strong> Balance óptimo de transferencia térmica.";
-      }
-
       let refFreq = "";
       let freqColor = "var(--success)";
       if (f_khz < 30) { refFreq = "(Baja)"; } 
@@ -667,26 +667,25 @@
       document.getElementById('lblFreqRef').style.color = freqColor;
 
       let refCurr = "";
-      if (I < 100) refCurr = "(Baja)";
-      else if (I <= 350) refCurr = "(Óptimo)";
-      else refCurr = "(⚠️ Alto estrés)";
+      if (I < 80) refCurr = "(Baja)";
+      else if (I <= 120) refCurr = "(Óptimo)";
+      else if (I <= 180) refCurr = "(⚠️ Alta - Req. Chiller)";
+      else refCurr = "(⛔ Crítica)";
       document.getElementById('lblCurrentRef').textContent = refCurr;
-      document.getElementById('lblCurrentRef').style.color = I > 350 ? "var(--warning)" : "var(--success)";
+      document.getElementById('lblCurrentRef').style.color = I > 180 ? "var(--danger)" : (I > 120 ? "var(--warning)" : "var(--success)");
 
       document.getElementById('lblMass').textContent = m.toFixed(2);
       document.getElementById('lblTempIni').textContent = T_ini;
       document.getElementById('lblTempFin').textContent = T_fin;
       document.getElementById('lblTime').textContent = t;
-      document.getElementById('lblArea').textContent = areaCm2;
       document.getElementById('lblFreq').textContent = f_khz;
       document.getElementById('lblTurns').textContent = N;
       document.getElementById('lblLength').textContent = lenCm;
       document.getElementById('lblCurrent').textContent = I;
       document.getElementById('lblSpeed').textContent = spd.toFixed(1) + 'x';
 
-      // MATEMÁTICA CON BLINDAJE APLICADO
       const B_bobina = MU_0 * (N / lenM) * I;
-      const B_pieza = B_bobina * attenuation; // El campo que realmente logra llegar
+      const B_pieza = B_bobina * attenuation; 
 
       if (hasShield) {
           document.getElementById('stepAmpereSub').innerHTML = `B = (4π × 10⁻⁷) · (${N} / ${lenM.toFixed(3)}) · ${I} <strong style="color:var(--warning)">× 0.05 (Blindaje)</strong>`;
@@ -696,93 +695,96 @@
       document.getElementById('stepAmpereRes').textContent = `B_pieza = ${B_pieza.toFixed(4)} T (${(B_pieza * 1000).toFixed(1)} mT)`;
 
       const A_pieza = areaM2; 
-      const FEM_est = 2 * Math.PI * f_hz * B_pieza * A_pieza; // Modificado por B_pieza
+      const FEM_est = 2 * Math.PI * f_hz * B_pieza * A_pieza; 
       document.getElementById('stepFaradaySub').textContent = `E_ind ≈ 2π · (${f_hz} Hz) · (${B_pieza.toFixed(3)} T) · ${A_pieza.toFixed(4)}`;
       document.getElementById('stepFaradayRes').textContent = `E_ind ≈ ${FEM_est.toFixed(1)} V`;
 
-      let warnings = [];
-      let dangers = [];
+      let warningsGlobales = 0;
       let isRestricted = false;
 
       const delta_m = Math.sqrt(mat.rho / (Math.PI * f_hz * MU_0 * mat.mu_r));
       const delta_mm = delta_m * 1000;
-      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100)); // Cae si FEM cae
+      const J_max = FEM_est / (mat.rho * (Math.max(delta_m, 0.00005) * 100)); 
       
-      const deltaT = T_fin_efectiva - T_ini; // Se usa la temperatura real que alcanza
+      const deltaT = T_fin_efectiva - T_ini; 
       const P_th = (m * mat.c * deltaT) / t;
       const T_fin_K = T_fin_efectiva + 273.15, T_amb_K = T_ini + 273.15;
       const P_rad = mat.emissivity * SIGMA * areaM2 * (Math.pow(T_fin_K, 4) - Math.pow(T_amb_K, 4));
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
-      // 1. RESTRICCIÓN FÍSICA: EFECTO SKIN
+      // VALIDACIÓN FRECUENCIA Y SKIN EFFECT
       if (delta_mm < 0.015) {
           isRestricted = true;
-          dangers.push(`⛔ <strong>RESTRICCIÓN FÍSICA:</strong> Efecto Skin microscópico (${delta_mm.toFixed(3)} mm). Riesgo de daño al inversor y fusión superficial extrema. <strong>Baje la frecuencia.</strong>`);
-      } 
-      else if (f_khz >= 250) {
+          mostrarAlertaLocal('freqWarning', 'danger', `⛔ <strong>Efecto Skin Crítico (${delta_mm.toFixed(3)} mm):</strong> Riesgo de fusión superficial y daño al inversor. <strong>Baje la frecuencia.</strong>`);
+      } else if (f_khz >= 250) {
           isRestricted = true;
-          dangers.push(`⛔ <strong>RESTRICCIÓN DE FRECUENCIA:</strong> Frecuencia crítica (${f_khz} kHz). Alto riesgo de arco eléctrico y sobrecarga del inversor. <strong>Baje la frecuencia a un rango operativo (&lt;250 kHz).</strong>`);
-      }
-      else if (f_khz >= 200 && f_khz < 250) {
-          warnings.push("⚡ <strong>Frecuencia Alta:</strong> Calentamiento predominantemente superficial. Vigile el estrés del equipo.");
-      } else if (f_khz < 20) {
-          warnings.push("📻 <strong>Frecuencia Baja (&lt; 20 kHz):</strong> Penetración profunda hacia el núcleo. Menor eficiencia energética.");
+          mostrarAlertaLocal('freqWarning', 'danger', `⛔ <strong>Frecuencia Crítica (${f_khz} kHz):</strong> Riesgo inminente de arco eléctrico. <strong>Baje la frecuencia.</strong>`);
+      } else if (f_khz >= 200) {
+          warningsGlobales++;
+          mostrarAlertaLocal('freqWarning', 'warning', `⚠️ <strong>Frecuencia Alta:</strong> Vigile el estrés del equipo.`);
       }
 
-      // 2. Restricción Estricta de Geometría
-      if (N >= 19) {
+      // VALIDACIÓN ESPIRAS
+      if (N >= 10) {
           isRestricted = true;
-          dangers.push(`⛔ <strong>RESTRICCIÓN GEOMÉTRICA:</strong> Exceso extremo de espiras ($N = ${N}$). Inductancia parásita y caída térmica inaceptables en el devanado.`);
-      }
-      if (lenCm >= 28) {
-          isRestricted = true;
-          dangers.push(`⛔ <strong>RESTRICCIÓN GEOMÉTRICA:</strong> Longitud de bobina excesiva ($l = ${lenCm}\\text{ cm}$). Dispersión severa del flujo magnético ($B \\approx 0$).`);
+          mostrarAlertaLocal('turnsWarning', 'danger', `⛔ <strong>Exceso de espiras:</strong> Reactancia inductiva muy alta. Inversor no sintoniza.`);
+      } else if (N > 8) {
+          warningsGlobales++;
+          mostrarAlertaLocal('turnsWarning', 'warning', `⚠️ <strong>Alta inductancia:</strong> Baja eficiencia. Baje a 5-6 espiras.`);
       }
 
-      // 3. RESTRICCIÓN TÉRMICA ESTRICTA 
-      // NOTA: Si está blindado, las restricciones de tiempo (muy lento/muy rápido) se desactivan lógicamente, porque el calor lo absorbe el escudo, no la pieza.
+      // VALIDACIÓN LONGITUD
+      if (lenCm >= 15) {
+          isRestricted = true;
+          mostrarAlertaLocal('lengthWarning', 'danger', `⛔ <strong>Bobina muy larga:</strong> Dispersión severa del campo. Acoplamiento nulo.`);
+      } else if (lenCm > 12) {
+          warningsGlobales++;
+          mostrarAlertaLocal('lengthWarning', 'warning', `⚠️ <strong>Bobina larga:</strong> Dispersión de campo magnético.`);
+      }
+
+      // VALIDACIÓN TIEMPO (Térmica)
       if (!hasShield) {
           if (t < tiempoMinimoSeguro) {
               isRestricted = true;
-              dangers.push(`⛔ <strong>RESTRICCIÓN TÉRMICA (${mat.nombre}):</strong> Tiempo demasiado corto ($t = ${t}\\text{ s}$). Por su conductividad, calentar ${m.toFixed(2)} kg tan rápido provocará fractura por choque térmico. <strong>El mínimo seguro es de ${Math.ceil(tiempoMinimoSeguro)} segundos.</strong>`);
+              mostrarAlertaLocal('timeWarning', 'danger', `⛔ <strong>Tiempo Corto:</strong> Riesgo de choque térmico para ${m.toFixed(2)}kg de ${mat.nombre}. Mínimo: ${Math.ceil(tiempoMinimoSeguro)}s.`);
           } else if (t > tiempoMaximoSeguro) {
               isRestricted = true;
-              dangers.push(`⛔ <strong>RESTRICCIÓN TÉRMICA (${mat.nombre}):</strong> Tiempo excesivamente largo ($t = ${t}\\text{ s}$). ${mat.descErrorTiempo} El calor radiado supera la inyección térmica. <strong>El máximo seguro es de ${Math.floor(tiempoMaximoSeguro)} segundos.</strong>`);
+              mostrarAlertaLocal('timeWarning', 'danger', `⛔ <strong>Tiempo Excesivo:</strong> Calor radiado supera inyección térmica. Máximo: ${Math.floor(tiempoMaximoSeguro)}s.`);
+          } else {
+              // Muestra que el ciclo es correcto (sin error)
+              const el = document.getElementById('timeWarning');
+              el.style.display = 'block';
+              el.innerHTML = `✅ Ciclo Industrial Estándar`;
           }
       }
 
-      // 4. Restricción de Inversor Estricta
-      const currentWarnBox = document.getElementById('currentWarning');
-      if (I > 450) {
+      // VALIDACIÓN CORRIENTE
+      if (I > 180) {
           isRestricted = true;
-          currentWarnBox.style.display = 'block';
-          currentWarnBox.style.color = 'var(--danger)';
-          currentWarnBox.innerHTML = '⛔ <strong>Corriente Crítica (&gt;450 A):</strong> Excede la capacidad segura del inversor. Operación bloqueada.';
-          dangers.push("🛑 <strong>Corriente RMS Excesiva:</strong> Rango no soportado por componentes estándar.");
-      } else if (I > 350) {
-          currentWarnBox.style.display = 'block';
-          currentWarnBox.style.color = 'var(--warning)';
-          currentWarnBox.innerHTML = '⚠️ <strong>Corriente Elevada (&gt;350 A):</strong> Alto estrés en semiconductores y riesgo térmico en la bobina de cobre.';
-          warnings.push("⚠️ Corriente RMS elevada cercana al límite térmico de la bobina.");
-      } else {
-          currentWarnBox.style.display = 'none';
-          currentWarnBox.innerHTML = '';
+          mostrarAlertaLocal('currentWarning', 'danger', `⛔ <strong>Corriente Crítica (>180 A):</strong> Riesgo de fundir semiconductores y bobina.`);
+      } else if (I > 120) {
+          warningsGlobales++;
+          mostrarAlertaLocal('currentWarning', 'warning', `⚠️ <strong>Corriente Elevada:</strong> Requiere refrigeración por agua a presión (Chiller).`);
       }
 
-      // 5. Restricción de Potencia (se ignora si está blindado porque el poder cae a cero para la pieza)
+      // VALIDACIÓN POTENCIA IRREAL (Afecta Masa o Tiempo)
       if (P_kW > 150 && !hasShield) {
-        dangers.push(`🛑 <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
+        isRestricted = true;
+        mostrarAlertaLocal('massWarning', 'danger', `⛔ <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
+      // === SEMÁFORO GLOBAL DE ESTADO ===
       const statusBox = document.getElementById('statusPanel');
       const btnSave = document.getElementById('saveHistoryBtn');
       
       if (isRestricted) {
+          statusBox.className = "status-panel status-danger";
+          statusBox.innerHTML = "⛔ <strong>SISTEMA BLOQUEADO:</strong> Corrija los parámetros en ROJO de arriba para continuar.";
+          
           btnSave.disabled = true;
           btnSave.className = "btn-blocked";
           btnSave.innerHTML = "⛔ RESTRICCIÓN FÍSICA (No Guardable)";
-          
           if(isPowerOn) turnOffPower(); 
           powerBtn.disabled = true;
           powerBtn.className = "btn-blocked";
@@ -792,43 +794,33 @@
           btnSave.className = "print-btn";
           btnSave.style.background = "var(--success)";
           btnSave.innerHTML = "💾 Guardar Escenario";
-
           powerBtn.disabled = false;
           if(!isPowerOn) {
             powerBtn.className = "power-btn power-off";
             powerBtn.innerHTML = "🛑 Equipo Apagado (OFF)";
           }
-      }
 
-      // MENSAJE DE BLINDAJE EN ESTADO
-      if (hasShield) {
-          warnings.unshift(`🛡️ <strong>BLINDAJE MAGNÉTICO ACTIVO:</strong> El 95% del flujo magnético hacia la pieza ha sido anulado. Alcanzará máximo <strong>${T_fin_efectiva.toFixed(0)}°C</strong>.`);
+          if (hasShield) {
+              statusBox.className = "status-panel status-optimal";
+              statusBox.style.borderLeftColor = 'var(--warning)';
+              statusBox.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+              statusBox.style.color = 'var(--warning)';
+              statusBox.innerHTML = `🛡️ <strong>BLINDAJE ACTIVO:</strong> El sistema es mecánicamente estable y la pieza está protegida magnéticamente.`;
+          } else if (warningsGlobales > 0) {
+              statusBox.className = "status-panel status-warning";
+              statusBox.innerHTML = "⚠️ <strong>SISTEMA CON ADVERTENCIAS:</strong> Puede operar, pero revise las alertas amarillas (ej. Refrigeración).";
+          } else {
+              statusBox.className = "status-panel status-optimal";
+              statusBox.innerHTML = "✅ <strong>Sistema en Óptimas Condiciones. Listo para operar.</strong>";
+          }
       }
-
-      let finalStatusHTML = "";
-      if (dangers.length > 0) {
-        statusBox.className = "status-panel status-danger";
-        finalStatusHTML = dangers.join("<br><br>") + (warnings.length > 0 ? "<br><br>" + warnings.join("<br><br>") : "");
-      } else if (warnings.length > 0) {
-        statusBox.className = "status-panel status-warning";
-        finalStatusHTML = warnings.join("<br><br>");
-      } else {
-        statusBox.className = "status-panel status-optimal";
-        finalStatusHTML = "✅ <strong>Sistema en Óptimas Condiciones.</strong>";
-      }
-      statusBox.innerHTML = finalStatusHTML;
 
       document.getElementById('stepSkinSub').textContent = `δ = √( ${mat.rho.toExponential(2)} / (π · ${f_hz} · μ₀ · ${mat.mu_r}) )`;
       document.getElementById('stepSkinRes').textContent = `δ = ${delta_mm.toFixed(3)} mm`;
       document.getElementById('stepJouleSub').textContent = `p = ρ · J² | ρ = ${mat.rho.toExponential(2)}`;
       document.getElementById('stepJouleRes').textContent = `J_sup ≈ ${(J_max / 1e6).toFixed(1)} A/mm²`;
-      
-      if (hasShield) {
-          document.getElementById('stepThermoSub').innerHTML = `P_th = (${m}kg · ${mat.c} · <strong style="color:var(--warning)">${deltaT.toFixed(1)}°C (Limitado)</strong>) / ${t}s`;
-      } else {
-          document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT.toFixed(1)}°C) / ${t}s`;
-      }
-      
+      if (hasShield) { document.getElementById('stepThermoSub').innerHTML = `P_th = (${m}kg · ${mat.c} · <strong style="color:var(--warning)">${deltaT.toFixed(1)}°C (Limitado)</strong>) / ${t}s`; } 
+      else { document.getElementById('stepThermoSub').textContent = `P_th = (${m}kg · ${mat.c} · ${deltaT.toFixed(1)}°C) / ${t}s`; }
       document.getElementById('stepThermoRes').textContent = `P_th = ${Math.round(P_th).toLocaleString()} W (${(P_th / 1000).toFixed(2)} kW)`;
       document.getElementById('stepRadSub').textContent = `P_rad = ${mat.emissivity} · σ · A · (${T_fin_K.toFixed(0)}⁴ - ${T_amb_K.toFixed(0)}⁴)`;
       document.getElementById('stepRadRes').textContent = `P_rad = ${Math.round(P_rad).toLocaleString()} W`;
@@ -840,13 +832,7 @@
       document.getElementById('cardSkinDepth').textContent = `${delta_mm.toFixed(2)} mm`;
       document.getElementById('cardMagneticB').textContent = `${(B_pieza * 1000).toFixed(0)} mT`;
 
-      if (hasShield) {
-          document.getElementById('conclusionAmigable').innerHTML = `💡 <strong>Análisis con Blindaje:</strong> El escudo de cobre/shunt está absorbiendo la inducción magnética. La pieza de <strong>${mat.nombre}</strong> está protegida y se mantendrá a salvo alcanzando un máximo de <strong>${T_fin_efectiva.toFixed(0)}°C</strong>.`;
-      } else {
-          document.getElementById('conclusionAmigable').innerHTML = `💡 <strong>Análisis Rápido:</strong> Calentando <strong>${m.toFixed(2)} kg</strong> de <strong>${mat.nombre}</strong> a ${T_fin}°C. Capa skin activa: <strong>${delta_mm.toFixed(3)} mm</strong>. Potencia requerida: <strong>${P_kW.toFixed(1)} kW</strong>.`;
-      }
-
-      animData = { freq: f_khz, delta: delta_mm, temp: T_fin_efectiva, tempIni: T_ini, current: I, speed: spd, materialName: mat.nombre, time: t, turns: N, lengthCm: lenCm, area: areaCm2, hasShield: hasShield };
+      animData = { freq: f_khz, delta: delta_mm, temp: T_fin_efectiva, tempIni: T_ini, current: I, speed: spd, materialName: mat.nombre, time: t, turns: N, lengthCm: lenCm, area: areaCm2, hasShield: hasShield, dPieza: diametroPiezaCm, dBobina: diametroBobinaCm };
 
       let matNameStr = hasShield ? `${mat.nombre} (Con Blindaje)` : mat.nombre;
 
@@ -855,7 +841,7 @@
         rhoVal: mat.rho.toExponential(2) + " Ω·m",
         cVal: mat.c + " J/kg·K",
         muVal: mat.mu_r,
-        descMat: mat.descRho + " " + mat.descMu,
+        descMat: mat.descRho + " " + mat.descMu, 
         mass: m.toFixed(2), 
         temp: T_fin_efectiva.toFixed(0) + " °C",
         tempRaw: T_fin_efectiva,
@@ -868,7 +854,7 @@
         skin: delta_mm.toFixed(3) + " mm",
         skinRaw: delta_mm.toFixed(3),
         current: I + " A",
-        turns: N + " espiras",
+        turns: N + " esp",
         turnsRaw: N,
         length: lenCm + " cm",
         lengthRaw: lenCm,
@@ -905,67 +891,49 @@
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
-      document.getElementById('chkShield').checked = false; // Desactivar blindaje al reiniciar
+      document.getElementById('chkShield').checked = false; 
       document.getElementById('inputMass').value = 0.5; 
       document.getElementById('inputTempIni').value = 25; 
       document.getElementById('inputTempFin').value = 800;
       document.getElementById('inputTime').value = 45; 
-      document.getElementById('inputArea').value = 60; 
       document.getElementById('inputFreq').value = 100;
-      document.getElementById('inputTurns').value = 6; 
-      document.getElementById('inputLength').value = 8; 
-      document.getElementById('inputCurrent').value = 180;
+      document.getElementById('inputTurns').value = 5; 
+      document.getElementById('inputLength').value = 6; 
+      document.getElementById('inputCurrent').value = 100;
       document.getElementById('inputSpeed').value = 1.0; 
       document.getElementById('materialSelect').value = 'acero';
       actualizarCalculos();
     });
 
     document.getElementById('exportExcelBtn').addEventListener('click', () => {
-      if (typeof XLSX === 'undefined') {
-        alert("La librería de Excel no ha cargado. Revisa tu conexión a internet.");
-        return;
-      }
-      if (simulationHistory.length === 0) {
-        alert("Primero debes guardar al menos un escenario en el historial para exportarlo.");
-        return;
-      }
+      if (typeof XLSX === 'undefined') { alert("La librería de Excel no ha cargado."); return; }
+      if (simulationHistory.length === 0) { alert("Primero debes guardar un escenario."); return; }
       
       let wb = XLSX.utils.book_new();
-
       let ws1_data = [
         ["IPChile — Ingeniería en Electricidad y Electrónica"],
-        ["Autores: José Luis Tapia y Axel Aros Romero"],
+        ["Autores: José Luis Tapia Tapia y Axel Aros"],
         ["REPORTE EJECUTIVO DE INGENIERÍA - SIMULACIÓN DE INDUCCIÓN ELECTROMAGNÉTICA"],
         ["Fecha de Emisión:", new Date().toLocaleString()],
         [],
         [
           "Escenario", "Material", "Resistividad (ρ)", "Calor Específico (c)", "Permeabilidad (μr)", 
-          "Descripción del Material", "Masa (kg)", "Espiras (N)", "Long. Bobina (cm)", 
+          "Masa (kg)", "Espiras (N)", "Long. Bobina (cm)", 
           "Frecuencia (kHz)", "Corriente (A)", "Potencia Obtenida (kW)", "Skin (mm)", "Temp Alcanzada (°C)", "Tiempo (s)"
         ]
       ];
       simulationHistory.forEach((item, index) => {
         ws1_data.push([
           `Prueba #${index + 1}`, item.material, item.rhoVal, item.cVal, item.muVal,
-          item.descMat, parseFloat(item.mass), parseFloat(item.turnsRaw), parseFloat(item.lengthRaw),
+          parseFloat(item.mass), parseFloat(item.turnsRaw), parseFloat(item.lengthRaw),
           parseFloat(item.freqRaw), parseFloat(item.current), parseFloat(item.powerRaw),
           parseFloat(item.skinRaw), parseFloat(item.tempRaw), parseFloat(item.timeRaw)
         ]);
       });
       let ws1 = XLSX.utils.aoa_to_sheet(ws1_data);
-      ws1['!cols'] = [
-        {wch:12}, {wch:28}, {wch:18}, {wch:18}, {wch:16}, 
-        {wch:45}, {wch:10}, {wch:12}, {wch:16}, {wch:16}, 
-        {wch:14}, {wch:20}, {wch:14}, {wch:18}, {wch:10}
-      ];
       XLSX.utils.book_append_sheet(wb, ws1, "Resumen Ejecutivo");
 
-      let ws2_data = [
-        ["IPChile — Ingeniería en Electricidad y Electrónica"],
-        ["Autores: José Luis Tapia Tapia y Axel Aros"],
-        ["MEMORIA DE CÁLCULO Y DESGLOSE DE LEYES FÍSICAS"],
-        []
-      ];
+      let ws2_data = [ ["IPChile — Ingeniería en Electricidad y Electrónica"], ["Autores: José Luis Tapia Tapia y Axel Aros"], ["MEMORIA DE CÁLCULO Y DESGLOSE DE LEYES FÍSICAS"], [] ];
       simulationHistory.forEach((item, index) => {
         ws2_data.push([`=== ESCENARIO #${index + 1}: ${item.material} (${item.power}) ===`]);
         ws2_data.push(["Principio / Ley Física", "Fórmula / Sustitución Numérica", "Resultado Final"]);
@@ -975,7 +943,7 @@
         ws2_data.push(["4. Densidad por Ley de Joule", item.f4_sub, item.f4_res]);
         ws2_data.push(["5. Potencia Térmica Neta (P_th)", item.f5_sub, item.f5_res]);
         ws2_data.push(["6. Pérdidas por Radiación (Stefan-Boltzmann)", item.f6_sub, item.f6_res]);
-        ws2_data.push(["7. Balance Global de Potencia de Pieza (P_eq)", item.f7_sub, item.f7_res]);
+        ws2_data.push(["7. Balance Global de Potencia (P_eq)", item.f7_sub, item.f7_res]);
         ws2_data.push([], []);
       });
       let ws2 = XLSX.utils.aoa_to_sheet(ws2_data);
@@ -987,10 +955,7 @@
 
     function updateHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
-      if (simulationHistory.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía. Modifica parámetros y haz clic en "Guardar Escenario".</td></tr>`;
-        return;
-      }
+      if (simulationHistory.length === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 8px;">Sin escenarios guardados todavía.</td></tr>`; return; }
       tbody.innerHTML = "";
       simulationHistory.forEach((item, index) => {
         const tr = document.createElement('tr');
@@ -1047,18 +1012,16 @@
       const backTL = projIso(-ex, ey, 160), backTR = projIso(ex, ey, 160);
       const backBL = projIso(-ex, -ey, 160), backBR = projIso(ex, -ey, 160);
 
-      // CÁMARA 1: VISUALIZACIÓN DEL BLINDAJE 
       if (animData.hasShield) {
           ctx1.fillStyle = 'rgba(217, 119, 6, 0.45)'; 
           ctx1.strokeStyle = '#b45309'; 
           ctx1.lineWidth = 1.5;
-          const sx = ex + 12, sy = ey + 12; // Un poco más grande que la pieza
+          const sx = ex + 12, sy = ey + 12; 
           const s_frontTL = projIso(-sx, sy, z_metal-10), s_frontTR = projIso(sx, sy, z_metal-10);
           const s_frontBL = projIso(-sx, -sy, z_metal-10), s_frontBR = projIso(sx, -sy, z_metal-10);
           const s_backTL = projIso(-sx, sy, 165), s_backTR = projIso(sx, sy, 165);
           const s_backBL = projIso(-sx, -sy, 165), s_backBR = projIso(sx, -sy, 165);
 
-          // Caja de Blindaje Protectora
           ctx1.beginPath(); ctx1.moveTo(s_frontTR.u, s_frontTR.v); ctx1.lineTo(s_backTR.u, s_backTR.v); ctx1.lineTo(s_backBR.u, s_backBR.v); ctx1.lineTo(s_frontBR.u, s_frontBR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
           ctx1.beginPath(); ctx1.moveTo(s_frontTL.u, s_frontTL.v); ctx1.lineTo(s_backTL.u, s_backTL.v); ctx1.lineTo(s_backTR.u, s_backTR.v); ctx1.lineTo(s_frontTR.u, s_frontTR.v); ctx1.closePath(); ctx1.fill(); ctx1.stroke();
       }
@@ -1087,13 +1050,10 @@
 
       for (let z = -180; z <= 160; z += 6) {
         let decay = 1;
-        // Si hay escudo, las ondas colapsan mucho antes y más rápido en la animación
         let surfaceZ = animData.hasShield ? z_metal - 10 : z_metal;
         let decayFactor = animData.hasShield ? 10 : Math.max(5, animData.delta * 40);
 
-        if (z > surfaceZ) {
-          decay = Math.exp(-(z - surfaceZ) / decayFactor);
-        }
+        if (z > surfaceZ) { decay = Math.exp(-(z - surfaceZ) / decayFactor); }
         if (decay < 0.015) continue; 
 
         const wave = Math.sin((z * waveSpatialFreq) - timePhase * timeMultiplier) * decay;
@@ -1126,7 +1086,6 @@
       ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(canvas2.width, cy); ctx2.stroke(); 
       ctx2.beginPath(); ctx2.moveTo(cx, 0); ctx2.lineTo(cx, canvas2.height); ctx2.stroke(); 
 
-      // CÁMARA 2: PARED DE BLINDAJE
       if (animData.hasShield) {
           ctx2.fillStyle = 'rgba(217, 119, 6, 0.8)'; 
           ctx2.fillRect(cx - 20, 0, 16, canvas2.height); 
@@ -1152,7 +1111,7 @@
       }
       
       let waveStart = -200;
-      let waveStop = animData.hasShield ? -20 : 0; // Si hay escudo, la onda se detiene antes
+      let waveStop = animData.hasShield ? -20 : 0; 
       drawRayLine(incU, waveStart, waveStop, 'rgba(255,255,255,0.3)'); 
       drawRayLine(refU, waveStop, 200, 'rgba(255,255,255,0.3)');  
       drawRayLine(traU, waveStop, 200, 'rgba(255,255,255,0.3)');  
@@ -1183,7 +1142,6 @@
       }
 
       let transDecay = Math.exp(-slidePhase / Math.max(5, animData.delta * 20));
-      // Si el escudo está puesto, casi no hay transmisión
       if (animData.hasShield) transDecay = transDecay * 0.05; 
 
       drawMovingVectors(incU, -slideRange + slidePhase + waveStop, 'E_i', 'B_i');
@@ -1200,9 +1158,30 @@
       const cx = canvas3.width / 2, cy = canvas3.height / 2;
       
       const coilVisualHeight = animData.lengthCm * 6; 
-      const radius = 45;
       
-      let cylWidth = 15 + (animData.area / 500) * 65; 
+      let scale = 12; 
+      if ((animData.dBobina * scale) > 200) { scale = 200 / animData.dBobina; }
+
+      let visualDPieza = animData.dPieza * scale;
+      let visualDBobina = animData.dBobina * scale;
+      let radius = visualDBobina / 2; 
+      let cylWidth = visualDPieza; 
+
+      ctx3.fillStyle = 'rgba(15, 23, 42, 0.6)';
+      ctx3.fillRect(5, 5, 135, 75);
+      ctx3.strokeStyle = '#38bdf8';
+      ctx3.lineWidth = 1;
+      ctx3.strokeRect(5, 5, 135, 75);
+
+      ctx3.fillStyle = '#38bdf8'; 
+      ctx3.font = 'bold 11px monospace';
+      ctx3.fillText(`Ø Pieza: ${animData.dPieza.toFixed(1)} cm`, 12, 22);
+      ctx3.fillStyle = '#f59e0b';
+      ctx3.fillText(`Ø Bobina: ${animData.dBobina.toFixed(1)} cm`, 12, 38);
+      ctx3.fillStyle = '#f8fafc';
+      ctx3.fillText(`Espiras(N): ${animData.turns}`, 12, 54);
+      ctx3.fillStyle = '#10b981';
+      ctx3.fillText(`Air Gap: 5.0 mm`, 12, 70);
 
       ctx3.lineWidth = 6;
       ctx3.strokeStyle = '#92400e'; 
@@ -1236,7 +1215,6 @@
       ctx3.fillStyle = 'rgba(255,255,255,0.1)';
       ctx3.fillRect(cx - cylWidth/2 + 5, cy - 90, cylWidth/4, 180);
 
-      // CÁMARA 3: TUBO DE BLINDAJE
       if (animData.hasShield) {
           ctx3.fillStyle = 'rgba(217, 119, 6, 0.55)';
           ctx3.strokeStyle = '#92400e';
