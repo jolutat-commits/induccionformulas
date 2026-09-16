@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador Calentamiento por Inducción</title>
+  <title>Simulador Maestro 3D de Calentamiento por Inducción</title>
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <!-- LIBRERÍA SHEETJS PARA EXPORTACIÓN PROFESIONAL A EXCEL (.xlsx) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- LIBRERÍAS PROFESIONALES PARA EXCEL Y GRÁFICOS WEB -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
@@ -92,6 +94,11 @@
     .summary-card strong { display: block; font-size: 1.2rem; margin-top: 3px; color: var(--accent); font-family: monospace; }
     .summary-card small { display: block; color: var(--text-muted); font-size: 0.7rem; margin-top: 2px; }
 
+    /* ESTILOS DEL NUEVO DASHBOARD WEB (GRÁFICOS) */
+    .dashboard-charts { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+    @media (min-width: 800px) { .dashboard-charts { grid-template-columns: 1fr 1fr; } }
+    .chart-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; position: relative; height: 250px; }
+
     .history-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; min-width: 0; }
     .history-card h3 { font-size: 0.9rem; color: var(--highlight); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
     .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
@@ -122,7 +129,7 @@
       body { background: white; color: black; }
       .panel-controls, .print-btn, .help-btn, .reset-btn, .excel-btn, .modal { display: none; }
       .container { display: block; }
-      .visualizer-card, .formula-card, .history-card { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; margin-bottom: 15px; }
+      .visualizer-card, .formula-card, .history-card, .dashboard-charts { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; background: white; margin-bottom: 15px; }
       canvas { filter: invert(1); }
       h3, .step-content, .step-title, .step-explanation, .step-explanation strong { color: black !important; }
       .status-panel, .history-table th, .history-table td { border: 1px solid #ccc; color: black; }
@@ -133,8 +140,8 @@
 
   <header>
     <div>
-      <h1>Simulador Calentamiento por Inducción</h1>
-      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia y Axel Aros Romero </p>
+      <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
+      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia Tapia y Axel Aros</p>
     </div>
     <div class="header-actions">
       <button class="help-btn" id="openHelpBtn">❓ Guía de Uso</button>
@@ -143,17 +150,43 @@
   </header>
 
   <div id="helpModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 620px; max-height: 85vh; overflow-y: auto;">
       <span class="close-modal" id="closeHelpBtn">&times;</span>
-      <h3 style="color:var(--highlight); margin-bottom:10px;">📖 Guía Rápida de Uso</h3>
-      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-        <strong>Desarrollado por:</strong> José Luis Tapia y Axel Aros Romero (IPChile)<br><br>
-        1. <strong>Geometría Auto-Ajustable:</strong> El diámetro de la pieza y la bobina se calculan en tiempo real basándose en la Masa, Densidad y Longitud. Visualízalo en la Cámara 3.<br>
-        2. <strong>Temporizador Automático:</strong> Presiona ENCENDER y el equipo operará por los segundos definidos.<br>
-        3. <strong>HMI y Restricciones:</strong> Si configuras un parámetro peligroso, el simulador se bloqueará y la alerta aparecerá exactamente debajo del deslizador que causó el error.<br>
-        4. <strong>Blindaje Protector:</strong> Activa el escudo de Cobre/Shunt para bloquear matemáticamente el campo magnético e impedir el calentamiento.<br>
-        5. Exporta todos tus datos en <strong>Excel Pro (.xlsx)</strong> con un diseño tipo Dashboard Ejecutivo en la primera pestaña y <strong>fórmulas matemáticas nativas vinculadas por celda</strong> en la memoria de cálculo.
-      </p>
+      <h3 style="color:var(--highlight); margin-bottom:8px;">📖 Guía de Operación y Manual de Ingeniería</h3>
+      
+      <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+        <p style="margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <strong>Desarrolladores:</strong> José Luis Tapia Tapia y Axel Aros<br>
+          <strong>Institución:</strong> IPChile — Ingeniería en Electricidad y Electrónica<br>
+          <span style="color: var(--highlight);"><strong>Docente Guía:</strong> Agradecimientos especiales a nuestro profesor guía por su continua orientación metodológica, revisión técnica y acompañamiento académico en el desarrollo de este simulador.</span>
+        </p>
+
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">1. Geometría Volumétrica Dinámica (Air Gap)</h4>
+        <p style="margin-bottom:8px;">
+          El software calcula automáticamente el diámetro cilíndrico de la pieza a partir de su masa (m) y densidad volumétrica (ρd). El diámetro interior de la bobina se auto-calibra manteniendo una separación de aire de seguridad constante de 5.0 mm por lado (1.0 cm total) para evitar arcos eléctricos.
+        </p>
+
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">2. Interfaz SCADA y Restricciones HMI Locales</h4>
+        <p style="margin-bottom:8px;">
+          El panel lateral incorpora lógica preventiva en tiempo real. Si un parámetro sale de los límites seguros (ej. corriente >180 A, reactancia por espiras ≥ 10, o tiempo insuficiente con riesgo de choque térmico), la alerta aparecerá directamente bajo el control correspondiente y el botón de encendido se bloqueará.
+        </p>
+
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">3. Blindaje Electromagnético (Shunt de Cobre)</h4>
+        <p style="margin-bottom:8px;">
+          Al activar la casilla de blindaje, se interpone un anillo de alta conductividad. Por Ley de Lenz, las corrientes parásitas se concentran en el escudo, reduciendo el campo magnético efectivo incidente en la pieza en un 95% y frenando la elevación térmica.
+        </p>
+
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">4. Sistema Multicámara 3D y Dashboard Web</h4>
+        <p style="margin-bottom:8px;">
+          • <strong>Cámaras 3D:</strong> Propagación simultánea vectorial (Cámara 1), atenuación exponencial por efecto Skin (Cámara 2) y telemetría industrial (Cámara 3).<br>
+          • <strong>Dashboard Gráfico:</strong> Al guardar escenarios, se generan automáticamente gráficos comparativos de Potencia (Barras) y Temperatura (Líneas) directamente en la interfaz web.
+        </p>
+
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">5. Reporte Ejecutivo y Memoria de Cálculo (.xlsx)</h4>
+        <p>
+          El botón <strong>Descargar Excel Pro</strong> genera un libro de cálculo automatizado. Utiliza la librería avanzada ExcelJS para exportar un Dashboard Ejecutivo a todo color con indicadores KPI y una memoria matemática operativa con fórmulas de Excel nativas.
+        </p>
+      </div>
     </div>
   </div>
 
@@ -302,6 +335,16 @@
 
       <div id="conclusionAmigable" class="tip-box" style="border-left-color: var(--success); margin-bottom: 15px;"></div>
 
+      <!-- NUEVO: DASHBOARD GRÁFICO WEB -->
+      <div class="dashboard-charts" id="dashboardCharts" style="display: none;">
+        <div class="chart-container">
+          <canvas id="powerChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="tempChart"></canvas>
+        </div>
+      </div>
+
       <div class="history-card">
         <h3>
           📊 Historial de Escenarios Guardados
@@ -420,7 +463,7 @@
 
   <footer class="academic-footer">
     IPChile — Ingeniería en Electricidad y Electrónica<br>
-    © 2026 José Luis Tapia y Axel Aros Romero. Todos los derechos reservados.<br>
+    © 2026 José Luis Tapia Tapia y Axel Aros. Todos los derechos reservados.<br>
     <small>Prohibida su reproducción, copia o uso comercial sin autorización expresa de los autores.</small>
   </footer>
 
@@ -479,6 +522,10 @@
     let animData = { freq: 100, delta: 1, temp: 800, tempIni: 25, current: 100, speed: 1.0, materialName: "Acero al Carbono", time: 45, turns: 5, lengthCm: 6, area: 60, hasShield: false, dPieza: 3.0, dBobina: 4.0 };
     let currentSimulationState = {};
     let simulationHistory = [];
+
+    // GRÁFICOS WEB CHART.JS
+    let powerChartInstance = null;
+    let tempChartInstance = null;
 
     const powerBtn = document.getElementById('powerBtn');
     
@@ -546,7 +593,6 @@
       }
     });
 
-    // Función para ocultar y resetear alertas locales
     function limpiarAlertasLocales() {
       const boxes = ['massWarning', 'timeWarning', 'freqWarning', 'turnsWarning', 'lengthWarning', 'currentWarning'];
       boxes.forEach(id => {
@@ -560,7 +606,6 @@
       });
     }
 
-    // Función auxiliar para mostrar alertas locales
     function mostrarAlertaLocal(id, tipo, htmlTexto) {
       const el = document.getElementById(id);
       el.style.display = 'block';
@@ -713,7 +758,6 @@
       const P_equipo = (P_th + P_rad) / 0.75;
       const P_kW = P_equipo / 1000;
 
-      // VALIDACIÓN FRECUENCIA Y SKIN EFFECT
       if (delta_mm < 0.015) {
           isRestricted = true;
           mostrarAlertaLocal('freqWarning', 'danger', `⛔ <strong>Efecto Skin Crítico (${delta_mm.toFixed(3)} mm):</strong> Riesgo de fusión superficial y daño al inversor. <strong>Baje la frecuencia.</strong>`);
@@ -725,7 +769,6 @@
           mostrarAlertaLocal('freqWarning', 'warning', `⚠️ <strong>Frecuencia Alta:</strong> Vigile el estrés del equipo.`);
       }
 
-      // VALIDACIÓN ESPIRAS
       if (N >= 10) {
           isRestricted = true;
           mostrarAlertaLocal('turnsWarning', 'danger', `⛔ <strong>Exceso de espiras:</strong> Reactancia inductiva muy alta. Inversor no sintoniza.`);
@@ -734,7 +777,6 @@
           mostrarAlertaLocal('turnsWarning', 'warning', `⚠️ <strong>Alta inductancia:</strong> Baja eficiencia. Baje a 5-6 espiras.`);
       }
 
-      // VALIDACIÓN LONGITUD
       if (lenCm >= 15) {
           isRestricted = true;
           mostrarAlertaLocal('lengthWarning', 'danger', `⛔ <strong>Bobina muy larga:</strong> Dispersión severa del campo. Acoplamiento nulo.`);
@@ -743,7 +785,6 @@
           mostrarAlertaLocal('lengthWarning', 'warning', `⚠️ <strong>Bobina larga:</strong> Dispersión de campo magnético.`);
       }
 
-      // VALIDACIÓN TIEMPO (Térmica)
       if (!hasShield) {
           if (t < tiempoMinimoSeguro) {
               isRestricted = true;
@@ -758,7 +799,6 @@
           }
       }
 
-      // VALIDACIÓN CORRIENTE
       if (I > 180) {
           isRestricted = true;
           mostrarAlertaLocal('currentWarning', 'danger', `⛔ <strong>Corriente Crítica (>180 A):</strong> Riesgo de fundir semiconductores y bobina.`);
@@ -767,13 +807,11 @@
           mostrarAlertaLocal('currentWarning', 'warning', `⚠️ <strong>Corriente Elevada:</strong> Requiere refrigeración por agua a presión (Chiller).`);
       }
 
-      // VALIDACIÓN POTENCIA IRREAL
       if (P_kW > 150 && !hasShield) {
         isRestricted = true;
         mostrarAlertaLocal('massWarning', 'danger', `⛔ <strong>Potencia Irreal (${P_kW.toFixed(0)} kW):</strong> Estás pidiendo demasiada energía. Aumenta el tiempo o baja la masa.`);
       }
 
-      // === SEMÁFORO GLOBAL DE ESTADO ===
       const statusBox = document.getElementById('statusPanel');
       const btnSave = document.getElementById('saveHistoryBtn');
       
@@ -835,68 +873,108 @@
 
       let matNameStr = hasShield ? `${mat.nombre} (Con Blindaje)` : mat.nombre;
 
-      // ESTADO GUARDADO CON VALORES NUMÉRICOS PUROS PARA FÓRMULAS EXCEL DINÁMICAS
       currentSimulationState = {
-        materialName: mat.nombre,
-        rho: mat.rho,
-        c: mat.c,
-        mu_r: mat.mu_r,
-        emissivity: mat.emissivity,
-        mass: m,
-        tempIni: T_ini,
-        temp: T_fin_efectiva,
-        time: t,
-        freq: f_khz,
-        turns: N,
-        lengthCm: lenCm,
-        current: I,
-        areaM2: areaM2,
-        powerKw: P_kW,
-        skinMm: delta_mm,
-        // Textos para la interfaz visual
-        material: matNameStr, 
-        rhoVal: mat.rho.toExponential(2) + " Ω·m",
-        cVal: mat.c + " J/kg·K",
-        muVal: mat.mu_r,
-        massStr: m.toFixed(2) + " kg",
-        tempStr: T_fin_efectiva.toFixed(0) + " °C",
-        timeStr: t + " s",
-        freqStr: f_khz + " kHz",
-        powerStr: P_kW.toFixed(1) + " kW",
-        skinStr: delta_mm.toFixed(3) + " mm",
-        currentStr: I + " A",
-        turnsStr: N + " esp",
-        lengthStr: lenCm + " cm",
-        B_mT: (B_pieza * 1000).toFixed(1),
-        E_V: FEM_est.toFixed(1),
-        f1_sub: document.getElementById('stepAmpereSub').innerText.replace(/<[^>]*>?/gm, ''),
-        f1_res: document.getElementById('stepAmpereRes').textContent,
-        f2_sub: document.getElementById('stepFaradaySub').textContent,
-        f2_res: document.getElementById('stepFaradayRes').textContent,
-        f3_sub: document.getElementById('stepSkinSub').textContent,
-        f3_res: document.getElementById('stepSkinRes').textContent,
-        f4_sub: document.getElementById('stepJouleSub').textContent,
-        f4_res: document.getElementById('stepJouleRes').textContent,
-        f5_sub: document.getElementById('stepThermoSub').innerText.replace(/<[^>]*>?/gm, ''),
-        f5_res: document.getElementById('stepThermoRes').textContent,
-        f6_sub: document.getElementById('stepRadSub').textContent,
-        f6_res: document.getElementById('stepRadRes').textContent,
-        f7_sub: document.getElementById('stepTotalSub').textContent,
-        f7_res: document.getElementById('stepTotalRes').textContent
+        materialName: mat.nombre, rho: mat.rho, c: mat.c, mu_r: mat.mu_r, emissivity: mat.emissivity,
+        mass: m, tempIni: T_ini, temp: T_fin_efectiva, time: t, freq: f_khz, turns: N, lengthCm: lenCm,
+        current: I, areaM2: areaM2, powerKw: P_kW, skinMm: delta_mm, B_mT: (B_pieza * 1000).toFixed(1),
+        
+        material: matNameStr, massStr: m.toFixed(2) + " kg", tempStr: T_fin_efectiva.toFixed(0) + " °C",
+        timeStr: t + " s", freqStr: f_khz + " kHz", powerStr: P_kW.toFixed(1) + " kW", skinStr: delta_mm.toFixed(3) + " mm",
       };
     }
 
     actualizarCalculos();
 
+    // MOTOR DE ACTUALIZACIÓN DE GRÁFICOS WEB (Chart.js)
+    function updateWebCharts() {
+      const dashboard = document.getElementById('dashboardCharts');
+      if (simulationHistory.length === 0) {
+        dashboard.style.display = 'none';
+        return;
+      }
+      
+      dashboard.style.display = 'grid'; // Mostrar el panel de gráficos
+      
+      const labels = simulationHistory.map((_, i) => `Prueba #${i + 1}`);
+      const powerData = simulationHistory.map(s => parseFloat(s.powerKw));
+      const tempData = simulationHistory.map(s => parseFloat(s.temp));
+
+      // Gráfico de Potencia (Barras)
+      const ctxPower = document.getElementById('powerChart').getContext('2d');
+      if (powerChartInstance) {
+        powerChartInstance.data.labels = labels;
+        powerChartInstance.data.datasets[0].data = powerData;
+        powerChartInstance.update();
+      } else {
+        powerChartInstance = new Chart(ctxPower, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Potencia Requerida (kW)',
+              data: powerData,
+              backgroundColor: 'rgba(56, 189, 248, 0.6)',
+              borderColor: 'rgba(56, 189, 248, 1)',
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+              y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' }, beginAtZero: true },
+              x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            }
+          }
+        });
+      }
+
+      // Gráfico de Temperatura (Líneas)
+      const ctxTemp = document.getElementById('tempChart').getContext('2d');
+      if (tempChartInstance) {
+        tempChartInstance.data.labels = labels;
+        tempChartInstance.data.datasets[0].data = tempData;
+        tempChartInstance.update();
+      } else {
+        tempChartInstance = new Chart(ctxTemp, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Temperatura Alcanzada (°C)',
+              data: tempData,
+              backgroundColor: 'rgba(249, 115, 22, 0.2)',
+              borderColor: 'rgba(249, 115, 22, 1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#ef4444'
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+              y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+              x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            }
+          }
+        });
+      }
+    }
+
     document.getElementById('saveHistoryBtn').addEventListener('click', () => {
       if (document.getElementById('saveHistoryBtn').disabled) return;
       simulationHistory.push({...currentSimulationState});
       updateHistoryTable();
+      updateWebCharts(); // Actualizar gráficos al guardar
     });
 
     document.getElementById('clearHistoryBtn').addEventListener('click', () => {
       simulationHistory = [];
       updateHistoryTable();
+      updateWebCharts(); // Ocultar/Limpiar gráficos al borrar
     });
 
     document.getElementById('resetBtn').addEventListener('click', () => {
@@ -914,147 +992,160 @@
       actualizarCalculos();
     });
 
-    // MOTOR DE EXPORTACIÓN A EXCEL PRO CORREGIDO (Fila de inicio de datos r = 11)
-    document.getElementById('exportExcelBtn').addEventListener('click', () => {
-      if (typeof XLSX === 'undefined') { alert("La librería de Excel no ha cargado."); return; }
+    // MOTOR EXCELJS (Genera Dashboard a Color desde Código Automáticamente)
+    document.getElementById('exportExcelBtn').addEventListener('click', async () => {
+      if (typeof ExcelJS === 'undefined') { alert("La librería ExcelJS no ha cargado."); return; }
       if (simulationHistory.length === 0) { alert("Primero debes guardar un escenario en el simulador."); return; }
       
-      let wb = XLSX.utils.book_new();
-      let ultimo = simulationHistory[simulationHistory.length - 1]; // Escenario más reciente para los KPIs del Dashboard
+      const wb = new ExcelJS.Workbook();
+      wb.creator = 'José Luis Tapia & Axel Aros';
+      wb.created = new Date();
 
-      // --- PESTAÑA 1: DASHBOARD EJECUTIVO (KPIs + Tabla de Historial con Columnas de A a O) ---
-      let ws1_data = [
-        ["IPChile — Ingeniería en Electricidad y Electrónica", "", "", "", "", "", "", ""],
-        ["AUTORES:", "José Luis Tapia Tapia & Axel Aros", "", "", "FECHA DE EMISIÓN:", new Date().toLocaleString(), "", ""],
-        ["PROYECTO:", "Simulador Maestro 3D de Calentamiento por Inducción", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        // Bloque Tarjetas KPI
-        ["📊 PANEL DE CONTROL KHI (ESTADO DE LA ÚLTIMA SIMULACIÓN)", "", "", "", "", "", "", ""],
-        ["Potencia Requerida (kW)", "Temp. Alcanzada (°C)", "Campo Magnético (mT)", "Efecto Skin (mm)", "Frecuencia (kHz)", "Corriente RMS (A)", "Masa Pieza (kg)", "Tiempo (s)"],
-        [
-          ultimo.powerKw, 
-          ultimo.temp, 
-          parseFloat(ultimo.B_mT), 
-          ultimo.skinMm, 
-          ultimo.freq, 
-          ultimo.current, 
-          ultimo.mass, 
-          ultimo.time
-        ],
-        ["", "", "", "", "", "", "", ""],
-        ["📋 HISTORIAL MAESTRO DE ESCENARIOS SIMULADOS", "", "", "", "", "", "", ""],
-        [
-          "Escenario",                // A (col 1)
-          "Material / Configuración", // B (col 2)
-          "Resistividad (ρ)",         // C (col 3)
-          "Calor Específico (c)",     // D (col 4)
-          "Permeabilidad (μr)",       // E (col 5)
-          "Masa (kg)",                // F (col 6)
-          "Temp. Inicial (°C)",       // G (col 7)
-          "Espiras (N)",              // H (col 8)
-          "Long. Bobina (cm)",        // I (col 9)
-          "Frecuencia (kHz)",         // J (col 10)
-          "Corriente (A)",            // K (col 11)
-          "Área Transversal (m²)",    // L (col 12)
-          "Emisividad (ε)",           // M (col 13)
-          "Temp. Alcanzada (°C)",     // N (col 14)
-          "Tiempo (s)"                // O (col 15)
-        ]
+      // ==========================================
+      // PESTAÑA 1: DASHBOARD EJECUTIVO (Con Color)
+      // ==========================================
+      const ws1 = wb.addWorksheet('Dashboard Ejecutivo');
+
+      ws1.columns = [
+        { width: 14 }, { width: 25 }, { width: 16 }, { width: 18 }, { width: 16 },
+        { width: 12 }, { width: 16 }, { width: 12 }, { width: 16 }, { width: 16 },
+        { width: 14 }, { width: 18 }, { width: 14 }, { width: 20 }, { width: 12 }
       ];
 
-      simulationHistory.forEach((item, index) => {
-        ws1_data.push([
-          `Prueba #${index + 1}`, // A
-          item.materialName,      // B
-          item.rho,               // C
-          item.c,                 // D
-          item.mu_r,              // E
-          item.mass,              // F
-          item.tempIni,           // G
-          item.turns,             // H
-          item.lengthCm,          // I
-          item.freq,              // J
-          item.current,           // K
-          item.areaM2,            // L
-          item.emissivity,        // M
-          item.temp,              // N
-          item.time               // O
-        ]);
+      // Cabecera Principal Azul Oscuro
+      ws1.mergeCells('A1:O2');
+      const titleCell = ws1.getCell('A1');
+      titleCell.value = "IPChile — Ingeniería en Electricidad y Electrónica\nSimulador Maestro 3D de Calentamiento por Inducción";
+      titleCell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 14 };
+      titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+
+      ws1.getCell('A4').value = "AUTORES:"; ws1.getCell('A4').font = { bold: true };
+      ws1.getCell('B4').value = "José Luis Tapia Tapia & Axel Aros";
+      ws1.getCell('N4').value = "FECHA EMISIÓN:"; ws1.getCell('N4').font = { bold: true };
+      ws1.getCell('O4').value = new Date().toLocaleString();
+
+      // Sección KPI (Naranja)
+      let ultimo = simulationHistory[simulationHistory.length - 1];
+      ws1.mergeCells('A6:H6');
+      const kpiTitle = ws1.getCell('A6');
+      kpiTitle.value = "📊 PANEL DE CONTROL KPI (ESTADO DE LA ÚLTIMA SIMULACIÓN)";
+      kpiTitle.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      kpiTitle.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } };
+
+      const kpiHeaders = ["Potencia Req (kW)", "Temp. Alcanzada (°C)", "Campo B (mT)", "Skin (mm)", "Frecuencia (kHz)", "Corriente RMS (A)", "Masa Pieza (kg)", "Tiempo (s)"];
+      const kpiRow = ws1.getRow(7);
+      kpiRow.values = kpiHeaders;
+      kpiRow.eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+        cell.alignment = { horizontal: 'center' };
+        cell.border = { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} };
       });
 
-      let ws1 = XLSX.utils.aoa_to_sheet(ws1_data);
-      ws1['!cols'] = [
-        {wch:15}, {wch:25}, {wch:16}, {wch:18}, {wch:16}, 
-        {wch:12}, {wch:16}, {wch:12}, {wch:16}, {wch:16}, 
-        {wch:14}, {wch:18}, {wch:14}, {wch:20}, {wch:12}
-      ];
-      XLSX.utils.book_append_sheet(wb, ws1, "Dashboard Ejecutivo");
-
-      // --- PESTAÑA 2: MEMORIA DE CÁLCULO TÉCNICA (Fórmulas Nativas con Referencias Exactas a Fila 11+) ---
-      let ws2_data = [
-        ["IPChile — Ingeniería en Electricidad y Electrónica", "", ""],
-        ["AUTORES:", "José Luis Tapia Tapia & Axel Aros", ""],
-        ["MEMORIA DE CÁLCULO TÉCNICO-MATEMÁTICA", "", ""],
-        ["(Evaluación dinámica vinculada mediante fórmulas nativas de celda)", "", ""],
-        []
-      ];
-
-      simulationHistory.forEach((item, index) => {
-        let r = 11 + index; // Fila exacta en la Hoja 'Dashboard Ejecutivo' (comienza en la fila 11 numérica)
-        
-        ws2_data.push([`=== ESCENARIO DE PRUEBA #${index + 1}: ${item.materialName} ===`, "", ""]);
-        ws2_data.push(["Principio / Ley Física", "Fórmula Teórica Aplicada", "Fórmula Nativa de Excel Operativa"]);
-        
-        // 1. Campo B (Ampère-Maxwell) -> H=Espiras(Col 8=H), I=Long(Col 9=I), K=Corriente(Col 11=K)
-        ws2_data.push([
-          "1. Ley de Ampère-Maxwell (Campo B)", 
-          "B = μ₀ · (N / l) · I", 
-          { t: 'n', f: `=4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r} / ('Dashboard Ejecutivo'!I${r}*0.01)) * 'Dashboard Ejecutivo'!K${r}` }
-        ]);
-
-        // 2. Voltaje Inducido (Faraday-Lenz) -> J=Freq(Col 10=J), H=Espiras(H), I=Long(I), K=Corr(K), L=Area(Col 12=L)
-        ws2_data.push([
-          "2. Ley de Faraday-Lenz (FEM Inducida)", 
-          "E_ind ≈ 2π · f · B · A", 
-          { t: 'n', f: `=2*PI() * ('Dashboard Ejecutivo'!J${r}*1000) * (4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r} / ('Dashboard Ejecutivo'!I${r}*0.01)) * 'Dashboard Ejecutivo'!K${r}) * 'Dashboard Ejecutivo'!L${r}` }
-        ]);
-
-        // 3. Efecto Skin -> C=Resistividad(Col 3=C), J=Freq(Col 10=J), E=Permeabilidad(Col 5=E)
-        ws2_data.push([
-          "3. Efecto Skin o Pelicular (δ)", 
-          "δ = √( ρ / (π · f · μ₀ · μ_r) )", 
-          { t: 'n', f: `=SQRT('Dashboard Ejecutivo'!C${r} / (PI() * ('Dashboard Ejecutivo'!J${r}*1000) * 4*PI()*10^-7 * 'Dashboard Ejecutivo'!E${r})) * 1000` }
-        ]);
-
-        // 4. Potencia Térmica Neta -> F=Masa(Col 6=F), D=Calor(Col 4=D), N=TempFinal(Col 14=N), G=TempIni(Col 7=G), O=Tiempo(Col 15=O)
-        ws2_data.push([
-          "4. Potencia Térmica Neta (P_th)", 
-          "P_th = (m · c · ΔT) / t", 
-          { t: 'n', f: `=('Dashboard Ejecutivo'!F${r} * 'Dashboard Ejecutivo'!D${r} * ('Dashboard Ejecutivo'!N${r} - 'Dashboard Ejecutivo'!G${r})) / 'Dashboard Ejecutivo'!O${r}` }
-        ]);
-
-        // 5. Pérdidas por Radiación -> M=Emisividad(Col 13=M), L=Area(Col 12=L), N=TempFinal(N), G=TempIni(G)
-        ws2_data.push([
-          "5. Pérdidas por Radiación (Stefan-Boltzmann)", 
-          "P_rad = ε · σ · A · (T_K⁴ - T_amb_K⁴)", 
-          { t: 'n', f: `='Dashboard Ejecutivo'!M${r} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r} * ( (('Dashboard Ejecutivo'!N${r}+273.15)^4) - (('Dashboard Ejecutivo'!G${r}+273.15)^4) )` }
-        ]);
-
-        // 6. Balance Global de Potencia (kW) -> Combina P_th y P_rad dividido por rendimiento (0.75) y 1000
-        ws2_data.push([
-          "6. Balance Global de Potencia de Pieza (P_eq)", 
-          "P_eq ≈ (P_th + P_rad) / η", 
-          { t: 'n', f: `=( (('Dashboard Ejecutivo'!F${r} * 'Dashboard Ejecutivo'!D${r} * ('Dashboard Ejecutivo'!N${r} - 'Dashboard Ejecutivo'!G${r})) / 'Dashboard Ejecutivo'!O${r}) + ('Dashboard Ejecutivo'!M${r} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r} * ( (('Dashboard Ejecutivo'!N${r}+273.15)^4) - (('Dashboard Ejecutivo'!G${r}+273.15)^4) )) ) / 0.75 / 1000` }
-        ]);
-
-        ws2_data.push([], []);
+      const kpiValues = ws1.getRow(8);
+      kpiValues.values = [ultimo.powerKw, ultimo.temp, parseFloat(ultimo.B_mT), ultimo.skinMm, ultimo.freq, ultimo.current, ultimo.mass, ultimo.time];
+      kpiValues.eachCell((cell) => {
+        cell.font = { bold: true, size: 12, color: { argb: 'FF0369A1' } };
+        cell.alignment = { horizontal: 'center' };
+        cell.border = { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} };
       });
 
-      let ws2 = XLSX.utils.aoa_to_sheet(ws2_data);
-      ws2['!cols'] = [{wch:45}, {wch:50}, {wch:65}];
-      XLSX.utils.book_append_sheet(wb, ws2, "Memoria de Cálculo");
+      // Sección Historial (Azul Claro)
+      ws1.mergeCells('A11:O11');
+      const histTitle = ws1.getCell('A11');
+      histTitle.value = "📋 HISTORIAL MAESTRO DE ESCENARIOS SIMULADOS";
+      histTitle.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      histTitle.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF334155' } };
 
-      XLSX.writeFile(wb, "Dashboard_Induccion_IPChile.xlsx");
+      const headers = [
+        "Escenario", "Material / Config", "Resistividad (ρ)", "Calor Específico (c)", "Permeabilidad (μr)", 
+        "Masa (kg)", "Temp. Inicial (°C)", "Espiras (N)", "Long. Bobina (cm)", 
+        "Frecuencia (kHz)", "Corriente (A)", "Área (m²)", "Emisividad (ε)", "Temp. Máx (°C)", "Tiempo (s)"
+      ];
+      const headerRow = ws1.getRow(12);
+      headerRow.values = headers;
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0284C7' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      });
+
+      // Llenar Datos
+      simulationHistory.forEach((item, index) => {
+        const row = ws1.addRow([
+          `Prueba #${index + 1}`, item.materialName, item.rho, item.c, item.mu_r,
+          item.mass, item.tempIni, item.turns, item.lengthCm, item.freq,
+          item.current, item.areaM2, item.emissivity, item.temp, item.time
+        ]);
+        row.alignment = { horizontal: 'center' };
+      });
+
+      // ==========================================
+      // PESTAÑA 2: MEMORIA DE CÁLCULO VINCULADA
+      // ==========================================
+      const ws2 = wb.addWorksheet('Memoria de Cálculo');
+      ws2.columns = [{ width: 45 }, { width: 50 }, { width: 70 }];
+
+      ws2.getCell('A1').value = "MEMORIA DE CÁLCULO TÉCNICO-MATEMÁTICA (FÓRMULAS NATIVAS)";
+      ws2.getCell('A1').font = { bold: true, size: 12, color: { argb: 'FF0F172A' } };
+      
+      let r2 = 3; // Fila actual en la pestaña 2
+
+      simulationHistory.forEach((item, index) => {
+        let r1 = 13 + index; // Fila exacta de la prueba en la hoja 'Dashboard Ejecutivo'
+        
+        ws2.getCell(`A${r2}`).value = `=== ESCENARIO DE PRUEBA #${index + 1}: ${item.materialName} ===`;
+        ws2.getCell(`A${r2}`).font = { bold: true, color: { argb: 'FFF97316' } };
+        r2++;
+
+        const hRow = ws2.getRow(r2);
+        hRow.values = ["Principio / Ley Física", "Fórmula Teórica Aplicada", "Fórmula Nativa de Excel Operativa"];
+        hRow.font = { bold: true };
+        hRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+        r2++;
+
+        // 1. Campo B
+        ws2.getCell(`A${r2}`).value = "1. Ley de Ampère-Maxwell (Campo B)";
+        ws2.getCell(`B${r2}`).value = "B = μ₀ · (N / l) · I";
+        ws2.getCell(`C${r2}`).value = { formula: `4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r1} / ('Dashboard Ejecutivo'!I${r1}*0.01)) * 'Dashboard Ejecutivo'!K${r1}` };
+        r2++;
+
+        // 2. Faraday
+        ws2.getCell(`A${r2}`).value = "2. Ley de Faraday-Lenz (FEM Inducida)";
+        ws2.getCell(`B${r2}`).value = "E_ind ≈ 2π · f · B · A";
+        ws2.getCell(`C${r2}`).value = { formula: `2*PI() * ('Dashboard Ejecutivo'!J${r1}*1000) * (4*PI()*10^-7 * ('Dashboard Ejecutivo'!H${r1} / ('Dashboard Ejecutivo'!I${r1}*0.01)) * 'Dashboard Ejecutivo'!K${r1}) * 'Dashboard Ejecutivo'!L${r1}` };
+        r2++;
+
+        // 3. Skin
+        ws2.getCell(`A${r2}`).value = "3. Efecto Skin o Pelicular (δ)";
+        ws2.getCell(`B${r2}`).value = "δ = √( ρ / (π · f · μ₀ · μ_r) )";
+        ws2.getCell(`C${r2}`).value = { formula: `SQRT('Dashboard Ejecutivo'!C${r1} / (PI() * ('Dashboard Ejecutivo'!J${r1}*1000) * 4*PI()*10^-7 * 'Dashboard Ejecutivo'!E${r1})) * 1000` };
+        r2++;
+
+        // 4. Potencia Termica
+        ws2.getCell(`A${r2}`).value = "4. Potencia Térmica Neta (P_th)";
+        ws2.getCell(`B${r2}`).value = "P_th = (m · c · ΔT) / t";
+        ws2.getCell(`C${r2}`).value = { formula: `('Dashboard Ejecutivo'!F${r1} * 'Dashboard Ejecutivo'!D${r1} * ('Dashboard Ejecutivo'!N${r1} - 'Dashboard Ejecutivo'!G${r1})) / 'Dashboard Ejecutivo'!O${r1}` };
+        r2++;
+
+        // 5. Radiacion
+        ws2.getCell(`A${r2}`).value = "5. Pérdidas por Radiación (Stefan-Boltzmann)";
+        ws2.getCell(`B${r2}`).value = "P_rad = ε · σ · A · (T_K⁴ - T_amb_K⁴)";
+        ws2.getCell(`C${r2}`).value = { formula: `'Dashboard Ejecutivo'!M${r1} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r1} * ( (('Dashboard Ejecutivo'!N${r1}+273.15)^4) - (('Dashboard Ejecutivo'!G${r1}+273.15)^4) )` };
+        r2++;
+
+        // 6. Balance
+        ws2.getCell(`A${r2}`).value = "6. Balance Global de Potencia de Pieza (P_eq)";
+        ws2.getCell(`B${r2}`).value = "P_eq ≈ (P_th + P_rad) / η";
+        ws2.getCell(`C${r2}`).value = { formula: `( (('Dashboard Ejecutivo'!F${r1} * 'Dashboard Ejecutivo'!D${r1} * ('Dashboard Ejecutivo'!N${r1} - 'Dashboard Ejecutivo'!G${r1})) / 'Dashboard Ejecutivo'!O${r1}) + ('Dashboard Ejecutivo'!M${r1} * 5.670374E-8 * 'Dashboard Ejecutivo'!L${r1} * ( (('Dashboard Ejecutivo'!N${r1}+273.15)^4) - (('Dashboard Ejecutivo'!G${r1}+273.15)^4) )) ) / 0.75 / 1000` };
+        
+        r2 += 2; // Espacio entre escenarios
+      });
+
+      // Escribir archivo y descargar
+      const buffer = await wb.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), "Dashboard_Induccion_IPChile.xlsx");
     });
 
     function updateHistoryTable() {
