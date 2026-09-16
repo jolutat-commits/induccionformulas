@@ -140,8 +140,8 @@
 
   <header>
     <div>
-      <h1>Simulador Maestro 3D de Calentamiento por Inducción</h1>
-      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia Tapia y Axel Aros</p>
+      <h1>Simulador Calentamiento por Inducción</h1>
+      <p>IPChile — Ingeniería en Electricidad y Electrónica | Autores: José Luis Tapia y Axel Aros Romero</p>
     </div>
     <div class="header-actions">
       <button class="help-btn" id="openHelpBtn">❓ Guía de Uso</button>
@@ -158,7 +158,7 @@
         <p style="margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
           <strong>Desarrolladores:</strong> José Luis Tapia Tapia y Axel Aros<br>
           <strong>Institución:</strong> IPChile — Ingeniería en Electricidad y Electrónica<br>
-          <span style="color: var(--highlight);"><strong>Docente Guía:</strong> Agradecimientos especiales a nuestro profesor guía por su continua orientación metodológica, revisión técnica y acompañamiento académico en el desarrollo de este simulador.</span>
+          <span style="color: var(--highlight);"><strong>Docente Guía:</strong> Agradecimientos especiales a nuestro profesor Pablo Latorre guía por su continua orientación metodológica, revisión técnica y acompañamiento académico en el desarrollo de este simulador.</span>
         </p>
 
         <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">1. Geometría Volumétrica Dinámica (Air Gap)</h4>
@@ -166,7 +166,7 @@
           El software calcula automáticamente el diámetro cilíndrico de la pieza a partir de su masa (m) y densidad volumétrica (ρd). El diámetro interior de la bobina se auto-calibra manteniendo una separación de aire de seguridad constante de 5.0 mm por lado (1.0 cm total) para evitar arcos eléctricos.
         </p>
 
-        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">2. Interfaz SCADA y Restricciones HMI Locales</h4>
+        <h4 style="color:var(--accent); font-size:0.85rem; margin-top:8px; margin-bottom:4px;">2. Interfaz y Restricciones Locales</h4>
         <p style="margin-bottom:8px;">
           El panel lateral incorpora lógica preventiva en tiempo real. Si un parámetro sale de los límites seguros (ej. corriente >180 A, reactancia por espiras ≥ 10, o tiempo insuficiente con riesgo de choque térmico), la alerta aparecerá directamente bajo el control correspondiente y el botón de encendido se bloqueará.
         </p>
@@ -463,7 +463,7 @@
 
   <footer class="academic-footer">
     IPChile — Ingeniería en Electricidad y Electrónica<br>
-    © 2026 José Luis Tapia Tapia y Axel Aros. Todos los derechos reservados.<br>
+    © 2026 José Luis Tapia y Axel Aros Romero. Todos los derechos reservados.<br>
     <small>Prohibida su reproducción, copia o uso comercial sin autorización expresa de los autores.</small>
   </footer>
 
@@ -1015,7 +1015,7 @@
       // Cabecera Principal Azul Oscuro
       ws1.mergeCells('A1:O2');
       const titleCell = ws1.getCell('A1');
-      titleCell.value = "IPChile — Ingeniería en Electricidad y Electrónica\nSimulador Maestro 3D de Calentamiento por Inducción";
+      titleCell.value = "IPChile — Ingeniería en Electricidad y Electrónica\nSimulador Calentamiento por Inducción";
       titleCell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 14 };
       titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
       titleCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
@@ -1145,7 +1145,7 @@
 
       // Escribir archivo y descargar
       const buffer = await wb.xlsx.writeBuffer();
-      saveAs(new Blob([buffer]), "Dashboard_Induccion_IPChile.xlsx");
+      saveAs(new Blob([buffer]), "archivo_Induccion_IPChile.xlsx");
     });
 
     function updateHistoryTable() {
